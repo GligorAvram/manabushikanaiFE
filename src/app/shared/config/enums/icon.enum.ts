@@ -1,6 +1,6 @@
 export enum IconEnum {
   Dashboard = 'dashboard',
-  Profile = 'profile',
+  Profile = 'account_circle',
   Settings = 'settings',
-  Stories = "stories",
+  Stories = "auto_stories",
 }

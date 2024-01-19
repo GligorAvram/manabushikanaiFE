@@ -4,6 +4,9 @@ import { AppR } from "@shared/config/constants/routes";
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
+storyDetails(arg0: string) {
+throw new Error('Method not implemented.');
+}
   constructor(private readonly router: Router) {}
 
   async navigateTo(url: string): Promise<void> {

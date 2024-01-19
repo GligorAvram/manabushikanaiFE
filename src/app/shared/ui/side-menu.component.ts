@@ -30,9 +30,11 @@ type MenuEntry = {
                   mat-list-item
                   [routerLink]="entry.routerLink"
                   [class.active-list-item]="isEntryActive(entry)"
-                  style="font-size: 13px; color: #5b5b5b"
+                  style="font-size: 13px; color: #5b5b5b;"
                 >
-                  <mat-icon matListItemIcon fontIcon="entry.icon"></mat-icon>
+                  <mat-icon style="margin-right: 10px;" matListItemIcon>{{
+                    entry.icon
+                  }}</mat-icon>
                   <span>{{ entry.title }}</span>
                 </a>
               </ng-container>
