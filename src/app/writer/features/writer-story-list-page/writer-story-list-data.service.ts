@@ -1,41 +1,33 @@
 import { Injectable } from "@angular/core";
-import { StoryDto } from "app/models/Api";
-import { BaseComponentDataService, ComponentDataSource } from "@shared/data/component-data.service";
+import {  ComponentDataSource, EntityListComponentDataService } from "@shared/data/component-data.service";
 import { WriterActions } from "@writer/data/writer.actions";
 import { WriterQueries } from "@writer/data/writer.queries";
-import { of } from "rxjs";
+import { WriterState } from "@writer/data/writer.store";
+import { StoryDto } from "app/models/Api";
 
-export interface WriterStoryListPageData {
-  stories: StoryDto[];
-  isLoading: boolean;
+interface WriterComponentData {
 }
 
-
-export interface WriterData<E extends object> {
-  entities: E[];
-  active: E;
-}
 
 @Injectable()
-export class WriterStoryListDataService extends BaseComponentDataService<StoryDto[], WriterStoryListPageData> {
+export class WriterStoryListDataService extends EntityListComponentDataService<StoryDto, WriterComponentData, WriterState> {
   constructor(
     private readonly writerActions: WriterActions,
-    private readonly writerQueries: WriterQueries
-  ){
+    private readonly writerQueries: WriterQueries,
+  ) {
     super(writerQueries);
   }
 
-  override onInit(): void {
-    this.loadAllStories();
+  protected override onInit(): void {
+    this.loadStoryList();
   }
 
-  protected override dataSource(): ComponentDataSource<StoryDto[]> {
-    //todo
-    return [of({id: "1", name: "test", difficulty: 5}), of({id: "2", name: "test", difficulty: 1})];
+  protected override dataSource(): ComponentDataSource<{}> {
+    return {};
   }
 
-  private loadAllStories(): void {
+  private loadStoryList(): void{
     this.writerActions.loadAllStories();
-  }
+  };
 }
 

@@ -1,25 +1,24 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { ApiService } from "@shared/data/api.service";
 import { CreateStoryDto, StoryDto } from "app/models/Api";
 import { Observable } from "rxjs";
+import { WriterStore } from "./writer.store";
+import { ApiResult } from "@shared/data/api-result";
+import { apiRoutes } from "@shared/data/api-routes";
 
 @Injectable({
   providedIn: 'root',
 })
-export class WriterApiService {
-  constructor(private http: HttpClient) {}
-
-  apiUrl = 'http://localhost:8080';
-
-  getAllStories(params?: object): Observable<StoryDto[]> {
-    return this.http.get<StoryDto[]>(`${this.apiUrl}/stories`);
+export class WriterApiService extends ApiService {
+  constructor(private writerStore: WriterStore) {
+    super(writerStore);
   }
 
-  getStoryById(id: string): Observable<StoryDto> {
-    return this.http.get<StoryDto>(`${this.apiUrl}/stories/${id}`);
-  }
-
-  createStory(story: CreateStoryDto){
-    this.http.post<StoryDto>(`${this.apiUrl}/stories`, story)
+  getAllStories(): Observable<ApiResult<StoryDto[]>> {
+    return this.get(
+      apiRoutes.writer.stories,
+      this.writerStore.onStoryListLoaded.bind(this.writerStore),
+    );
   }
 }

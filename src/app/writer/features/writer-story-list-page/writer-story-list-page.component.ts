@@ -1,19 +1,18 @@
 import { Component, ChangeDetectionStrategy, OnInit } from "@angular/core";
 import { WriterStoryListDataService } from "./writer-story-list-data.service";
 import { UntilDestroy } from "ngx-reactivetoolkit";
+import { ComponentDataSource } from "@shared/data/component-data.service";
 
 @Component({
   selector: 'app-writer-story-list-page',
   template: `
     writer stories
     <ng-container *ngIf="(dataService.data$ | async)! as data">
-      <!-- <app-story-list-table></app-story-list-table> -->
-      <!-- <ul *ngIf="dataService.data$"> -->
-      <!-- <li *ngFor="let story of stories$ | async">{{ story.name }}</li> -->
-      <!-- </ul> -->
+      <app-story-list-table></app-story-list-table> 
+      <ul> 
+        <li *ngFor="let story of data.entities">{{ story.name }}</li> 
+      </ul>
       <br />
-      <span *ngFor="let story of data">{{ story.name }}</span>
-      <span>{{ data[0].id }}</span>
     </ng-container>
   `,
   providers: [WriterStoryListDataService],
@@ -27,5 +26,6 @@ export class WriterStoryListPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.init(this);
+    this.dataService.data$.subscribe(console.log)
   }
 }

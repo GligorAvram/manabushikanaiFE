@@ -1,13 +1,7 @@
-import { Query, Store } from "@datorama/akita";
-import { Error } from "app/models/Api";
-import { Observable } from "rxjs";
+import { EntityStore, Store } from "@datorama/akita";
+import { BaseEntityState, BaseState } from "./base.state";
 
-export interface IBaseState {
-  success: boolean;
-  loading: boolean;
-}
-
-export class BaseStore<State extends IBaseState> extends Store<State> {
+export class BaseStore<State extends BaseState> extends Store<State> {
   onRequestInit(): void {
     this.update((state) => ({
       ...state,
@@ -27,7 +21,7 @@ export class BaseStore<State extends IBaseState> extends Store<State> {
 
   onError(error: Error): void {
     this.setLoading(false);
-    this.setError(error.fieldErrors);
+    this.setError(error);
   }
 
   setSuccess(value: boolean): void {
@@ -44,12 +38,43 @@ export class BaseStore<State extends IBaseState> extends Store<State> {
   }
 }
 
-export class BaseQuery<S extends IBaseState> extends Query<S> {
-  protected constructor(store: BaseStore<S>) {
-    super(store);
-  }
+export class BaseEntityStore<Entity, State extends BaseEntityState<Entity>> extends Store<State> {
+    onRequestInit(): void {
+        this.update( state => (
+            { ...state, loading: true, success: false, error: null }
+        ) );
+    }
 
-  selectSuccess(): Observable<boolean> {
-    return this.select((state) => state.success);
-  }
+    onSuccess(fromGETRequest: boolean): void {
+        this.setLoading( false );
+
+        if( !fromGETRequest ) {
+            this.setSuccess( true );
+        }
+    }
+
+    onError(error: Error): void {
+        this.setLoading( false );
+        this.setError( error );
+    }
+
+    setSuccess(value: boolean): void {
+        this.update( state => (
+            { ...state, success: value }
+        ) );
+    }
+
+    resetBaseState(): void {
+        this.update( state => (
+            { ...state, loading: false, success: false, error: null }
+        ) );
+    }
+
+    clearEntities(): void {
+        this.update(state => ({...state, entities: []} ));
+    }
+
+    clearActive(): void {
+        this.update( state => ({ ...state, active: null } ));
+    }
 }

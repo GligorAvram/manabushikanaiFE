@@ -12,7 +12,7 @@ import { WriterDataModule } from "@writer/data/writer-data.module";
     ContainerComponent,
     WriterStoryListPageRoutingModule,
     StoryListTableComponent,
-    CommonModule,
+    CommonModule, 
     WriterDataModule
   ],
 })

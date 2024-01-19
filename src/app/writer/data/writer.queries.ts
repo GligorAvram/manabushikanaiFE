@@ -1,20 +1,18 @@
 import { Injectable } from "@angular/core";
-import { BaseQuery } from "@shared/data/store.models";
+import { BaseEntityQuery, BaseQuery } from "@shared/data/base.query";
 import { WriterState, WriterStore } from "./writer.store";
 import { Observable } from "rxjs";
 import { StoryDto } from "app/models/Api";
+import { HashMap } from "@datorama/akita";
 
 @Injectable()
-export class WriterQueries extends BaseQuery<WriterState> {
-  constructor(private readonly writerStore: WriterStore) {
-    super(writerStore);
-  }
+export class WriterQueries extends BaseEntityQuery<StoryDto, WriterState>{
 
-  selectAllStories(): Observable<StoryDto[]> {
-    return this.select((state) => state.entities);
-  }
+    constructor(private readonly writerStore: WriterStore){
+        super(writerStore);
+    }
 
-  selectActiveStory(): Observable<StoryDto | null> {
-    return this.select((state) => state.active);
-  }
+    selectEntities():Observable<StoryDto[]>  {
+        return this.select(state => state.entities ?? []);
+    }
 }

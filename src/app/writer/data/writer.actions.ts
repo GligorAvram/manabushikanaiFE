@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { action } from "@datorama/akita";
-import { WriterApiService } from "@writer/data/writer-api.service";
-import { firstValueFrom } from "rxjs";
+import { WriterApiService } from "./writer-api.service";
 import { WriterStore } from "./writer.store";
-
+import { action } from "@datorama/akita";
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class WriterActions {
@@ -16,11 +15,5 @@ export class WriterActions {
   loadAllStories(): void {
     this.writerStore.clearEntities();
     firstValueFrom(this.writerApiService.getAllStories()).then();
-  }
-
-  @action('Load story by id')
-  loadStoriesById(id: string): void {
-    this.writerStore.clearActive();
-    firstValueFrom(this.writerApiService.getStoryById(id)).then();
   }
 }
