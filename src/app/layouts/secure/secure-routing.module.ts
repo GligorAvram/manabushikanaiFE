@@ -37,23 +37,16 @@ const routes: Routes = [
         path: AppR.reader.stories.list.simple,
         loadChildren: () =>
           import(
-            '@reader/features/reader-story-list-page/reader-story-list-page.module'
-          ).then((m) => m.ReaderStoryListPageModule),
+            '@reader/features/reader-shell/reader-shell.module'
+          ).then((m) => m.ReaderShellModule),
       },
       {
         path: AppR.writer.list.simple,
         loadChildren: () =>
           import(
-            '@writer/features/writer-story-list-page/writer-story-list-page.module'
-          ).then((m) => m.WriterStoryListPageModule),
-      },
-      {
-        path: AppR.writer.create.simple,
-        loadChildren: () =>
-          import(
-            '@writer/features/writer-story-create-page/writer-story-create-page.module'
-          ).then((m) => m.WriterStoryCreatePageModule),
-      },
+            '@writer/features/writer-shell/writer-shell.module'
+          ).then((m) => m.WriterShellModule),
+      }
     ],
   },
 ];

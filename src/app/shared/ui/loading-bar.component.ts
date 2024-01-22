@@ -1,6 +1,6 @@
 import { NgIf } from "@angular/common";
 import { Component, ChangeDetectionStrategy, Input } from "@angular/core";
-import { MatProgressBarModule } from "@angular/material";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 @Component({
   standalone: true,

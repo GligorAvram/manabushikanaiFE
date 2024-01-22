@@ -66,7 +66,7 @@ export function valueIsEmpty(
     | boolean
     | null
     | undefined
-    | ((...args: any) => any),
+    // | ((...args: any) => any),
 ): value is undefined | null {
   if (typeof value === 'number' || typeof value === 'boolean') {
     return isNil(value);

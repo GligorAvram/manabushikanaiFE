@@ -1,20 +1,31 @@
 import { Component, ChangeDetectionStrategy, OnInit } from "@angular/core";
+import { IconEnum } from "@shared/config/enums/icon.enum";
+import { StoryDto } from "app/models/Api";
 
 @Component({
   selector: 'app-reader-story-list-page',
   template: `
-  reader stories
     <app-container>
-      <app-story-list-table></app-story-list-table>
+      <app-header>
+        <app-title
+          headerLeft
+          title="Stories"
+          [icon]="icon"
+        ></app-title>
+      </app-header>
+      <app-story-list-table
+        [stories]="stories"
+        [loading]="false"
+      ></app-story-list-table>
     </app-container>
   `,
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReaderStoryListPageComponent implements OnInit{
+export class ReaderStoryListPageComponent implements OnInit {
+  ngOnInit(): void {}
+  //todo
+  icon = IconEnum.Stories
 
-  ngOnInit(): void {  }
-
-
-  
+  stories: StoryDto[] = [];
 }

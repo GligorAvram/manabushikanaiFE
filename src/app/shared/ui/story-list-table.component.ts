@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { StoryDto } from "app/models/Api";
 import { LoadingBarComponent } from "./loading-bar.component";
 import { CommonModule } from "@angular/common";
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule } from "@angular/material/table"
 import { WriterPipesModule } from "@writer/pipes/writer-pipes.module";
+
 
 @Component({
   selector: 'app-story-list-table',
   template: `
     <app-loading-bar [visible]="loading"></app-loading-bar>
-    <ng-container *ngIf="stories.length > 0 || loading; else noData">
+    <ng-container *ngIf="stories.length > 0 && !loading; else noData">
       <table mat-table [dataSource]="stories">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -23,11 +24,12 @@ import { WriterPipesModule } from "@writer/pipes/writer-pipes.module";
             <strong>{{ story | storyDifficulty }}</strong>
           </td>
         </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="columns"></tr>
         <tr
           mat-row
-          *matRowDef="let story; columns: columns"
-          (click)="rowClicked(story)"
+          *matRowDef="let row; columns: columns"
+          (click)="rowClicked(row)"
         ></tr>
       </table>
     </ng-container>
@@ -36,18 +38,19 @@ import { WriterPipesModule } from "@writer/pipes/writer-pipes.module";
     </ng-template>
   `,
   providers: [],
+  styleUrl: "./table.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    MatTableModule,
     LoadingBarComponent,
     CommonModule,
     WriterPipesModule,
+    MatTableModule,
   ],
 })
 export class StoryListTableComponent implements OnInit {
   @Input()
-  stories: StoryDto[] = [{ name: '1', difficulty: 5, id: 'dasd' }];
+  stories!: StoryDto[];
 
   @Input()
   loading!: boolean;
@@ -58,7 +61,7 @@ export class StoryListTableComponent implements OnInit {
   columns: string[] = [];
 
   ngOnInit(): void {
-    this.setColumns;
+    this.setColumns();
   }
 
   rowClicked(story: StoryDto): void {

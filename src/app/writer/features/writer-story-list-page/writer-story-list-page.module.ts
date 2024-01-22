@@ -8,6 +8,10 @@ import { WriterDataModule } from "@writer/data/writer-data.module";
 import { HeaderComponent } from "@shared/ui/header.component";
 import { TitleComponent } from "@shared/ui/title.component";
 import { ButtonModule } from "@shared/ui/buttons/button.module";
+import { PrimaryButtonComponent } from "@shared/ui/buttons/primary-button.component";
+import { ModalModule } from "@shared/features/modal/modal.module";
+import { InputModule } from "@shared/ui/input/input.module";
+
 
 @NgModule({
   declarations: [WriterStoryListPageComponent],
@@ -20,6 +24,8 @@ import { ButtonModule } from "@shared/ui/buttons/button.module";
     HeaderComponent,
     TitleComponent,
     ButtonModule,
-  ],
+    PrimaryButtonComponent,
+    ModalModule
+    ],
 })
 export class WriterStoryListPageModule {}

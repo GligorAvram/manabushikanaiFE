@@ -11,11 +11,11 @@ const routes: Routes = [
       ).then((m) => m.WriterStoryListPageModule),
   },
   {
-    path: AppR.writer.create.simple,
+    path: AppR.writer.details.simple,
     loadChildren: () =>
       import(
-        '@writer/features/writer-story-create-page/writer-story-create-page.module'
-      ).then((m) => m.WriterStoryCreatePageModule),
+        '@writer/features/writer-story-details-page/writer-story-details-page.module'
+      ).then((m) => m.WriterStoryDetailsPageModule),
   },
 ];
 

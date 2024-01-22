@@ -28,10 +28,6 @@ export const AppR = {
       full: '/writer/stories',
       simple: 'writer/stories',
     },
-    create: {
-      full: '/writer/stories/create',
-      simple: 'create',
-    },
     details: {
       simple: ':id',
     },

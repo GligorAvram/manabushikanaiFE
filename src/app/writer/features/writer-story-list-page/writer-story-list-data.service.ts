@@ -3,14 +3,18 @@ import {  ComponentDataSource, EntityListComponentDataService } from "@shared/da
 import { WriterActions } from "@writer/data/writer.actions";
 import { WriterQueries } from "@writer/data/writer.queries";
 import { WriterState } from "@writer/data/writer.store";
-import { StoryDto } from "app/models/Api";
+import { CreateStoryDto, StoryDto } from "app/models/Api";
 
 interface WriterComponentData {
 }
 
 
 @Injectable()
-export class WriterStoryListDataService extends EntityListComponentDataService<StoryDto, WriterComponentData, WriterState> {
+export class WriterStoryListDataService extends EntityListComponentDataService<
+  StoryDto,
+  WriterComponentData,
+  WriterState
+> {
   constructor(
     private readonly writerActions: WriterActions,
     private readonly writerQueries: WriterQueries,
@@ -26,8 +30,12 @@ export class WriterStoryListDataService extends EntityListComponentDataService<S
     return {};
   }
 
-  private loadStoryList(): void{
+  private loadStoryList(): void {
     this.writerActions.loadAllStories();
-  };
+  }
+
+  create(data: CreateStoryDto) {
+    this.writerActions.createStory(data);
+  }
 }
 

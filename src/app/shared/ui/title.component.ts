@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, ChangeDetectionStrategy, Input } from "@angular/core";
-import { MatIconModule } from "@angular/material";
+import { MatIconModule } from "@angular/material/icon";
+
 import { IconEnum } from "@shared/config/enums/icon.enum";
 
 @Component({

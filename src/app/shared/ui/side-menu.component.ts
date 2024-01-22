@@ -1,6 +1,8 @@
 import { NgIf, NgForOf } from "@angular/common";
-import { Component } from "@angular/core";
-import { MatSidenavModule, MatListModule, MatIconModule } from "@angular/material";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { MatSidenavModule} from "@angular/material/sidenav";
+import { MatListModule} from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
 import { RouterModule, Router } from "@angular/router";
 import { AppR } from "@shared/config/constants/routes";
 import { IconEnum } from "@shared/config/enums/icon.enum";
@@ -18,6 +20,7 @@ type MenuEntry = {
 @Component({
   standalone: true,
   selector: 'app-side-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <mat-sidenav-container class="sidenav-container">
       <mat-sidenav class="sidenav" mode="side" [opened]="true">
