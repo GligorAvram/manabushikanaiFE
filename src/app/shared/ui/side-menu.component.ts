@@ -150,37 +150,33 @@ export class SideMenuComponent {
     return [
       {
         title: 'Main',
-        // oneOfPermissions: [],
         entries: [
           {
             title: 'Dashboard',
             routerLink: AppR.dashboard.full,
-            icon: IconEnum.Dashboard,
-            // requiredPermissions: [],
+            icon: IconEnum.Dashboard
           },
           {
             title: 'Profile',
             routerLink: AppR.profile.full,
-            icon: IconEnum.Profile,
-            // requiredPermissions: [],
+            icon: IconEnum.Profile
           },
           {
             title: 'Settings',
             routerLink: AppR.settings.full,
-            icon: IconEnum.Settings,
-            // requiredPermissions: [],
+            icon: IconEnum.Settings
           },
         ],
       },
       {
         title: 'Reader',
-        // oneOfPermissions: [],
+      
         entries: [
           {
             title: 'Stories',
             routerLink: AppR.reader.stories.list.full,
-            icon: IconEnum.Stories,
-            // requiredPermissions: [],
+            icon: IconEnum.Stories
+        
           },
         ],
       },
@@ -190,8 +186,7 @@ export class SideMenuComponent {
           {
             title: 'Stories',
             routerLink: AppR.writer.list.full,
-            icon: IconEnum.Stories,
-            // requiredPermissions: [],
+            icon: IconEnum.Stories
           },
         ],
       },

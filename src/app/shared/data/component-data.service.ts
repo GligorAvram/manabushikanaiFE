@@ -126,12 +126,9 @@ export abstract class EntityListComponentDataService<E extends object, D extends
 
 
 export abstract class EntityDetailsComponentDataService<E, Data extends object> extends BaseComponentDataService<Data, DetailsComponentData<E>> {
-  // private readonly _route: ActivatedRoute;
 
   protected constructor(query: BaseEntityQuery<E, any> ) {
     super(query);
-    //todo
-    // this._route = inject(ActivatedRoute);
   }
 
   get entity$(): Observable<E> {
@@ -141,12 +138,6 @@ export abstract class EntityDetailsComponentDataService<E, Data extends object> 
   get entity(): Promise<E> {
     return this.dataAsPromise.then((data) => data.entity);
   }
-
-  // getIdFromRoute(): Observable<string> {
-  //   return getParamFromRoute('id', this._route).pipe(
-  //     takeUntilDestroy(this.componentInstance),
-  //   );
-  // }
 
   protected override extraDataSource(): ComponentDataSource<DetailsComponentData<E>> {
     //todo check why the exclamation mark is needed

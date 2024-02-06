@@ -65,7 +65,6 @@ export class StoryCreateFormModalComponent extends AbstractForm<
   CreateStoryDto,
   string[]
 > {
-  //todo
   override loading: boolean = false;
   override onSubmit: SubmitFn<CreateStoryDto>;
   override initialValues?: string[];
@@ -75,15 +74,9 @@ export class StoryCreateFormModalComponent extends AbstractForm<
     @Inject(MAT_DIALOG_DATA)
     public readonly data: StoryCreateFormModalData,
   ) {
-    //todo
     super({ loadingSrc$: of(false) });
     this.initialValues = [];
     this.onSubmit = (formData: { name?: string; difficulty?: number }) => data.onSubmit(formData)
-      // console.log({
-      //   name: d.name,
-      //   difficulty:
-      //     DifficultyEnum[d.difficulty! as unknown as keyof typeof DifficultyEnum],
-      // });
   }
 
   ngOnInit(): void {
@@ -92,7 +85,6 @@ export class StoryCreateFormModalComponent extends AbstractForm<
 
   override cancel(): void {
     super.cancel();
-    //todo
     this.data.onCancel();
   }
 

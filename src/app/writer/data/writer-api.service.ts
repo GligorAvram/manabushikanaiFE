@@ -13,8 +13,6 @@ import { apiRoutes } from "@shared/data/api-routes";
 export class WriterApiService extends ApiService {
   createStory(data: CreateStoryDto): Observable<unknown> {
     throw new Error("Method not implemented.");
-    // const formData: FormData = [];
-    // return this.postWithFormData(apiRoutes.writer.stories, formData)
   }
   constructor(private writerStore: WriterStore) {
     super(writerStore);

@@ -17,13 +17,13 @@ import { of } from "rxjs";
       <app-title
         headerLeft
         title="Story management page"
-        [icon]="icon"
+        [icon]="icon.Stories"
       ></app-title>
     </app-header>
     <app-primary-button
       appButton
       label="Add new story"
-      icon="add_icon"
+      [icon]="icon.Add"
       (onClick)="openStoryCreateFormModal()"
     ></app-primary-button>
 
@@ -40,13 +40,12 @@ import { of } from "rxjs";
 })
 @UntilDestroy()
 export class WriterStoryListPageComponent implements OnInit {
-  icon = IconEnum.Stories;
-  add_icon = IconEnum.Dashboard;
+  icon = IconEnum;
 
   constructor(
     public readonly dataService: WriterStoryListDataService,
     public readonly navigationService: NavigationService,
-    public readonly modalService: ModalService,
+    public readonly modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +70,6 @@ export class WriterStoryListPageComponent implements OnInit {
     this.onCreateStorySuccess();
   }
   onCreateStorySuccess() {
-    //todo message service
     this.modalService.close(StoryCreateFormModalComponent);
   }
 

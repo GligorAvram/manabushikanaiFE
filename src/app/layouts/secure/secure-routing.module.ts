@@ -14,10 +14,6 @@ const routes: Routes = [
           import('@dashboard/dashboard-page.module').then(
             (m) => m.DashboardPageModule
           ),
-        // loadChildren: () =>
-        //   import('@auth/features/auth-shell/auth-shell.module').then(
-        //     (m) => m.AuthShellModule
-        //   ),
       },
       {
         path: AppR.profile.simple,

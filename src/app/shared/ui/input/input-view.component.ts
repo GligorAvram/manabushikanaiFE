@@ -51,10 +51,10 @@ export class InputViewComponent<T> {
     value: T;
     type: InputValueType;
   }): string {
-    //todo
-    // if (valueIsEmpty(value)) {
-    //   return '-';
-    // }
+    // @ts-ignore
+    if (valueIsEmpty(value)) {
+      return '-';
+    }
 
     switch (type) {
       case 'string':

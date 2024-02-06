@@ -7,11 +7,7 @@ import { StoryDto } from "app/models/Api";
   template: `
     <app-container>
       <app-header>
-        <app-title
-          headerLeft
-          title="Stories"
-          [icon]="icon"
-        ></app-title>
+        <app-title headerLeft title="Stories" [icon]="icon.Stories"></app-title>
       </app-header>
       <app-story-list-table
         [stories]="stories"
@@ -24,8 +20,7 @@ import { StoryDto } from "app/models/Api";
 })
 export class ReaderStoryListPageComponent implements OnInit {
   ngOnInit(): void {}
-  //todo
-  icon = IconEnum.Stories
+  icon = IconEnum;
 
   stories: StoryDto[] = [];
 }

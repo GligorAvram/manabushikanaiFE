@@ -7,7 +7,6 @@ import { Component } from "@angular/core";
     <app-side-menu>
         <router-outlet></router-outlet>
     </app-side-menu>
-    hi
   `,
 })
 export class PublicComponent {}

@@ -27,7 +27,7 @@ export class WriterStoryDetailsDataService extends EntityListComponentDataServic
   protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
     return {
       //   story: this.writerQueries.selectStoryById(),
-      //   internsLoading: this.writerQueries.selectLoading(),
+      //   storyLoading: this.writerQueries.selectLoading(),
     };
   }
 
@@ -36,6 +36,6 @@ export class WriterStoryDetailsDataService extends EntityListComponentDataServic
   }
 
   loadStory() {
-    throw new Error('Method not implemented.');
+        throw new Error('Method not implemented.');
   }
 }

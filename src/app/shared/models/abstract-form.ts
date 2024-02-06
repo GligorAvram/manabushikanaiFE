@@ -39,8 +39,6 @@ export abstract class AbstractForm<
     if (buildForm) {
       this.setForm(validators);
     }
-//todo remove maybe?
-    // this.form.addAsyncValidators(ServerValidator());
   }
 
   setForm(validators?: ValidatorFn[], ...fieldsArgs: any): void {
