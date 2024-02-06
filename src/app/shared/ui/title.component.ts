@@ -12,7 +12,6 @@ import { IconEnum } from "@shared/config/enums/icon.enum";
       <div *ngIf="!icon">
         <ng-content select="[titleLeft]"></ng-content>
       </div>
-      <!-- todo -->
       <mat-icon *ngIf="icon" color="primary">{{icon}}</mat-icon>
       <div
         class="d-flex align-items-start justify-content-center flex-column mx-2"

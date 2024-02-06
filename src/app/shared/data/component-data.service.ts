@@ -140,7 +140,6 @@ export abstract class EntityDetailsComponentDataService<E, Data extends object> 
   }
 
   protected override extraDataSource(): ComponentDataSource<DetailsComponentData<E>> {
-    //todo check why the exclamation mark is needed
     const entity = this.query!.select('active');
     return { entity: entity.pipe(takeIfDefined) };
   }

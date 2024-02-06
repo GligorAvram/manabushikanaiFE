@@ -57,7 +57,6 @@ export class WriterStoryListPageComponent implements OnInit {
       StoryCreateFormModalComponent,
       this,
       {
-        //todo
         loading$: of(false),
         onSubmit: this.createStory.bind(this),
         onCancel: this.closeStoryCreateFormModal.bind(this),
