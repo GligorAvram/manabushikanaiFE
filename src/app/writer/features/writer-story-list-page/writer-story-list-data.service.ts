@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
-import {  ComponentDataSource, EntityListComponentDataService } from "@shared/data/component-data.service";
+import { ComponentDataSource, EntityListComponentDataService } from "@shared/data/component-data.service";
 import { WriterActions } from "@writer/data/writer.actions";
 import { WriterQueries } from "@writer/data/writer.queries";
 import { WriterState } from "@writer/data/writer.store";
-import { CreateStoryDto, StoryDto } from "app/models/Api";
+import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
+import { StoryDto } from "app/models/Api";
 
 interface WriterComponentData {
 }
@@ -34,7 +35,7 @@ export class WriterStoryListDataService extends EntityListComponentDataService<
     this.writerActions.loadAllStories();
   }
 
-  create(data: CreateStoryDto) {
+  create(data: CreateStoryWithFile) {
     this.writerActions.createStory(data);
   }
 }

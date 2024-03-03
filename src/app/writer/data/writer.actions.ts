@@ -3,11 +3,11 @@ import { WriterApiService } from "./writer-api.service";
 import { WriterStore } from "./writer.store";
 import { action } from "@datorama/akita";
 import { firstValueFrom } from "rxjs";
-import { CreateStoryDto } from "app/models/Api";
+import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
+import { SentenceDto } from "app/models/Api";
 
 @Injectable()
 export class WriterActions {
-
   constructor(
     private readonly writerApiService: WriterApiService,
     private readonly writerStore: WriterStore,
@@ -19,8 +19,19 @@ export class WriterActions {
     firstValueFrom(this.writerApiService.getAllStories()).then();
   }
 
-  @action("Create story")
-  createStory(data: CreateStoryDto): void {
-      firstValueFrom(this.writerApiService.createStory(data)).then();
+  @action('Load story by id')
+  loadStoryById(id: string): void {
+    this.writerStore.clearActive();
+    firstValueFrom(this.writerApiService.getStoryById(id)).then();
+  }
+
+  @action('Create story')
+  createStory(data: CreateStoryWithFile): void {
+    firstValueFrom(this.writerApiService.createStory(data)).then();
+  }
+
+  @action('Add translation to sentence')
+  submitTranslationForSentence(sentence: SentenceDto) {
+    firstValueFrom(this.writerApiService.submitTranslationForSentence(sentence)).then();
   }
 }

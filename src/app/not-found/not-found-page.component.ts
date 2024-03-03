@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { Location } from '@angular/common';
 import { IconEnum } from '@shared/config/enums/icon.enum';
-import { PrimaryButtonComponent } from '@shared/ui/buttons/primary-button.component';
 
 @Component({
   selector: 'app-not-found-page',
@@ -17,6 +15,5 @@ import { PrimaryButtonComponent } from '@shared/ui/buttons/primary-button.compon
   `
 })
 export class NotFoundPageComponent {
-  icon = IconEnum
-  constructor(private location: Location) {}
+  icon = IconEnum;
 }

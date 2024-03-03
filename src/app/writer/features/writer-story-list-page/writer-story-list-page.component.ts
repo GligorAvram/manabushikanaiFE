@@ -4,8 +4,7 @@ import { NavigationService } from "@shared/features/navigation/navigation.servic
 import { UntilDestroy } from "ngx-reactivetoolkit";
 import { WriterStoryListDataService } from "./writer-story-list-data.service";
 import { ModalService } from "@shared/features/modal/modal.service";
-import { StoryCreateFormModalComponent } from "@writer/ui/story-create-form-modal.component";
-import { CreateStoryDto } from "app/models/Api";
+import { CreateStoryWithFile, StoryCreateFormModalComponent } from "@writer/ui/story-create-form-modal.component";
 import { StoryCreateFormModalData } from "@writer/config/writer.interfaces";
 import { of } from "rxjs";
 
@@ -31,7 +30,7 @@ import { of } from "rxjs";
       <app-story-list-table
         [stories]="data.entities"
         [loading]="data.loading"
-        (onRowClick)="navigationService.writerStoryDetails($event.id)"
+        (onRowClick)="navigationService.writerStoryDetails($event?.id!)"
       ></app-story-list-table>
     </app-container>
   `,
@@ -45,7 +44,7 @@ export class WriterStoryListPageComponent implements OnInit {
   constructor(
     public readonly dataService: WriterStoryListDataService,
     public readonly navigationService: NavigationService,
-    public readonly modalService: ModalService
+    public readonly modalService: ModalService,
   ) {}
 
   ngOnInit(): void {
@@ -64,10 +63,11 @@ export class WriterStoryListPageComponent implements OnInit {
     );
   }
 
-  createStory(data: CreateStoryDto): void {
+  createStory(data: CreateStoryWithFile): void {
     this.dataService.create(data);
     this.onCreateStorySuccess();
   }
+
   onCreateStorySuccess() {
     this.modalService.close(StoryCreateFormModalComponent);
   }

@@ -59,5 +59,6 @@
   "description": "manabi",
   "main": "index.js",
   "author": "gligoravram <gligor_avram@yahoo.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": "github.com:GligorAvram/manabushikanaiFE.git"
 }

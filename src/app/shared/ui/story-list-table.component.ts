@@ -4,6 +4,7 @@ import { LoadingBarComponent } from "./loading-bar.component";
 import { CommonModule } from "@angular/common";
 import { MatTableModule } from "@angular/material/table"
 import { WriterPipesModule } from "@writer/pipes/writer-pipes.module";
+import { valueIsNotEmpty } from "@shared/functions";
 
 
 @Component({
@@ -56,7 +57,7 @@ export class StoryListTableComponent implements OnInit {
   loading!: boolean;
 
   @Output()
-  onRowClick = new EventEmitter<StoryDto>();
+  onRowClick = new EventEmitter<StoryDto | undefined>();
 
   columns: string[] = [];
 
@@ -65,7 +66,9 @@ export class StoryListTableComponent implements OnInit {
   }
 
   rowClicked(story: StoryDto): void {
-    this.onRowClick.emit(story);
+    if(valueIsNotEmpty(story)){
+      this.onRowClick.emit(story);
+    }
   }
 
   private setColumns(): void {
