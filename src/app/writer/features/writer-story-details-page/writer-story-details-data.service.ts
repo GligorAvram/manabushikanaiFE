@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import {
-  BaseComponentDataService,
   ComponentDataSource,
-  EntityListComponentDataService,
-} from '@shared/data/component-data.service';
+  EntityDetailsComponentDataService,
+  } from '@shared/data/component-data.service';
+import { getParamFromRoute } from '@shared/functions';
 import { WriterActions } from '@writer/data/writer.actions';
 import { WriterQueries } from '@writer/data/writer.queries';
-import { WriterState } from '@writer/data/writer.store';
-import { StoryDto } from 'app/models/Api';
+import { SentenceDto, StoryDto } from 'app/models/Api';
 
-interface WriterStoryDetailsComponentData {}
+interface WriterStoryDetailsComponentData {
+  story: StoryDto | null;
+  loading: boolean;
+}
 
 @Injectable()
-export class WriterStoryDetailsDataService extends EntityListComponentDataService<
+export class WriterStoryDetailsDataService extends EntityDetailsComponentDataService<
   StoryDto,
-  WriterStoryDetailsComponentData,
-  WriterState
+  WriterStoryDetailsComponentData
 > {
   constructor(
     private readonly writerActions: WriterActions,
@@ -24,18 +25,26 @@ export class WriterStoryDetailsDataService extends EntityListComponentDataServic
     super(writerQueries);
   }
 
+  submitTranslationForSentence(sentence: SentenceDto) {
+    this.writerActions.submitTranslationForSentence(sentence);
+  }
+
   protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
     return {
-      //   story: this.writerQueries.selectStoryById(),
-      //   storyLoading: this.writerQueries.selectLoading(),
+      story: this.writerQueries.selectActive(),
+      loading: this.writerQueries.selectLoading(),
     };
   }
 
-  protected onInit(): void {
+  protected override onInit(): void {
     this.loadStory();
   }
 
-  loadStory() {
-        throw new Error('Method not implemented.');
+  private loadStory() {
+    const id = getParamFromRoute('id', this._route);
+
+    if (id) {
+      this.writerActions.loadStoryById(id);
+    }
   }
 }

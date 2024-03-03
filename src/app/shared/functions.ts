@@ -1,4 +1,6 @@
+import { ActivatedRoute } from "@angular/router";
 import { isArray, isBoolean, isEmpty, isFunction, isNil, isString } from "lodash-es";
+
 
 export const valueIsDefined = <T>(
   input: null | undefined | T,
@@ -84,4 +86,12 @@ export function valueIsEmpty(
   }
 
   return isNil(value) || isEmpty(value);
+}
+
+
+export function getParamFromRoute(
+  paramName: string,
+  route: ActivatedRoute
+): string | null {
+  return route.snapshot.paramMap.get(paramName);
 }

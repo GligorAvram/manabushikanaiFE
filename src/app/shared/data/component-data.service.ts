@@ -10,6 +10,8 @@ import { BaseEntityQuery, BaseQuery } from './base.query';
 import { takeIfDefined } from '@shared/rxjs-operators';
 import { ComponentInstance } from '@shared/types';
 import { BaseEntityState } from './base.state';
+import { inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 type BaseComponentData = { loading: boolean; success: boolean };
 export type ComponentDataSource<Data extends object> = {
@@ -55,9 +57,7 @@ export abstract class BaseComponentDataService<
     this.onInit();
   }
 
-  get dataAsPromise(): Promise<
-    FullComponentData<ComponentData, ExtraComponentData>
-  > {
+  get dataAsPromise(): Promise<FullComponentData<ComponentData, ExtraComponentData>> {
     return firstValueFrom(this.data$.pipe(takeIfDefined));
   }
 
@@ -125,10 +125,15 @@ export abstract class EntityListComponentDataService<E extends object, D extends
 }
 
 
-export abstract class EntityDetailsComponentDataService<E, Data extends object> extends BaseComponentDataService<Data, DetailsComponentData<E>> {
+export abstract class EntityDetailsComponentDataService<
+  E,
+  Data extends object,
+> extends BaseComponentDataService<Data, DetailsComponentData<E>> {
+  protected readonly _route: ActivatedRoute;
 
-  protected constructor(query: BaseEntityQuery<E, any> ) {
+  protected constructor(query: BaseEntityQuery<E, any>) {
     super(query);
+    this._route = inject(ActivatedRoute);
   }
 
   get entity$(): Observable<E> {
@@ -139,7 +144,9 @@ export abstract class EntityDetailsComponentDataService<E, Data extends object> 
     return this.dataAsPromise.then((data) => data.entity);
   }
 
-  protected override extraDataSource(): ComponentDataSource<DetailsComponentData<E>> {
+  protected override extraDataSource(): ComponentDataSource<
+    DetailsComponentData<E>
+  > {
     const entity = this.query!.select('active');
     return { entity: entity.pipe(takeIfDefined) };
   }

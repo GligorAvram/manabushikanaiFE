@@ -1,4 +1,4 @@
-import { EntityStore, Store } from "@datorama/akita";
+import { Store } from "@datorama/akita";
 import { BaseEntityState, BaseState } from "./base.state";
 
 export class BaseStore<State extends BaseState> extends Store<State> {

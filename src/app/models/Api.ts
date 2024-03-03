@@ -47,15 +47,25 @@ export interface SentenceDto {
   japaneseSentence?: string;
   /** @format int32 */
   order?: number;
+  englishTranslation?: string;
+  translationDone?: boolean;
+  wordsDone?: boolean;
+  /** @format uuid */
+  storyID?: string;
 }
 
 export interface StoryDto {
   /** @format uuid */
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   /** @format int32 */
-  difficulty: number;
+  difficulty?: number;
   sentences?: SentenceDto[];
+}
+
+export interface AddSentenceTranslationDto {
+  id?: string;
+  englishTranslation: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -310,6 +320,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         type: ContentType.FormData,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name AddTranslation
+     * @request PATCH:/stories/translations
+     */
+    addTranslation: (data: AddSentenceTranslationDto, params: RequestParams = {}) =>
+      this.request<SentenceDto, Error>({
+        path: `/stories/translations`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
         ...params,
       }),
 

@@ -13,7 +13,9 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { InputModule } from "@shared/ui/input/input.module";
 import { StoryCreateFormModalData } from "@writer/config/writer.interfaces";
 import { TextInputComponent } from "@shared/ui/input/text-input.component";
+import { FileUploadComponent } from "@shared/ui/file-upload.component";
 
+export type CreateStoryWithFile = CreateStoryDto & {file: File}
 
 @Component({
   selector: 'app-story-create-modal-form',
@@ -33,6 +35,7 @@ import { TextInputComponent } from "@shared/ui/input/text-input.component";
           formControlName="name"
         ></app-text-input>
         <app-select-input
+          class="displayBlock"
           appInput
           formControlName="difficulty"
           label="Difficulty"
@@ -40,6 +43,13 @@ import { TextInputComponent } from "@shared/ui/input/text-input.component";
           [required]="true"
         >
         </app-select-input>
+        <app-file-upload
+          label="Select file"
+          accept="application/txt"
+          [showSummary]="true"
+          (onUpload)="onFileUpload($event)"
+        >
+        </app-file-upload>
       </form>
     </app-form-modal>
   `,
@@ -58,15 +68,16 @@ import { TextInputComponent } from "@shared/ui/input/text-input.component";
     FormModalComponent,
     ReactiveFormsModule,
     InputModule,
+    FileUploadComponent,
   ],
 })
 @UntilDestroy()
 export class StoryCreateFormModalComponent extends AbstractForm<
-  CreateStoryDto,
+  CreateStoryWithFile,
   string[]
 > {
   override loading: boolean = false;
-  override onSubmit: SubmitFn<CreateStoryDto>;
+  override onSubmit: SubmitFn<CreateStoryWithFile>;
   override initialValues?: string[];
   difficultyEnum = DifficultyEnum;
 
@@ -76,7 +87,11 @@ export class StoryCreateFormModalComponent extends AbstractForm<
   ) {
     super({ loadingSrc$: of(false) });
     this.initialValues = [];
-    this.onSubmit = (formData: { name?: string; difficulty?: number }) => data.onSubmit(formData)
+    this.onSubmit = (formData: {
+      name?: string;
+      difficulty?: number;
+      file: File;
+    }) => data.onSubmit(formData);
   }
 
   ngOnInit(): void {
@@ -88,14 +103,19 @@ export class StoryCreateFormModalComponent extends AbstractForm<
     this.data.onCancel();
   }
 
-  protected override formFields(): FormFields<CreateStoryDto> {
+  protected override formFields(): FormFields<CreateStoryWithFile> {
     return {
       name: '',
       difficulty: 0,
+      file: [],
     };
   }
 
   protected override componentInstance(): ComponentInstance | null {
     return this;
+  }
+
+  onFileUpload(file: File): void {
+    this.form.patchValue({ file: file });
   }
 }

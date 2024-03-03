@@ -1,6 +1,7 @@
 import { IFormModalData } from "@shared/config/constants/shared.interfaces";
-import { CreateStoryDto } from "app/models/Api";
+import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
+
 
 export interface StoryCreateFormModalData
-  extends IFormModalData<CreateStoryDto> {
+  extends IFormModalData<CreateStoryWithFile> {
 }
