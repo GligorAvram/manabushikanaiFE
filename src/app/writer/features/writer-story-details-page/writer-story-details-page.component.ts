@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { WriterStoryDetailsDataService } from "./writer-story-details-data.service";
 import { NavigationService } from "@shared/features/navigation/navigation.service";
 import { UntilDestroy } from "ngx-reactivetoolkit";
-import { SentenceDto } from "app/models/Api";
+import { AddWordToDictionaryDto, SentenceDto } from "app/models/Api";
 
 @Component({
   selector: '',
@@ -13,6 +13,7 @@ import { SentenceDto } from "app/models/Api";
         (translationSubmitted)="submitTranslation($event)"
         *ngIf="data.story"
         [sentences]="data.story!.sentences ?? []"
+        (dictionaryWordSubmitted)="submitDictionaryWord($event)"
       >
       </app-sentence-editor-manager>
     </ng-container>
@@ -33,5 +34,9 @@ export class WriterStoryDetailsPageComponent implements OnInit {
 
   submitTranslation(sentence: SentenceDto) {
     this.dataService.submitTranslationForSentence(sentence);
+  }
+
+  submitDictionaryWord(word: AddWordToDictionaryDto) {
+    this.dataService.submitWordToDictionary(word);
   }
 }

@@ -63,6 +63,25 @@ export interface StoryDto {
   sentences?: SentenceDto[];
 }
 
+export interface AddWordToDictionaryDto {
+  dictionaryWord: string;
+  englishTranslation: string;
+  japaneseDefinition: string;
+  kana: string;
+  observation?: string;
+  setPhrase?: boolean;
+}
+
+export interface DictionaryWordDto {
+  id?: string;
+  dictionaryForm?: string;
+  englishTranslation?: string;
+  kana?: string;
+  japaneseDefinition?: string;
+  observation?: string;
+  setPhrase?: boolean;
+}
+
 export interface AddSentenceTranslationDto {
   id?: string;
   englishTranslation: string;
@@ -350,6 +369,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<StoryDto, Error>({
         path: `/stories/${id}`,
         method: "GET",
+        ...params,
+      }),
+  };
+  dictionary = {
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name CreateStory1
+     * @request POST:/dictionary
+     */
+    createStory1: (data: AddWordToDictionaryDto, params: RequestParams = {}) =>
+      this.request<DictionaryWordDto, Error>({
+        path: `/dictionary`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
         ...params,
       }),
   };

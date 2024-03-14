@@ -69,7 +69,7 @@ export class WriterStoryListPageComponent implements OnInit {
   }
 
   onCreateStorySuccess() {
-    this.modalService.close(StoryCreateFormModalComponent);
+    this.closeStoryCreateFormModal();
   }
 
   closeStoryCreateFormModal(): void {

@@ -14,6 +14,7 @@ import { InputModule } from "@shared/ui/input/input.module";
 import { StoryCreateFormModalData } from "@writer/config/writer.interfaces";
 import { TextInputComponent } from "@shared/ui/input/text-input.component";
 import { FileUploadComponent } from "@shared/ui/file-upload.component";
+import { ModalModule } from "@shared/features/modal/modal.module";
 
 export type CreateStoryWithFile = CreateStoryDto & {file: File}
 

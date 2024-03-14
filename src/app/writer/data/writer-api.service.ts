@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "@shared/data/api.service";
-import { SentenceDto, StoryDto } from "app/models/Api";
+import { AddWordToDictionaryDto, DictionaryWordDto, SentenceDto, StoryDto } from "app/models/Api";
 import { Observable } from "rxjs";
 import { WriterStore } from "./writer.store";
 import { ApiResult } from "@shared/data/api-result";
@@ -56,6 +56,14 @@ export class WriterApiService extends ApiService {
   submitTranslationForSentence(
     sentence: SentenceDto,
   ): Observable<ApiResult<SentenceDto>> {
-    return this.patch<{id: string, englishTranslation: string}, SentenceDto>(apiRoutes.writer.stories.translations, {id: sentence.id!, englishTranslation: sentence.englishTranslation!}, this.writerStore.onSentenceTranslationAdded.bind(this.writerStore));
+    return this.patch<{ id: string; englishTranslation: string }, SentenceDto>(
+      apiRoutes.writer.stories.translations,
+      { id: sentence.id!, englishTranslation: sentence.englishTranslation! },
+      this.writerStore.onSentenceTranslationAdded.bind(this.writerStore),
+    );
+  }
+
+  submitDictionaryWord(word: AddWordToDictionaryDto): Observable<ApiResult<DictionaryWordDto>> {
+    return this.post<DictionaryWordDto, AddWordToDictionaryDto>(apiRoutes.writer.stories.dictionary, word) 
   }
 }

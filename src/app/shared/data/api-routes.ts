@@ -7,6 +7,7 @@ export const apiRoutes = {
     stories: {
       base: `${apiUrl}/stories`,
       translations: `${apiUrl}/stories/translations`,
+      dictionary: `${apiUrl}/dictionary`
     },
   },
 };
