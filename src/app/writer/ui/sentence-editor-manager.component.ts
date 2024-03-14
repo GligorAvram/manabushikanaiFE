@@ -31,7 +31,6 @@ import { ModalModule } from '@shared/features/modal/modal.module';
       <app-word-editor
         [sentences]="sentences"
         (onTranslationSubmitted)="submitWordsTranslation($event)"
-        (onDictionaryWordSubmitted)="submitDictionaryWord($event)"
         (onAddWordToDictionaryClicked)="openAddWordToDictionaryFormModal()"
       ></app-word-editor>
     </ng-container>
@@ -54,6 +53,9 @@ export class SentenceEditorComponentManager {
   @Output()
   translationSubmitted = new EventEmitter<SentenceDto>();
 
+  @Output()
+  dictionaryWordSubmitted = new EventEmitter<AddWordToDictionaryDto>();
+
   sentenceView = 'Sentence view';
   wordView = 'Word view';
   selected: string | undefined = this.wordView;
@@ -72,25 +74,25 @@ export class SentenceEditorComponentManager {
     console.log(event);
   }
 
-  submitDictionaryWord(event: any) {
-    console.log(event);
+  submitDictionaryWord(word: AddWordToDictionaryDto) {    
+    this.dictionaryWordSubmitted.emit(word);
+    this.onWordAddedToDictionarySuccessfully();
+  }
+  onWordAddedToDictionarySuccessfully() {
+    this.closeAddWordToDictioanryFormModal()
   }
 
+
   openAddWordToDictionaryFormModal() {
-    console.log('here');
     this.modalService.openMdModal<AddWordToDictionaryFormModalData>(
       AddWordToDictionaryFormModalComponent,
       this,
       {
         loading$: of(false),
-        onSubmit: this.addWordToDictionary.bind(this),
+        onSubmit: this.submitDictionaryWord.bind(this),
         onCancel: this.closeAddWordToDictioanryFormModal.bind(this),
       },
     );
-  }
-
-  addWordToDictionary(data: AddWordToDictionaryDto) {
-    console.log(data);
   }
 
   closeAddWordToDictioanryFormModal(): void {

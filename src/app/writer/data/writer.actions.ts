@@ -4,7 +4,7 @@ import { WriterStore } from "./writer.store";
 import { action } from "@datorama/akita";
 import { firstValueFrom } from "rxjs";
 import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
-import { SentenceDto } from "app/models/Api";
+import { AddWordToDictionaryDto, SentenceDto } from "app/models/Api";
 
 @Injectable()
 export class WriterActions {
@@ -32,6 +32,13 @@ export class WriterActions {
 
   @action('Add translation to sentence')
   submitTranslationForSentence(sentence: SentenceDto) {
-    firstValueFrom(this.writerApiService.submitTranslationForSentence(sentence)).then();
+    firstValueFrom(
+      this.writerApiService.submitTranslationForSentence(sentence),
+    ).then();
+  }
+
+  @action('Add word to dictioainry')
+  submitDictionaryWord(word: AddWordToDictionaryDto) {
+    firstValueFrom(this.writerApiService.submitDictionaryWord(word)).then();
   }
 }

@@ -6,7 +6,7 @@ import {
 import { getParamFromRoute } from '@shared/functions';
 import { WriterActions } from '@writer/data/writer.actions';
 import { WriterQueries } from '@writer/data/writer.queries';
-import { SentenceDto, StoryDto } from 'app/models/Api';
+import { AddWordToDictionaryDto, SentenceDto, StoryDto } from 'app/models/Api';
 
 interface WriterStoryDetailsComponentData {
   story: StoryDto | null;
@@ -46,5 +46,9 @@ export class WriterStoryDetailsDataService extends EntityDetailsComponentDataSer
     if (id) {
       this.writerActions.loadStoryById(id);
     }
+  }
+
+  submitWordToDictionary(word: AddWordToDictionaryDto) {
+    this.writerActions.submitDictionaryWord(word);
   }
 }
