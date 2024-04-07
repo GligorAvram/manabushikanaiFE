@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SubmitFn, FormFields, ComponentInstance } from "@shared/config/constants/shared.types";
 import { AbstractForm } from "@shared/models/abstract-form";
 import { AddWordToDictionaryFormModalData } from "@writer/config/writer.interfaces";
-import { AddWordToDictionaryDto } from "app/models/Api";
+import { CreateDictionaryWordDto } from 'app/models/Api';
 import { UntilDestroy } from "ngx-reactivetoolkit";
 import { of } from "rxjs";
 import { ReactiveFormsModule, Validators } from "@angular/forms";
@@ -15,7 +15,7 @@ import { TextInputComponent } from "@shared/ui/input/text-input.component";
 import { CheckboxInputComponent } from "../../shared/ui/input/checkbox-input.component";
 
 @Component({
-  selector: 'app-add-word-to-dictionary-form-modal',
+  selector: 'app-create-dictionary-word-form-modal',
   standalone: true,
   template: `
     <app-form-modal
@@ -83,9 +83,9 @@ import { CheckboxInputComponent } from "../../shared/ui/input/checkbox-input.com
   ],
 })
 @UntilDestroy()
-export class AddWordToDictionaryFormModalComponent extends AbstractForm<AddWordToDictionaryDto> {
+export class CreateDictionaryWordFormModalComponent extends AbstractForm<CreateDictionaryWordDto> {
   override loading: boolean = false;
-  override onSubmit: SubmitFn<AddWordToDictionaryDto>;
+  override onSubmit: SubmitFn<CreateDictionaryWordDto>;
   override initialValues: any = null;
 
   constructor(
@@ -112,7 +112,7 @@ export class AddWordToDictionaryFormModalComponent extends AbstractForm<AddWordT
     this.data.onCancel();
   }
 
-  protected override formFields(): FormFields<AddWordToDictionaryDto> {
+  protected override formFields(): FormFields<CreateDictionaryWordDto> {
     return {
       dictionaryWord: '',
       englishTranslation: '',

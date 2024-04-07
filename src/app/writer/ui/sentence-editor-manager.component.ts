@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { AddWordToDictionaryDto, SentenceDto } from 'app/models/Api';
+import { CreateDictionaryWordDto, CreateParagraphTranslationDto, ParagraphDto, SentenceDto } from 'app/models/Api';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { ContainerComponent } from '@shared/ui/container.component';
 import { SliderComponent } from "@shared/ui/slider.component";
 import { WordEditorComponent } from "@writer/ui/word-editor.component";
-import { SentenceEditorComponent } from '@writer/ui/sentence-editor.component';
+import { ParagraphEditorComponent } from '@writer/ui/sentence-editor.component';
 import { ModalService } from '@shared/features/modal/modal.service';
 import { of } from 'rxjs';
-import { AddWordToDictionaryFormModalComponent } from './add-word-to-dictionary-form-modal.component';
+import { CreateDictionaryWordFormModalComponent } from './add-word-to-dictionary-form-modal.component';
 import { AddWordToDictionaryFormModalData } from '@writer/config/writer.interfaces';
 import { ModalModule } from '@shared/features/modal/modal.module';
 
@@ -22,14 +22,14 @@ import { ModalModule } from '@shared/features/modal/modal.module';
       (onChange)="setSelected($event)"
     ></app-slider>
     <ng-container *ngIf="selected == sentenceView">
-      <app-sentence-editor
-        [sentences]="sentences"
+      <app-paragraph-editor
+        [paragraphs]="paragraphs"
         (onTranslationSubmitted)="submitTranslation($event)"
-      ></app-sentence-editor>
+      ></app-paragraph-editor>
     </ng-container>
     <ng-container *ngIf="selected == wordView">
       <app-word-editor
-        [sentences]="sentences"
+        [sentences]="paragraphs"
         (onTranslationSubmitted)="submitWordsTranslation($event)"
         (onAddWordToDictionaryClicked)="openAddWordToDictionaryFormModal()"
       ></app-word-editor>
@@ -41,22 +41,22 @@ import { ModalModule } from '@shared/features/modal/modal.module';
     ContainerComponent,
     SliderComponent,
     WordEditorComponent,
-    SentenceEditorComponent,
-    ModalModule,
+    ParagraphEditorComponent,
+    ModalModule
   ],
 })
 @UntilDestroy()
 export class SentenceEditorComponentManager {
   @Input()
-  sentences!: SentenceDto[];
+  paragraphs!: ParagraphDto[];
 
   @Output()
-  translationSubmitted = new EventEmitter<SentenceDto>();
+  translationSubmitted = new EventEmitter<CreateParagraphTranslationDto>();
 
   @Output()
-  dictionaryWordSubmitted = new EventEmitter<AddWordToDictionaryDto>();
+  dictionaryWordSubmitted = new EventEmitter<CreateDictionaryWordDto>();
 
-  sentenceView = 'Sentence view';
+  sentenceView = 'Paragraph view';
   wordView = 'Word view';
   selected: string | undefined = this.wordView;
 
@@ -66,26 +66,25 @@ export class SentenceEditorComponentManager {
     this.selected = value;
   }
 
-  submitTranslation(sentence: SentenceDto) {
-    this.translationSubmitted.emit(sentence);
+  submitTranslation(paragraphTranslation: CreateParagraphTranslationDto) {
+    this.translationSubmitted.emit(paragraphTranslation);
   }
 
   submitWordsTranslation(event: any) {
     console.log(event);
   }
 
-  submitDictionaryWord(word: AddWordToDictionaryDto) {    
+  submitDictionaryWord(word: CreateDictionaryWordDto) {
     this.dictionaryWordSubmitted.emit(word);
     this.onWordAddedToDictionarySuccessfully();
   }
   onWordAddedToDictionarySuccessfully() {
-    this.closeAddWordToDictioanryFormModal()
+    this.closeAddWordToDictioanryFormModal();
   }
-
 
   openAddWordToDictionaryFormModal() {
     this.modalService.openMdModal<AddWordToDictionaryFormModalData>(
-      AddWordToDictionaryFormModalComponent,
+      CreateDictionaryWordFormModalComponent,
       this,
       {
         loading$: of(false),
@@ -96,6 +95,6 @@ export class SentenceEditorComponentManager {
   }
 
   closeAddWordToDictioanryFormModal(): void {
-    this.modalService.close(AddWordToDictionaryFormModalComponent);
+    this.modalService.close(CreateDictionaryWordFormModalComponent);
   }
 }

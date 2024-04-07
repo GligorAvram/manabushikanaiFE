@@ -2,10 +2,7 @@ import { NgModule } from "@angular/core";
 import { StoryNamePipe } from "./story-name.pipe";
 import { StoryDifficultyPipe } from "./story-difficulty.pipe";
 
-const Pipes = [
-    StoryNamePipe,
-    StoryDifficultyPipe
-];
+const Pipes = [StoryNamePipe, StoryDifficultyPipe];
 
 @NgModule({
   declarations: Pipes,

@@ -4,7 +4,7 @@ import { BaseEntityState } from '@shared/data/base.state';
 import { StoreNameEnum } from '@shared/data/store.constants';
 import { storeEvent } from '@shared/data/store.decorators';
 import { BaseEntityStore } from '@shared/data/store.models';
-import { SentenceDto, StoryDto } from 'app/models/Api';
+import { ParagraphDto, SentenceDto, StoryDto } from 'app/models/Api';
 
 export interface WriterState extends BaseEntityState<StoryDto> {}
 
@@ -37,17 +37,20 @@ export class WriterStore extends BaseEntityStore<StoryDto, WriterState> {
     this.update({ entities: [story, ...this.getValue().entities] });
   }
 
-  @storeEvent('Sentence translation added')
-  onSentenceTranslationAdded(sentence: SentenceDto): void {
+  @storeEvent('Paragraph translation added')
+  onSentenceTranslationAdded(paragraph: ParagraphDto): void {
     if (
       (this.getValue().active !== null || this.getValue().active !== undefined) &&
-      this.getValue().active?.id === sentence.storyID
+      this.getValue().active?.id === paragraph.storyId
     ) {
       this.update({
         active: {
           ...this.getValue().active,
-          sentences: this.getValue().active!.sentences!
-                          .map(oldSentence => oldSentence.id === sentence.id ? sentence : oldSentence).sort((s1, s2)=> s1.order! - s2.order!),
+          paragraphs: this.getValue()
+            .active!.paragraphs!.map((oldParagraph) =>
+              oldParagraph.id === paragraph.id ? paragraph : oldParagraph,
+            )
+            .sort((p1, p2) => p1.orderInStory! - p2.orderInStory!),
         },
       });
     }

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from "@angular/core";
-import { AddWordToDictionaryDto, SentenceDto } from "app/models/Api";
+import { ParagraphDto, SentenceDto } from 'app/models/Api';
 import { PrimaryButtonComponent } from "@shared/ui/buttons/primary-button.component";
 import { ButtonModule } from "@shared/ui/buttons/button.module";
-import { ButtonDirective } from "@shared/ui/buttons/button.directive";
 import { IconEnum } from "@shared/config/enums/icon.enum";
 
 @Component({
@@ -22,7 +21,7 @@ import { IconEnum } from "@shared/config/enums/icon.enum";
 })
 export class WordEditorComponent {
   @Input()
-  sentences!: SentenceDto[];
+  sentences!: ParagraphDto[];
 
   @Output()
   onAddWordToDictionaryClicked: EventEmitter<null> = new EventEmitter();

@@ -41,17 +41,28 @@ export interface CreateStoryDto {
   difficulty?: number;
 }
 
+export interface ParagraphDto {
+  /** @format uuid */
+  id?: string;
+  originalParagraph?: string;
+  /** @format int32 */
+  orderInStory?: number;
+  translationDone?: boolean;
+  wordsDone?: boolean;
+  sentences?: SentenceDto[];
+  /** @format uuid */
+  storyId?: string;
+}
+
 export interface SentenceDto {
   /** @format uuid */
   id?: string;
   japaneseSentence?: string;
+  englishTranslation?: string;
+  /** @format uuid */
+  paragraphId?: string;
   /** @format int32 */
   order?: number;
-  englishTranslation?: string;
-  translationDone?: boolean;
-  wordsDone?: boolean;
-  /** @format uuid */
-  storyID?: string;
 }
 
 export interface StoryDto {
@@ -60,10 +71,10 @@ export interface StoryDto {
   name?: string;
   /** @format int32 */
   difficulty?: number;
-  sentences?: SentenceDto[];
+  paragraphs?: ParagraphDto[];
 }
 
-export interface AddWordToDictionaryDto {
+export interface CreateDictionaryWordDto {
   dictionaryWord: string;
   englishTranslation: string;
   japaneseDefinition: string;
@@ -82,9 +93,16 @@ export interface DictionaryWordDto {
   setPhrase?: boolean;
 }
 
-export interface AddSentenceTranslationDto {
+export interface CreateParagraphTranslationDto {
   id?: string;
-  englishTranslation: string;
+  sentences?: CreateSentenceDto[];
+}
+
+export interface CreateSentenceDto {
+  japaneseSentence?: string;
+  englishTranslation?: string;
+  /** @format int32 */
+  order?: number;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -346,11 +364,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags writer-controller
-     * @name AddTranslation
+     * @name AddParagraphTranslation
      * @request PATCH:/stories/translations
      */
-    addTranslation: (data: AddSentenceTranslationDto, params: RequestParams = {}) =>
-      this.request<SentenceDto, Error>({
+    addParagraphTranslation: (data: CreateParagraphTranslationDto, params: RequestParams = {}) =>
+      this.request<ParagraphDto, Error>({
         path: `/stories/translations`,
         method: "PATCH",
         body: data,
@@ -380,7 +398,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateStory1
      * @request POST:/dictionary
      */
-    createStory1: (data: AddWordToDictionaryDto, params: RequestParams = {}) =>
+    createStory1: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
       this.request<DictionaryWordDto, Error>({
         path: `/dictionary`,
         method: "POST",
