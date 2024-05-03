@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { CreateDictionaryWordDto, CreateParagraphTranslationDto, ParagraphDto, SentenceDto } from 'app/models/Api';
+import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, ParagraphDto, SentenceDto } from 'app/models/Api';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { ContainerComponent } from '@shared/ui/container.component';
 import { SliderComponent } from "@shared/ui/slider.component";
@@ -13,88 +13,88 @@ import { AddWordToDictionaryFormModalData } from '@writer/config/writer.interfac
 import { ModalModule } from '@shared/features/modal/modal.module';
 
 @Component({
-  selector: 'app-sentence-editor-manager',
-  standalone: true,
-  template: `
-    <app-slider
-      [rightOption]="sentenceView"
-      [leftOption]="wordView"
-      (onChange)="setSelected($event)"
-    ></app-slider>
-    <ng-container *ngIf="selected == sentenceView">
-      <app-paragraph-editor
-        [paragraphs]="paragraphs"
-        (onTranslationSubmitted)="submitTranslation($event)"
-      ></app-paragraph-editor>
-    </ng-container>
-    <ng-container *ngIf="selected == wordView">
-      <app-word-editor
-        [sentences]="paragraphs"
-        (onTranslationSubmitted)="submitWordsTranslation($event)"
-        (onAddWordToDictionaryClicked)="openAddWordToDictionaryFormModal()"
-      ></app-word-editor>
-    </ng-container>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    ContainerComponent,
-    SliderComponent,
-    WordEditorComponent,
-    ParagraphEditorComponent,
-    ModalModule
-  ],
+    selector: "app-sentence-editor-manager",
+    standalone: true,
+    template: `
+        <app-slider [rightOption]="sentenceView" [leftOption]="wordView" (onChange)="setSelected($event)"></app-slider>
+        <ng-container *ngIf="selected == sentenceView">
+            <app-paragraph-editor [paragraphs]="paragraphs" (onTranslationSubmitted)="submitTranslation($event)"></app-paragraph-editor>
+        </ng-container>
+        <ng-container *ngIf="selected == wordView">
+            <app-word-editor
+                [possibleTranslations]="possibleTranslations"
+                [paragraphs]="paragraphs"
+                (onOnWordFieldFilled)="getTranslationForSelectedWord($event)"
+                (onTranslationSubmitted)="submitWordsTranslation($event)"
+                (onTranslationForWordSelected)="onTranslationForWordSelected.emit()"
+                (onAddWordToDictionaryClicked)="openAddWordToDictionaryFormModal()"
+            ></app-word-editor>
+        </ng-container>
+    `,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, ContainerComponent, SliderComponent, WordEditorComponent, ParagraphEditorComponent, ModalModule],
 })
 @UntilDestroy()
 export class SentenceEditorComponentManager {
-  @Input()
-  paragraphs!: ParagraphDto[];
+    @Input()
+    paragraphs!: ParagraphDto[];
 
-  @Output()
-  translationSubmitted = new EventEmitter<CreateParagraphTranslationDto>();
+    @Input()
+    possibleTranslations!: DictionaryWordDto[];
 
-  @Output()
-  dictionaryWordSubmitted = new EventEmitter<CreateDictionaryWordDto>();
+    @Output()
+    onTranslationSubmitted: EventEmitter<CreateParagraphTranslationDto> = new EventEmitter();
 
-  sentenceView = 'Paragraph view';
-  wordView = 'Word view';
-  selected: string | undefined = this.wordView;
+    @Output()
+    onWordTranslationSubmitted: EventEmitter<CreateWordTranslationForParagraphDto> = new EventEmitter();
 
-  constructor(public readonly modalService: ModalService) {}
+    @Output()
+    onWordTranslationRequested: EventEmitter<string> = new EventEmitter();
 
-  setSelected(value: string | undefined) {
-    this.selected = value;
-  }
+    @Output()
+    onTranslationForWordSelected: EventEmitter<void> = new EventEmitter();
 
-  submitTranslation(paragraphTranslation: CreateParagraphTranslationDto) {
-    this.translationSubmitted.emit(paragraphTranslation);
-  }
+    @Output()
+    dictionaryWordSubmitted: EventEmitter<CreateDictionaryWordDto> = new EventEmitter();
 
-  submitWordsTranslation(event: any) {
-    console.log(event);
-  }
+    sentenceView = "Paragraph view";
+    wordView = "Word view";
+    selected: string | undefined = this.wordView;
 
-  submitDictionaryWord(word: CreateDictionaryWordDto) {
-    this.dictionaryWordSubmitted.emit(word);
-    this.onWordAddedToDictionarySuccessfully();
-  }
-  onWordAddedToDictionarySuccessfully() {
-    this.closeAddWordToDictioanryFormModal();
-  }
+    constructor(public readonly modalService: ModalService) {}
 
-  openAddWordToDictionaryFormModal() {
-    this.modalService.openMdModal<AddWordToDictionaryFormModalData>(
-      CreateDictionaryWordFormModalComponent,
-      this,
-      {
-        loading$: of(false),
-        onSubmit: this.submitDictionaryWord.bind(this),
-        onCancel: this.closeAddWordToDictioanryFormModal.bind(this),
-      },
-    );
-  }
+    setSelected(value: string | undefined) {
+        this.selected = value;
+    }
 
-  closeAddWordToDictioanryFormModal(): void {
-    this.modalService.close(CreateDictionaryWordFormModalComponent);
-  }
+    submitTranslation(paragraphTranslation: CreateParagraphTranslationDto) {
+        this.onTranslationSubmitted.emit(paragraphTranslation);
+    }
+
+    submitWordsTranslation(wordTranslation: CreateWordTranslationForParagraphDto) {
+        this.onWordTranslationSubmitted.emit(wordTranslation);
+    }
+
+    submitDictionaryWord(word: CreateDictionaryWordDto) {
+        this.dictionaryWordSubmitted.emit(word);
+        this.onWordAddedToDictionarySuccessfully();
+    }
+    onWordAddedToDictionarySuccessfully() {
+        this.closeAddWordToDictionaryFormModal();
+    }
+    getTranslationForSelectedWord($event: string) {
+        this.onWordTranslationRequested.emit($event);
+    }
+
+    openAddWordToDictionaryFormModal() {
+        this.modalService.openMdModal<AddWordToDictionaryFormModalData>(CreateDictionaryWordFormModalComponent, this, {
+            loading$: of(false),
+            onSubmit: this.submitDictionaryWord.bind(this),
+            onCancel: this.closeAddWordToDictionaryFormModal.bind(this),
+        });
+    }
+
+    closeAddWordToDictionaryFormModal(): void {
+        this.modalService.close(CreateDictionaryWordFormModalComponent);
+    }
 }

@@ -3,10 +3,11 @@ import { ComponentDataSource, EntityDetailsComponentDataService } from "@shared/
 import { getParamFromRoute } from "@shared/functions";
 import { WriterActions } from "@writer/data/writer.actions";
 import { WriterQueries } from "@writer/data/writer.queries";
-import { CreateDictionaryWordDto, CreateParagraphTranslationDto, StoryDto } from "app/models/Api";
+import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, StoryDto } from "app/models/Api";
 
 interface WriterStoryDetailsComponentData {
     story: StoryDto | null;
+    possibleWordTranslations: DictionaryWordDto[];
     loading: boolean;
 }
 
@@ -19,14 +20,11 @@ export class WriterStoryDetailsDataService extends EntityDetailsComponentDataSer
         super(writerQueries);
     }
 
-    submitTranslationForParagraph(paragraph: CreateParagraphTranslationDto) {
-        this.writerActions.submitTranslationForParagraph(paragraph);
-    }
-
     protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
         return {
             story: this.writerQueries.selectActive(),
             loading: this.writerQueries.selectLoading(),
+            possibleWordTranslations: this.writerQueries.selectPossibleWordTranslations(),
         };
     }
 
@@ -44,5 +42,21 @@ export class WriterStoryDetailsDataService extends EntityDetailsComponentDataSer
 
     submitWordToDictionary(word: CreateDictionaryWordDto) {
         this.writerActions.submitDictionaryWord(word);
+    }
+
+    submitSentenceTranslationForParagraph(sentenceTranslation: CreateParagraphTranslationDto) {
+        this.writerActions.submitSentenceTranslationForParagraph(sentenceTranslation);
+    }
+
+    submitWordsTranslationForParagraph(wordTranslation: CreateWordTranslationForParagraphDto) {
+        this.writerActions.submitWordTranslationForParagraph(wordTranslation);
+    }
+
+    getTranslationForWord(word: string) {
+        this.writerActions.getTranslationForWord(word);
+    }
+
+    clearPossibleDictionaryWordList() {
+        this.writerActions.clearPossibleDictionaryWordList();
     }
 }

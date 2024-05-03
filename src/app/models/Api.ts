@@ -41,6 +41,17 @@ export interface CreateStoryDto {
   difficulty?: number;
 }
 
+export interface DictionaryWordDto {
+  id: string;
+  dictionaryForm: string;
+  englishTranslation: string;
+  kana: string;
+  japaneseDefinition: string;
+  isSetPhrase: boolean;
+  pitchAccent: PitchAccentEnum;
+  observation?: string;
+}
+
 export interface ParagraphDto {
   /** @format uuid */
   id?: string;
@@ -52,17 +63,32 @@ export interface ParagraphDto {
   sentences?: SentenceDto[];
   /** @format uuid */
   storyId?: string;
+  words?: WordDto[];
+}
+
+export enum PitchAccentEnum {
+  NONE = "NONE",
+  HEIBAN = "HEIBAN",
+  ATAMADAKA = "ATAMADAKA",
+  NAKADAKA2 = "NAKADAKA2",
+  NAKADAKA3 = "NAKADAKA3",
+  NAKADAKA4 = "NAKADAKA4",
+  NAKADAKA5 = "NAKADAKA5",
+  NAKADAKA6 = "NAKADAKA6",
+  NAKADAKA7 = "NAKADAKA7",
+  NAKADAKA8 = "NAKADAKA8",
+  OODAKA = "OODAKA",
 }
 
 export interface SentenceDto {
   /** @format uuid */
-  id?: string;
-  japaneseSentence?: string;
-  englishTranslation?: string;
+  id: string;
+  japaneseSentence: string;
+  englishTranslation: string;
   /** @format uuid */
-  paragraphId?: string;
+  paragraphId: string;
   /** @format int32 */
-  order?: number;
+  order: number;
 }
 
 export interface StoryDto {
@@ -74,23 +100,23 @@ export interface StoryDto {
   paragraphs?: ParagraphDto[];
 }
 
+export interface WordDto {
+  id: string;
+  translation: DictionaryWordDto;
+  /** @format int32 */
+  order: number;
+  wordKanji: string;
+  wordKana: string;
+}
+
 export interface CreateDictionaryWordDto {
   dictionaryWord: string;
   englishTranslation: string;
   japaneseDefinition: string;
   kana: string;
+  pitchAccent: PitchAccentEnum;
   observation?: string;
-  setPhrase?: boolean;
-}
-
-export interface DictionaryWordDto {
-  id?: string;
-  dictionaryForm?: string;
-  englishTranslation?: string;
-  kana?: string;
-  japaneseDefinition?: string;
-  observation?: string;
-  setPhrase?: boolean;
+  isSetPhrase?: boolean;
 }
 
 export interface CreateParagraphTranslationDto {
@@ -99,10 +125,47 @@ export interface CreateParagraphTranslationDto {
 }
 
 export interface CreateSentenceDto {
-  japaneseSentence?: string;
-  englishTranslation?: string;
+  japaneseSentence: string;
+  englishTranslation: string;
   /** @format int32 */
+  order: number;
+}
+
+export interface CreateWordTranslationForParagraphDto {
+  paragraphId: string;
+  words: WordTranslationDto[];
+}
+
+export interface WordTranslationDto {
+  dictionaryWordId?: string;
+  /**
+   * @format int32
+   * @min 0
+   */
   order?: number;
+  /**
+   * @minLength 1
+   * @maxLength 2147483647
+   */
+  wordKanji?: string;
+  /**
+   * @minLength 1
+   * @maxLength 2147483647
+   */
+  wordKana?: string;
+}
+
+export interface PageableDto {
+  /** @format int32 */
+  pageNumber?: number;
+  /** @format int32 */
+  pageSize?: number;
+  sort?: PageableDtoSortEnum;
+}
+
+export enum PageableDtoSortEnum {
+  ASCENDING = "ASCENDING",
+  DESCENDING = "DESCENDING",
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -151,7 +214,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8080";
+  public baseUrl: string = "http://localhost:8080/api/v1";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -317,7 +380,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title No title
- * @baseUrl http://localhost:8080
+ * @baseUrl http://localhost:8080/api/v1
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   stories = {
@@ -328,10 +391,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetAllStories
      * @request GET:/stories
      */
-    getAllStories: (params: RequestParams = {}) =>
+    getAllStories: (
+      query: {
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<StoryDto[], Error>({
         path: `/stories`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
@@ -380,6 +449,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags writer-controller
+     * @name CreateWordTranslationForParagraph
+     * @request PATCH:/stories/paragraphs/words
+     */
+    createWordTranslationForParagraph: (data: CreateWordTranslationForParagraphDto, params: RequestParams = {}) =>
+      this.request<ParagraphDto, Error>({
+        path: `/stories/paragraphs/words`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
      * @name GetStoryById
      * @request GET:/stories/{id}
      */
@@ -404,6 +489,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name GetTranslationForWord
+     * @request GET:/dictionary/{word}
+     */
+    getTranslationForWord: (word: string, params: RequestParams = {}) =>
+      this.request<DictionaryWordDto[], Error>({
+        path: `/dictionary/${word}`,
+        method: "GET",
         ...params,
       }),
   };

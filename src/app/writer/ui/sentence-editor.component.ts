@@ -22,7 +22,7 @@ export type translationData = {
 
 @Component({
     selector: "app-paragraph-editor",
-    template: ` <app-container>
+    template: `<app-container>
         <mat-card>
             <mat-stepper [linear]="false" #stepper *ngIf="formGroups" (selectionChange)="onStepChange($event)">
                 <mat-step *ngFor="let group of formGroups; let index = index" [completed]="group.paragraph.translationDone" [stepControl]="group.formGroup">
@@ -159,7 +159,7 @@ export class ParagraphEditorComponent implements OnInit , OnChanges{
         let index = 0;
         this.selectedParagraph = "";
         for (let i = 0; i < paragraph.length; i++) {
-            if (paragraph.substring(i).startsWith(this.sentences[index].japaneseSentence!)) {
+            if (index < this.sentences.length && paragraph.substring(i).startsWith(this.sentences[index].japaneseSentence!)) {
                 this.selectedParagraph += `<span class="${this.doneSentenceCssClass}">${this.sentences[index].japaneseSentence}</span>`;
                 i += this.sentences[index].japaneseSentence!.length - 1;
                 index++;
