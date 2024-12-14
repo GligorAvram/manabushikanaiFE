@@ -1,12 +1,20 @@
-import { Injectable } from "@angular/core";
-import { ApiService } from "@shared/data/api.service";
-import { AddWordToDictionaryDto, DictionaryWordDto, SentenceDto, StoryDto } from "app/models/Api";
-import { Observable } from "rxjs";
-import { WriterStore } from "./writer.store";
-import { ApiResult } from "@shared/data/api-result";
-import { apiRoutes } from "@shared/data/api-routes";
-import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
-import { DifficultyEnum } from "@shared/config/enums/difficulty.enum";
+import {Injectable} from "@angular/core";
+import {ApiService} from "@shared/data/api.service";
+import {
+  CreateDictionaryWordDto,
+  CreateParagraphTranslationDto,
+  DictionaryWordDto,
+  PaginatedParagraphDto,
+  ParagraphDto,
+  StoryDto
+} from "app/models/Api";
+import {Observable} from "rxjs";
+import {WriterStore} from "./writer.store";
+import {ApiResult} from "@shared/data/api-result";
+import {apiRoutes} from "@shared/data/api-routes";
+import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component";
+import {DifficultyEnum} from "@shared/config/enums/difficulty.enum";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
@@ -54,16 +62,28 @@ export class WriterApiService extends ApiService {
   }
 
   submitTranslationForSentence(
-    sentence: SentenceDto,
-  ): Observable<ApiResult<SentenceDto>> {
-    return this.patch<{ id: string; englishTranslation: string }, SentenceDto>(
-      apiRoutes.writer.stories.translations,
-      { id: sentence.id!, englishTranslation: sentence.englishTranslation! },
+    paragraphTranslation: CreateParagraphTranslationDto,
+  ): Observable<ApiResult<ParagraphDto>> {
+    return this.patch<CreateParagraphTranslationDto, ParagraphDto>(
+      apiRoutes.writer.stories.sentences,
+      paragraphTranslation,
       this.writerStore.onSentenceTranslationAdded.bind(this.writerStore),
     );
   }
 
-  submitDictionaryWord(word: AddWordToDictionaryDto): Observable<ApiResult<DictionaryWordDto>> {
-    return this.post<DictionaryWordDto, AddWordToDictionaryDto>(apiRoutes.writer.stories.dictionary, word) 
+  submitDictionaryWord(word: CreateDictionaryWordDto): Observable<ApiResult<DictionaryWordDto>> {
+    return this.post<CreateDictionaryWordDto, DictionaryWordDto>(apiRoutes.writer.stories.dictionary, word)
+  }
+
+  getPaginatedParagraphs(storyId: string, page: { pageNumber: number; pageSize: number; sort?: string }) {
+    // TODO refactor to a function
+    let paginationParams: HttpParams = new HttpParams();
+    const pp = paginationParams.appendAll(page);
+
+    return this.getWithParams<HttpParams, PaginatedParagraphDto>(
+      `${apiRoutes.writer.stories.base}/${storyId}/paragraphs`,
+      pp,
+      this.writerStore.onParagraphsLoaded.bind(this.writerStore),
+    );
   }
 }

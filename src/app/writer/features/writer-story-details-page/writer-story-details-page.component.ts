@@ -1,20 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
-import { WriterStoryDetailsDataService } from "./writer-story-details-data.service";
-import { NavigationService } from "@shared/features/navigation/navigation.service";
-import { UntilDestroy } from "ngx-reactivetoolkit";
-import { AddWordToDictionaryDto, SentenceDto } from "app/models/Api";
+import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
+import {WriterStoryDetailsDataService} from "./writer-story-details-data.service";
+import {NavigationService} from "@shared/features/navigation/navigation.service";
+import {UntilDestroy} from "ngx-reactivetoolkit";
+import {CreateDictionaryWordDto, CreateParagraphTranslationDto} from "app/models/Api";
+import {FormBuilder} from "@angular/forms";
 
 @Component({
-  selector: '',
+  selector: 'app-writer-story-details-page',
   template: `
     <ng-container *ngIf="(dataService.data$ | async)! as data">
       <app-loading-bar [visible]="data.loading"></app-loading-bar>
       <app-sentence-editor-manager
-        (translationSubmitted)="submitTranslation($event)"
+        (onTranslationSubmitted)="submitTranslationForParagraph($event)"
         *ngIf="data.story"
-        [sentences]="data.story!.sentences ?? []"
         (dictionaryWordSubmitted)="submitDictionaryWord($event)"
-      >
+        [paragraphs]="data.paragraphs?.paragraphs ?? []">
       </app-sentence-editor-manager>
     </ng-container>
   `,
@@ -23,20 +23,23 @@ import { AddWordToDictionaryDto, SentenceDto } from "app/models/Api";
 })
 @UntilDestroy()
 export class WriterStoryDetailsPageComponent implements OnInit {
+
   constructor(
     public readonly dataService: WriterStoryDetailsDataService,
     public readonly navigationService: NavigationService,
+    private _formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.dataService.init(this);
   }
 
-  submitTranslation(sentence: SentenceDto) {
-    this.dataService.submitTranslationForSentence(sentence);
+
+  submitTranslationForParagraph(paragraphTranslation: CreateParagraphTranslationDto) {
+    this.dataService.submitTranslationForParagraph(paragraphTranslation);
   }
 
-  submitDictionaryWord(word: AddWordToDictionaryDto) {
+  submitDictionaryWord(word: CreateDictionaryWordDto) {
     this.dataService.submitWordToDictionary(word);
   }
 }

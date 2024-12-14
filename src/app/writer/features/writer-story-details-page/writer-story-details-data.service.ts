@@ -1,43 +1,50 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {BaseComponentDataService, ComponentDataSource} from '@shared/data/component-data.service';
+import {getParamFromRoute} from '@shared/functions';
+import {WriterActions} from '@writer/data/writer.actions';
+import {WriterQueries} from '@writer/data/writer.queries';
 import {
-  ComponentDataSource,
-  EntityDetailsComponentDataService,
-  } from '@shared/data/component-data.service';
-import { getParamFromRoute } from '@shared/functions';
-import { WriterActions } from '@writer/data/writer.actions';
-import { WriterQueries } from '@writer/data/writer.queries';
-import { AddWordToDictionaryDto, SentenceDto, StoryDto } from 'app/models/Api';
+  CreateDictionaryWordDto,
+  CreateParagraphTranslationDto,
+  PaginatedParagraphDto,
+  SentenceDto,
+  StoryDto
+} from 'app/models/Api';
+import {ActivatedRoute} from "@angular/router";
 
 interface WriterStoryDetailsComponentData {
   story: StoryDto | null;
+  paragraphs: PaginatedParagraphDto | null
   loading: boolean;
 }
 
 @Injectable()
-export class WriterStoryDetailsDataService extends EntityDetailsComponentDataService<
-  StoryDto,
+export class WriterStoryDetailsDataService extends BaseComponentDataService<
   WriterStoryDetailsComponentData
 > {
   constructor(
     private readonly writerActions: WriterActions,
     private readonly writerQueries: WriterQueries,
+    private readonly _route: ActivatedRoute
   ) {
     super(writerQueries);
   }
 
-  submitTranslationForSentence(sentence: SentenceDto) {
-    this.writerActions.submitTranslationForSentence(sentence);
+  submitTranslationForParagraph(paragraphTranslation: CreateParagraphTranslationDto) {
+    this.writerActions.submitTranslationForSentence(paragraphTranslation);
   }
 
   protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
     return {
-      story: this.writerQueries.selectActive(),
+      story: this.writerQueries.selectActiveStory(),
+      paragraphs: this.writerQueries.selectParagraphs(),
       loading: this.writerQueries.selectLoading(),
     };
   }
 
   protected override onInit(): void {
     this.loadStory();
+    this.loadParagraphs({pageNumber: 0, pageSize: 10});
   }
 
   private loadStory() {
@@ -48,7 +55,15 @@ export class WriterStoryDetailsDataService extends EntityDetailsComponentDataSer
     }
   }
 
-  submitWordToDictionary(word: AddWordToDictionaryDto) {
+  private loadParagraphs(page: { pageNumber: number, pageSize: number, sort?: string }) {
+    const storyId = getParamFromRoute('id', this._route);
+
+    if (storyId) {
+      this.writerActions.loadParagraphs(storyId, page);
+    }
+  }
+
+  submitWordToDictionary(word: CreateDictionaryWordDto) {
     this.writerActions.submitDictionaryWord(word);
   }
 }

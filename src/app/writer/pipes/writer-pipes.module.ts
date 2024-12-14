@@ -1,6 +1,6 @@
-import { NgModule } from "@angular/core";
-import { StoryNamePipe } from "./story-name.pipe";
-import { StoryDifficultyPipe } from "./story-difficulty.pipe";
+import {NgModule} from "@angular/core";
+import {StoryNamePipe} from "./story-name.pipe";
+import {StoryDifficultyPipe} from "./story-difficulty.pipe";
 
 const Pipes = [
     StoryNamePipe,

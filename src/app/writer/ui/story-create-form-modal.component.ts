@@ -40,7 +40,7 @@ export type CreateStoryWithFile = CreateStoryDto & {file: File}
           appInput
           formControlName="difficulty"
           label="Difficulty"
-          [options]="difficultyEnum | enumToSelectInputOptions"
+          [control]="DifficultyEnum | enumToSelectInputOptions"
           [required]="true"
         >
         </app-select-input>
@@ -119,4 +119,6 @@ export class StoryCreateFormModalComponent extends AbstractForm<
   onFileUpload(file: File): void {
     this.form.patchValue({ file: file });
   }
+
+  protected readonly DifficultyEnum = DifficultyEnum;
 }

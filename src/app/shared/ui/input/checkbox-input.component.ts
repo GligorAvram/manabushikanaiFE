@@ -1,7 +1,16 @@
 import { CommonModule } from "@angular/common";
-import { Component, ChangeDetectionStrategy, AfterViewInit, ViewChild, Host } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { MatInput } from "@angular/material/input";
+import {
+  Component,
+  ChangeDetectionStrategy,
+  AfterViewInit,
+  ViewChild,
+  Host,
+  Input,
+  Output,
+  EventEmitter
+} from "@angular/core";
+import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MatError, MatFormField, MatHint, MatInput, MatLabel} from "@angular/material/input";
 import { InputViewComponent } from "./input-view.component";
 import { InputDirective } from "./input.directive";
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -11,33 +20,48 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   selector: 'app-checkbox-input',
   template: `
     <mat-checkbox
-      *ngIf="!input.showInputView; else inputView"
-      [(ngModel)]="input.value"
-      [checked]="input.value"
-      [required]="input.required"
-      [disabled]="input.disabled"
-      labelPosition="after"
-      (change)="input.onChange($event.checked)"
-      >{{ input.label }}</mat-checkbox
+      [formControl]="control"
+      [required]="required"
+      [disabled]="control.disabled"
+      [class.disabled]="control.disabled"
     >
-    <ng-template #inputView>
-      <app-input-view
-        [data]="{ value: input.value, type: 'boolean' }"
-        [label]="input.label"
-        (onClick)="input.inputViewClicked()"
-      ></app-input-view>
-    </ng-template>
+      {{ label }}
+    </mat-checkbox>
+    <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
+    <mat-error *ngIf="control.invalid && control.touched">
+      <ul class="error-list">
+        <li *ngFor="let error of getErrors()">{{ error }}</li>
+      </ul>
+    </mat-error>
   `,
-  imports: [CommonModule, MatCheckboxModule, FormsModule, InputViewComponent],
+  imports: [
+    CommonModule,
+    MatCheckboxModule,
+    ReactiveFormsModule,
+    MatHint,
+    MatError,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CheckboxInputComponent implements AfterViewInit {
-  @ViewChild(MatInput)
-  matInput!: MatInput;
+export class CheckboxInputComponent {
+  @Output()
+  keyUp = new EventEmitter<KeyboardEvent>();
 
-  constructor(@Host() public readonly input: InputDirective<boolean>) {}
+  @Input() label = '';
+  @Input() required = false;
+  @Input() hint?: string;
 
-  ngAfterViewInit(): void {
-    this.input.inputElement = this.matInput;
+  @Input() control!: FormControl<boolean>;
+
+  constructor() {}
+
+  onKeyUp(event: KeyboardEvent): void {
+    this.keyUp.emit(event);
+  }
+
+  getErrors(): string[] {
+    return Object.keys(this.control.errors || {}).map(
+      (key) => this.control.errors![key]
+    );
   }
 }

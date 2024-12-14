@@ -1,17 +1,8 @@
-import { takeUntilDestroy } from 'ngx-reactivetoolkit';
-import {
-  Observable,
-  BehaviorSubject,
-  firstValueFrom,
-  of,
-  combineLatest,
-} from 'rxjs';
-import { BaseEntityQuery, BaseQuery } from './base.query';
-import { takeIfDefined } from '@shared/rxjs-operators';
-import { ComponentInstance } from '@shared/types';
-import { BaseEntityState } from './base.state';
-import { inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {takeUntilDestroy} from 'ngx-reactivetoolkit';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of,} from 'rxjs';
+import {BaseQuery} from './base.query';
+import {takeIfDefined} from '@shared/rxjs-operators';
+import {ComponentInstance} from '@shared/types';
 
 type BaseComponentData = { loading: boolean; success: boolean };
 export type ComponentDataSource<Data extends object> = {
@@ -87,7 +78,7 @@ export abstract class BaseComponentDataService<
       'loading',
       'success',
     ];
-    
+
     combineLatest(sources)
       .pipe(takeUntilDestroy(this.componentInstance))
       .subscribe((values) => {
@@ -106,48 +97,5 @@ export abstract class BaseComponentDataService<
     } as ComponentDataSource<
       FullComponentData<ComponentData, ExtraComponentData>
     >;
-  }
-}
-
-export abstract class EntityListComponentDataService<E extends object, D extends object, S extends BaseEntityState<E>> extends BaseComponentDataService<D, ListComponentData<E>> {
-  protected constructor(query: BaseEntityQuery<E, S>) {
-    super(query);
-  }
-
-  protected override extraDataSource(): ComponentDataSource<ListComponentData<E>> {
-    const entities = this.entityQuery.select("entities");
-    return { entities: entities.pipe(takeIfDefined) };
-  }
-
-  private get entityQuery(): BaseEntityQuery<E, S> {
-    return this.query as BaseEntityQuery<E, S>;
-  }
-}
-
-
-export abstract class EntityDetailsComponentDataService<
-  E,
-  Data extends object,
-> extends BaseComponentDataService<Data, DetailsComponentData<E>> {
-  protected readonly _route: ActivatedRoute;
-
-  protected constructor(query: BaseEntityQuery<E, any>) {
-    super(query);
-    this._route = inject(ActivatedRoute);
-  }
-
-  get entity$(): Observable<E> {
-    return this.extraDataSource().entity;
-  }
-
-  get entity(): Promise<E> {
-    return this.dataAsPromise.then((data) => data.entity);
-  }
-
-  protected override extraDataSource(): ComponentDataSource<
-    DetailsComponentData<E>
-  > {
-    const entity = this.query!.select('active');
-    return { entity: entity.pipe(takeIfDefined) };
   }
 }

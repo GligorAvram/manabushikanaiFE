@@ -1,16 +1,22 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { AddWordToDictionaryDto, SentenceDto } from 'app/models/Api';
-import { UntilDestroy } from 'ngx-reactivetoolkit';
-import { ContainerComponent } from '@shared/ui/container.component';
-import { SliderComponent } from "@shared/ui/slider.component";
-import { WordEditorComponent } from "@writer/ui/word-editor.component";
-import { SentenceEditorComponent } from '@writer/ui/sentence-editor.component';
-import { ModalService } from '@shared/features/modal/modal.service';
-import { of } from 'rxjs';
-import { AddWordToDictionaryFormModalComponent } from './add-word-to-dictionary-form-modal.component';
-import { AddWordToDictionaryFormModalData } from '@writer/config/writer.interfaces';
-import { ModalModule } from '@shared/features/modal/modal.module';
+import {CommonModule} from '@angular/common';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {CreateDictionaryWordDto, ParagraphDto} from 'app/models/Api';
+import {UntilDestroy} from 'ngx-reactivetoolkit';
+import {SliderComponent} from "@shared/ui/slider.component";
+import {ModalService} from '@shared/features/modal/modal.service';
+import {ModalModule} from '@shared/features/modal/modal.module';
+import {MatCard} from "@angular/material/card";
+import {MatStep, MatStepper} from "@angular/material/stepper";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SentenceEditorComponent} from "@writer/ui/sentence-editor.component";
+import {WordEditorComponent} from "@writer/ui/word-editor.component";
+import {of} from "rxjs";
+import {AddWordToDictionaryFormModalComponent} from "@writer/ui/add-word-to-dictionary-form-modal.component";
+import {CreateDictionaryWordFormModalData} from "@writer/config/writer.interfaces";
+import {IconEnum} from "@shared/config/enums/icon.enum";
+import {ButtonModule} from "@shared/ui/buttons/button.module";
+import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
 
 @Component({
   selector: 'app-sentence-editor-manager',
@@ -21,70 +27,93 @@ import { ModalModule } from '@shared/features/modal/modal.module';
       [leftOption]="wordView"
       (onChange)="setSelected($event)"
     ></app-slider>
-    <ng-container *ngIf="selected == sentenceView">
-      <app-sentence-editor
-        [sentences]="sentences"
-        (onTranslationSubmitted)="submitTranslation($event)"
-      ></app-sentence-editor>
-    </ng-container>
-    <ng-container *ngIf="selected == wordView">
-      <app-word-editor
-        [sentences]="sentences"
-        (onTranslationSubmitted)="submitWordsTranslation($event)"
-        (onAddWordToDictionaryClicked)="openAddWordToDictionaryFormModal()"
-      ></app-word-editor>
-    </ng-container>
+    <div>
+      <app-primary-button
+        label="Add word to dictionary"
+        [icon]="icon.Add"
+        appButton
+        (click)="openAddWordToDictionaryFormModal()"
+      ></app-primary-button>
+    </div>
+    <mat-card>
+      <mat-stepper [linear]="false" #stepper>
+        <mat-step *ngFor="let paragraph of paragraphs" [stepControl]="firstFormGroup">
+          <app-sentence-editor *ngIf="selected===sentenceView"
+                               [paragraph]="paragraph"
+                               (onTranslationSubmitted)="submitParagraphTranslation($event)"
+          ></app-sentence-editor>
+          <ng-container>
+            <app-word-editor *ngIf="selected===wordView"
+                             [paragraph]="paragraph"
+            ></app-word-editor>
+          </ng-container>
+        </mat-step>
+      </mat-stepper>
+    </mat-card>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ContainerComponent,
     SliderComponent,
-    WordEditorComponent,
-    SentenceEditorComponent,
     ModalModule,
+    MatCard,
+    MatStepper,
+    MatStep,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    FormsModule,
+    SentenceEditorComponent,
+    WordEditorComponent,
+    ButtonModule,
+    PrimaryButtonComponent
   ],
 })
 @UntilDestroy()
 export class SentenceEditorComponentManager {
   @Input()
-  sentences!: SentenceDto[];
+  paragraphs!: ParagraphDto[];
 
   @Output()
-  translationSubmitted = new EventEmitter<SentenceDto>();
+  onTranslationSubmitted = new EventEmitter<ParagraphDto>();
 
   @Output()
-  dictionaryWordSubmitted = new EventEmitter<AddWordToDictionaryDto>();
+  dictionaryWordSubmitted = new EventEmitter<CreateDictionaryWordDto>();
 
   sentenceView = 'Sentence view';
   wordView = 'Word view';
   selected: string | undefined = this.wordView;
-
-  constructor(public readonly modalService: ModalService) {}
+  firstFormGroup = this._formBuilder.group({
+    firstCtrl: [''],
+  });
 
   setSelected(value: string | undefined) {
     this.selected = value;
   }
 
-  submitTranslation(sentence: SentenceDto) {
-    this.translationSubmitted.emit(sentence);
+  constructor(public readonly modalService: ModalService,
+              private _formBuilder: FormBuilder) {
+  }
+
+  submitParagraphTranslation(translation: any) {
+    this.onTranslationSubmitted.emit(translation);
   }
 
   submitWordsTranslation(event: any) {
     console.log(event);
   }
 
-  submitDictionaryWord(word: AddWordToDictionaryDto) {    
+
+  submitDictionaryWord(word: CreateDictionaryWordDto) {
     this.dictionaryWordSubmitted.emit(word);
     this.onWordAddedToDictionarySuccessfully();
   }
+
   onWordAddedToDictionarySuccessfully() {
     this.closeAddWordToDictioanryFormModal()
   }
 
-
   openAddWordToDictionaryFormModal() {
-    this.modalService.openMdModal<AddWordToDictionaryFormModalData>(
+    this.modalService.openMdModal<CreateDictionaryWordFormModalData>(
       AddWordToDictionaryFormModalComponent,
       this,
       {
@@ -98,4 +127,6 @@ export class SentenceEditorComponentManager {
   closeAddWordToDictioanryFormModal(): void {
     this.modalService.close(AddWordToDictionaryFormModalComponent);
   }
+
+  protected readonly icon = IconEnum;
 }

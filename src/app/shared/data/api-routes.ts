@@ -1,13 +1,19 @@
-import { environment } from "environments/environment";
+import {environment} from "environments/environment";
 
 const apiUrl = environment.apiUrl;
 
 export const apiRoutes = {
   writer: {
     stories: {
-      base: `${apiUrl}/stories`,
-      translations: `${apiUrl}/stories/translations`,
-      dictionary: `${apiUrl}/dictionary`
+      base: `${apiUrl}/writer/stories`,
+      translations: `${apiUrl}/writer/stories/translations`,
+      sentences: `${apiUrl}/writer/stories/translations/sentences`,
+      dictionary: `${apiUrl}/writer/dictionary`
     },
   },
+  reader: {
+    stories: {
+      base: `${apiUrl}/reader/stories`
+    }
+  }
 };
