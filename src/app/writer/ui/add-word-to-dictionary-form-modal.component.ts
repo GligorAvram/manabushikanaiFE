@@ -17,6 +17,7 @@ import {TextNullableInputComponent} from "@shared/ui/input/text-nullable-input.c
 import {WriterPipesModule} from "@writer/pipes/writer-pipes.module";
 import {EnumSelectInputComponent} from "@shared/ui/input/enum-select-input.component";
 import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.component";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-add-word-to-dictionary-form-modal',
@@ -28,7 +29,7 @@ import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.compo
       (onSaveBtnClick)="submit()"
       (onCancelBtnClick)="cancel()"
     >
-      <form [formGroup]="form">
+      <form *ngIf="form" [formGroup]="form">
         <app-text-input
           class="displayBlock"
           appInput
@@ -70,13 +71,13 @@ import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.compo
           class="displayBlock"
           appInput
           label="Is a set phrase"
-          [control]="form.controls.isSetPhrase"
+          [control]="form.controls.isSetPhrase!"
         ></app-checkbox-input>
         <app-multi-value-input
           class="displayBlock"
           appInput
           label="Alternative writings"
-          [control]="form.controls.alternativeWritings"
+          [control]="form.controls.alternativeWritings!"
         ></app-multi-value-input>
       </form>
     </app-form-modal>
@@ -99,7 +100,8 @@ import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.compo
     TextNullableInputComponent,
     WriterPipesModule,
     EnumSelectInputComponent,
-    MultiValueInputComponent
+    MultiValueInputComponent,
+    NgIf
   ],
 })
 @UntilDestroy()
@@ -109,9 +111,6 @@ export class AddWordToDictionaryFormModalComponent extends AbstractForm<CreateDi
   override initialValues: any = null;
   protected readonly PitchAccentEnum = PitchAccentEnum;
 
-  ngOnInit(): void {
-    this.init();
-  }
 
   override cancel(): void {
     super.cancel();
@@ -130,9 +129,10 @@ export class AddWordToDictionaryFormModalComponent extends AbstractForm<CreateDi
       kana: string;
       pitchAccent: PitchAccentEnum,
       observation?: string;
-      isSetPhrase: boolean;
-      alternativeWritings: string[]
+      isSetPhrase?: boolean;
+      alternativeWritings?: string[]
     }) => data.onSubmit(formData);
+    this.init([], true)
   }
 
   protected override componentInstance(): ComponentInstance | null {

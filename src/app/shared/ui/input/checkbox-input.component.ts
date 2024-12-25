@@ -1,19 +1,8 @@
-import { CommonModule } from "@angular/common";
-import {
-  Component,
-  ChangeDetectionStrategy,
-  AfterViewInit,
-  ViewChild,
-  Host,
-  Input,
-  Output,
-  EventEmitter
-} from "@angular/core";
-import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {MatError, MatFormField, MatHint, MatInput, MatLabel} from "@angular/material/input";
-import { InputViewComponent } from "./input-view.component";
-import { InputDirective } from "./input.directive";
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import {CommonModule} from "@angular/common";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
+import {FormControl, ReactiveFormsModule} from "@angular/forms";
+import {MatError, MatHint} from "@angular/material/input";
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
   standalone: true,
@@ -22,7 +11,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     <mat-checkbox
       [formControl]="control"
       [required]="required"
-      [disabled]="control.disabled"
       [class.disabled]="control.disabled"
     >
       {{ label }}
@@ -51,7 +39,7 @@ export class CheckboxInputComponent {
   @Input() required = false;
   @Input() hint?: string;
 
-  @Input() control!: FormControl<boolean>;
+  @Input() control!: FormControl<boolean | null | undefined>;
 
   constructor() {}
 

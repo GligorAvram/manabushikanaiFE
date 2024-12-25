@@ -21,8 +21,6 @@ import { InputModule } from "./input.module";
         type="number"
         [(ngModel)]="input.value"
         [required]="input.required"
-        [disabled]="input.disabled"
-        [class.disabled]="input.disabled"
         [errorStateMatcher]="input.errorStateMatcher"
         (input)="input.onChange($any($event.target).value)"
         (blur)="input.onTouch()"

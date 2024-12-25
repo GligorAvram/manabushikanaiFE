@@ -5,9 +5,9 @@ import {WriterActions} from '@writer/data/writer.actions';
 import {WriterQueries} from '@writer/data/writer.queries';
 import {
   CreateDictionaryWordDto,
-  CreateParagraphTranslationDto,
+  CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto,
+  DictionaryWordDto,
   PaginatedParagraphDto,
-  SentenceDto,
   StoryDto
 } from 'app/models/Api';
 import {ActivatedRoute} from "@angular/router";
@@ -16,6 +16,7 @@ interface WriterStoryDetailsComponentData {
   story: StoryDto | null;
   paragraphs: PaginatedParagraphDto | null
   loading: boolean;
+  possibleWordTranslations: DictionaryWordDto[];
 }
 
 @Injectable()
@@ -34,12 +35,8 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
     this.writerActions.submitTranslationForSentence(paragraphTranslation);
   }
 
-  protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
-    return {
-      story: this.writerQueries.selectActiveStory(),
-      paragraphs: this.writerQueries.selectParagraphs(),
-      loading: this.writerQueries.selectLoading(),
-    };
+  getTranslationForWord(word: string) {
+    this.writerActions.getTranslationForWord(word);
   }
 
   protected override onInit(): void {
@@ -65,5 +62,22 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
 
   submitWordToDictionary(word: CreateDictionaryWordDto) {
     this.writerActions.submitDictionaryWord(word);
+  }
+
+  clearPossibleDictionaryWordList() {
+    this.writerActions.clearPossibleDictionaryWordList();
+  }
+
+  protected dataSource(): ComponentDataSource<WriterStoryDetailsComponentData> {
+    return {
+      story: this.writerQueries.selectActiveStory(),
+      paragraphs: this.writerQueries.selectParagraphs(),
+      loading: this.writerQueries.selectLoading(),
+      possibleWordTranslations: this.writerQueries.selectPossibleWordTranslations(),
+    };
+  }
+
+  submitWordTranslationToParagraph(data: CreateWordTranslationForParagraphDto) {
+    this.writerActions.submitWordTranslationForParagraph(data);
   }
 }

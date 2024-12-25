@@ -1,10 +1,13 @@
-import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output,} from '@angular/core';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {InputModule} from './input.module';
+import {ChangeDetectionStrategy, Component, EventEmitter, Host, Input, Output} from "@angular/core";
+import {CommonModule} from "@angular/common";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectChange, MatSelectModule} from "@angular/material/select";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {InputModule} from "@shared/ui/input/input.module";
+import {MatInputModule} from "@angular/material/input";
+import {InputViewComponent} from "@shared/ui/input/input-view.component";
+import {valueIsNotEmpty} from "@shared/functions";
+import {InputDirective} from "@shared/ui/input/input.directive";
 
 export interface ISelectInputOption {
   id: string;
@@ -19,22 +22,62 @@ export type SelectInputOptions = ISelectInputOption[];
   standalone: true,
   selector: 'app-select-input',
   template: `
-    <mat-form-field appearance="outline">
-      <mat-label>{{ label }}</mat-label>
-      <mat-select>
-        @for (option of control.getRawValue(); track option) {
-          <mat-option [value]="option.id">
-            {{ option.name }}
-          </mat-option>
-        }
+    <mat-form-field
+      appearance="outline"
+      *ngIf="!input.showInputView; else inputView"
+    >
+      <mat-label>{{ input.label }}</mat-label>
+      <mat-select
+        [(ngModel)]="input.value"
+        [required]="input.required"
+        [errorStateMatcher]="input.errorStateMatcher"
+        (selectionChange)="onSelectionChange($event)"
+        (blur)="input.onTouch()"
+        (focus)="input.inputFocused()"
+      >
+        <ng-container *ngIf="!optionsLoading; else loading">
+          <input
+            *ngIf="enableSearch"
+            placeholder="Search..."
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup)="onSearch($any($event.target).value)"
+          />
+          <ng-container *ngIf="filteredOptions.length > 0">
+            <mat-option *ngIf="!input.required"><em>None</em></mat-option>
+            <div
+              *ngFor="let option of filteredOptions"
+              class="list-option-container"
+            >
+              <mat-option [value]="option.id">
+                {{ option.name }}
+              </mat-option>
+              <em
+                *ngIf="option.description"
+                [innerHTML]="option.description"
+                class="list-option-description"
+              ></em>
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-template #loading>
+          <mat-option [disabled]="true"><em>Loading...</em></mat-option>
+        </ng-template>
       </mat-select>
-      <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
-      <mat-error *ngIf="control.invalid && control.touched">
+      <mat-hint *ngIf="input.hint">{{ input.hint }}</mat-hint>
+      <mat-error *ngIf="input.errors.length > 0">
         <ul class="error-list">
-          <li *ngFor="let error of getErrors()">{{ error }}</li>
+          <li *ngFor="let error of input.errors">{{ error }}</li>
         </ul>
       </mat-error>
     </mat-form-field>
+    <ng-template #inputView>
+      <app-input-view
+        [data]="{ value: valueToDisplay(), type: 'selectInputOption' }"
+        [label]="input.label"
+        (onClick)="input.inputViewClicked()"
+      ></app-input-view>
+    </ng-template>
   `,
   styles: [
     `
@@ -64,6 +107,7 @@ export type SelectInputOptions = ISelectInputOption[];
     MatFormFieldModule,
     MatSelectModule,
     FormsModule,
+    InputViewComponent,
     ReactiveFormsModule,
     MatInputModule,
     InputModule,
@@ -71,22 +115,47 @@ export type SelectInputOptions = ISelectInputOption[];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectInputComponent {
-
+  @Input()
+  optionsLoading!: boolean;
+  @Input()
+  enableSearch = false;
   @Output()
-  keyUp = new EventEmitter<KeyboardEvent>();
+  onSelect = new EventEmitter<string>();
+  initialOptions: SelectInputOptions = [];
+  filteredOptions: SelectInputOptions = [];
+  searchQuery: string | null = null;
 
-  @Input() label = '';
-  @Input() required = false;
-  @Input() hint?: string;
-
-  @Input() control!: FormControl<SelectInputOptions>;
-
-  constructor() {
+  constructor(@Host() public readonly input: InputDirective<string | null>) {
   }
 
-  getErrors(): string[] {
-    return Object.keys(this.control.errors || {}).map(
-      (key) => this.control.errors![key]
-    );
+  @Input()
+  set options(value: SelectInputOptions) {
+    this.initialOptions = value;
+    this.filteredOptions = valueIsNotEmpty(value) ? value.slice() : [];
+  }
+
+  onSelectionChange(event: MatSelectChange): void {
+    this.input.onChange(event.value);
+    this.onSelect.emit(event.value);
+    this.searchQuery = null;
+    this.onSearch('');
+  }
+
+  valueToDisplay(): ISelectInputOption {
+    return this.filteredOptions.find((o) => o.id === this.input.value)!;
+  }
+
+  onSearch(query: string): void {
+    if (this.enableSearch && valueIsNotEmpty(query)) {
+      const filter = (option: ISelectInputOption): boolean =>
+        option.name.toLowerCase().includes(query.trim().toLowerCase());
+      this.filteredOptions = valueIsNotEmpty(query)
+        ? this.initialOptions?.filter(filter) ?? []
+        : this.initialOptions?.slice() ?? [];
+    }
+
+    if (valueIsNotEmpty(query)) {
+      this.filteredOptions = this.initialOptions?.slice() ?? [];
+    }
   }
 }

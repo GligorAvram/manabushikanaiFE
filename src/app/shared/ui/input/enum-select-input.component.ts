@@ -53,8 +53,8 @@ export class EnumSelectInputComponent {
   @Input() required = false;
   @Input() hint?: string;
 
-  @Input() control!: FormControl<string | null>;
-  enumOptions: { key: string; value: string }[] = [];
+  @Input() control!: FormControl<string | number | null>;
+  enumOptions: { key: string; value: string | number }[] = [];
 
   constructor() {
   }

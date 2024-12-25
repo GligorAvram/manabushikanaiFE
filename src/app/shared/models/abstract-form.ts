@@ -1,10 +1,10 @@
-import { EventEmitter, inject } from "@angular/core";
-import { FormBuilder, ValidatorFn } from "@angular/forms";
-import { FormFields, FormGroupTyped, SubmitFn } from "@shared/config/constants/shared.types";
-import { valueIsNotEmpty } from "@shared/functions";
-import { ComponentInstance } from "@shared/types";
-import { takeUntilDestroy } from "ngx-reactivetoolkit";
-import { Observable } from "rxjs";
+import {EventEmitter, inject} from "@angular/core";
+import {FormBuilder, ValidatorFn} from "@angular/forms";
+import {FormFields, FormGroupTyped, SubmitFn} from "@shared/config/constants/shared.types";
+import {valueIsNotEmpty} from "@shared/functions";
+import {ComponentInstance} from "@shared/types";
+import {takeUntilDestroy} from "ngx-reactivetoolkit";
+import {Observable} from "rxjs";
 
 type AbstractFormData<InitialValues extends object | null = null> = {
   loadingSrc$?: Observable<boolean>;
@@ -86,6 +86,7 @@ export abstract class AbstractForm<
     validators?: ValidatorFn[],
     ...fieldsArgs: any
   ): FormGroupTyped<FormData> {
+    console.log("heeee")
     // @ts-ignore
     return this.fb.nonNullable.group<FormData>(this.formFields(...fieldsArgs), {
       validators,

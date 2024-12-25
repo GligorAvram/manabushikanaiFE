@@ -15,6 +15,7 @@ import { StoryCreateFormModalData } from "@writer/config/writer.interfaces";
 import { TextInputComponent } from "@shared/ui/input/text-input.component";
 import { FileUploadComponent } from "@shared/ui/file-upload.component";
 import { ModalModule } from "@shared/features/modal/modal.module";
+import {EnumSelectInputComponent} from "@shared/ui/input/enum-select-input.component";
 
 export type CreateStoryWithFile = CreateStoryDto & {file: File}
 
@@ -35,15 +36,16 @@ export type CreateStoryWithFile = CreateStoryDto & {file: File}
           label="Story name"
           formControlName="name"
         ></app-text-input>
-        <app-select-input
+        <app-enum-select-input
           class="displayBlock"
           appInput
           formControlName="difficulty"
           label="Difficulty"
-          [control]="DifficultyEnum | enumToSelectInputOptions"
+          [enumType]="DifficultyEnum"
+          [control]="form.controls.difficulty"
           [required]="true"
         >
-        </app-select-input>
+        </app-enum-select-input>
         <app-file-upload
           label="Select file"
           accept="application/txt"
@@ -63,13 +65,13 @@ export type CreateStoryWithFile = CreateStoryDto & {file: File}
     `,
   ],
   imports: [
-    SelectInputComponent,
     TextInputComponent,
     SharedPipesModule,
     FormModalComponent,
     ReactiveFormsModule,
     InputModule,
     FileUploadComponent,
+    EnumSelectInputComponent,
   ],
 })
 @UntilDestroy()
@@ -80,7 +82,6 @@ export class StoryCreateFormModalComponent extends AbstractForm<
   override loading: boolean = false;
   override onSubmit: SubmitFn<CreateStoryWithFile>;
   override initialValues?: string[];
-  difficultyEnum = DifficultyEnum;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -89,9 +90,9 @@ export class StoryCreateFormModalComponent extends AbstractForm<
     super({ loadingSrc$: of(false) });
     this.initialValues = [];
     this.onSubmit = (formData: {
-      name?: string;
-      difficulty?: number;
-      file: File;
+      name: string,
+      difficulty: DifficultyEnum,
+      file: File
     }) => data.onSubmit(formData);
   }
 
@@ -107,7 +108,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<
   protected override formFields(): FormFields<CreateStoryWithFile> {
     return {
       name: '',
-      difficulty: 0,
+      difficulty: DifficultyEnum.easiest,
       file: [],
     };
   }

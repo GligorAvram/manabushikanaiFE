@@ -21,4 +21,8 @@ export class WriterQueries extends BaseQuery<WriterState> {
   selectParagraphs() {
     return this.select((state => state.paragraphs));
   }
+
+  selectPossibleWordTranslations() {
+    return this.select((state => state.possibleWordTranslations));
+  }
 }

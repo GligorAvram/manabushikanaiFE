@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
-import {ISelectInputOption, SelectInputOptions} from "@shared/ui/input/select-input.component";
+import {SelectInputOptions} from "@shared/ui/input/select-input.component";
 import {FormControl} from "@angular/forms";
 
 @Pipe({ name: 'enumToSelectInputOptions', pure: true })
@@ -18,8 +18,6 @@ export class EnumToSelectInputOptionsPipe implements PipeTransform {
         description: descriptions?.[key] || '',
         discriminator: 'ISelectInputOption',
       }));
-
-    console.log(options)
 
     return new FormControl(options, {nonNullable: true});
   }

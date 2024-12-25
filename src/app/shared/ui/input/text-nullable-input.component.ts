@@ -16,8 +16,6 @@ import {valueIsEmpty} from "@shared/functions";
         matInput
         [formControl]="control"
         [required]="required"
-        [disabled]="control.disabled"
-        [class.disabled]="control.disabled"
       />
       <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
       <mat-error *ngIf="control!.invalid && control.touched">

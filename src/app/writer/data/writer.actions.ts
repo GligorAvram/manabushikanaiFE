@@ -4,7 +4,11 @@ import {WriterStore} from "./writer.store";
 import {action} from "@datorama/akita";
 import {firstValueFrom} from "rxjs";
 import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component";
-import {CreateDictionaryWordDto, CreateParagraphTranslationDto} from "app/models/Api";
+import {
+  CreateDictionaryWordDto,
+  CreateParagraphTranslationDto,
+  CreateWordTranslationForParagraphDto
+} from "app/models/Api";
 
 @Injectable()
 export class WriterActions {
@@ -28,7 +32,7 @@ export class WriterActions {
     firstValueFrom(this.writerApiService.createStory(data)).then();
   }
 
-  @action('Add translation to sentence')
+  @action('Add translation to paragraph')
   submitTranslationForSentence(paragraphTranslation: CreateParagraphTranslationDto) {
     firstValueFrom(
       this.writerApiService.submitTranslationForSentence(paragraphTranslation),
@@ -44,4 +48,19 @@ export class WriterActions {
   loadParagraphs(storyId: string, page: { pageNumber: number; pageSize: number; sort?: string }) {
     firstValueFrom(this.writerApiService.getPaginatedParagraphs(storyId, page)).then()
   }
+
+  @action("Get translation for word")
+  getTranslationForWord(word: string) {
+    firstValueFrom(this.writerApiService.getTranslationForWord(word)).then();
+  }
+
+  @action("Add word translation to paragraph")
+  submitWordTranslationForParagraph(data: CreateWordTranslationForParagraphDto) {
+    firstValueFrom(this.writerApiService.submitWordTranslationForParagraph(data)).then();
+  }
+
+  clearPossibleDictionaryWordList() {
+    this.writerStore.resetDictionaryWordsList();
+  }
+
 }

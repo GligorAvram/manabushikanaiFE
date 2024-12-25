@@ -1,8 +1,8 @@
-import { Directive, Input, Output, EventEmitter, Optional, Self } from "@angular/core";
-import { ControlValueAccessor, NgControl } from "@angular/forms";
-import { MatInput } from "@angular/material/input";
-import { valueIsEmpty } from "@shared/functions";
-import { FormInputErrorStateMatcher } from "@shared/models/form-input-error-state.matcher";
+import {Directive, EventEmitter, Input, Optional, Output, Self} from "@angular/core";
+import {ControlValueAccessor, NgControl} from "@angular/forms";
+import {MatInput} from "@angular/material/input";
+import {valueIsEmpty} from "@shared/functions";
+import {FormInputErrorStateMatcher} from "@shared/models/form-input-error-state.matcher";
 
 @Directive({ selector: '[appInput]' })
 export class InputDirective<T> implements ControlValueAccessor {
@@ -34,7 +34,6 @@ export class InputDirective<T> implements ControlValueAccessor {
   onInputFocus = new EventEmitter();
 
   value: T | null = null;
-  disabled: boolean = false;
   errorStateMatcher = new FormInputErrorStateMatcher();
 
   set inputElement(value: MatInput) {
@@ -71,10 +70,6 @@ export class InputDirective<T> implements ControlValueAccessor {
 
   writeValue(obj: T | null): void {
     this.value = obj;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
   }
 
   inputViewClicked(): void {

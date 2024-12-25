@@ -69,7 +69,7 @@ export class MultiValueInputComponent {
   @Input() hint?: string;
   @Input() placeholder = 'Enter a value';
   @Input()
-  control: FormControl<string[] | null> = new FormControl([]);
+  control: FormControl<string[] | null | undefined> = new FormControl([]);
 
   @Output() valuesChange = new EventEmitter<string[]>();
 

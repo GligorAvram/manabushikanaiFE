@@ -32,13 +32,13 @@ export interface CreateStoryDto {
    * @minLength 3
    * @maxLength 2147483647
    */
-  name?: string;
+  name: string;
   /**
    * @format int32
    * @min 1
    * @max 5
    */
-  difficulty?: number;
+  difficulty: number;
 }
 
 export interface StoryDto {
@@ -56,8 +56,8 @@ export interface CreateDictionaryWordDto {
   kana: string;
   pitchAccent: PitchAccentEnum;
   observation?: string;
-  isSetPhrase: boolean;
-  alternativeWritings: string[];
+  isSetPhrase?: boolean;
+  alternativeWritings?: string[];
 }
 
 export enum PitchAccentEnum {
@@ -93,6 +93,7 @@ export interface DictionaryWordDto {
 }
 
 export interface CreateWordTranslationDto {
+  originalWord: string;
   dictionaryWordId: string;
   /**
    * @format int32
@@ -105,18 +106,12 @@ export interface CreateWordTranslationDto {
    * @maxLength 2147483647
    */
   wordKana: string;
-  /** @format uuid */
-  observationId?: string;
+  observation?: string;
 }
 
 export interface CreateWordTranslationForParagraphDto {
   paragraphId: string;
   words: CreateWordTranslationDto[];
-}
-
-export interface ObservationDto {
-  id?: string;
-  observation?: string;
 }
 
 export interface ParagraphDto {
@@ -152,7 +147,7 @@ export interface WordDto {
   wordKanji?: string;
   wordKana: string;
   englishTranslation: string;
-  observation?: ObservationDto;
+  observation?: string;
 }
 
 export interface CreateParagraphTranslationDto {

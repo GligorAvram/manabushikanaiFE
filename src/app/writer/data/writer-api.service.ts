@@ -3,6 +3,7 @@ import {ApiService} from "@shared/data/api.service";
 import {
   CreateDictionaryWordDto,
   CreateParagraphTranslationDto,
+  CreateWordTranslationForParagraphDto,
   DictionaryWordDto,
   PaginatedParagraphDto,
   ParagraphDto,
@@ -83,7 +84,19 @@ export class WriterApiService extends ApiService {
     return this.getWithParams<HttpParams, PaginatedParagraphDto>(
       `${apiRoutes.writer.stories.base}/${storyId}/paragraphs`,
       pp,
-      this.writerStore.onParagraphsLoaded.bind(this.writerStore),
+      this.writerStore.onParagraphsLoaded.bind(this.writerStore)
     );
+  }
+
+  getTranslationForWord(word: string): Observable<ApiResult<DictionaryWordDto[]>> {
+    return this.get(`${apiRoutes.writer.stories.dictionary}/${word}`, this.writerStore.onDictionaryWordLoaded.bind(this.writerStore));
+  }
+
+  submitWordTranslationForParagraph(paragraphTranslation: CreateWordTranslationForParagraphDto): Observable<ApiResult<ParagraphDto>> {
+    return this.patch<CreateWordTranslationForParagraphDto, ParagraphDto>(
+      apiRoutes.writer.stories.words,
+      paragraphTranslation,
+      this.writerStore.onSentenceTranslationAdded.bind(this.writerStore)
+    )
   }
 }

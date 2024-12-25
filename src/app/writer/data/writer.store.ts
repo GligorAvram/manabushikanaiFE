@@ -3,18 +3,20 @@ import {StoreConfig} from '@datorama/akita';
 import {BaseState} from '@shared/data/base.state';
 import {StoreNameEnum} from '@shared/data/store.constants';
 import {storeEvent} from '@shared/data/store.decorators';
-import {PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
+import {DictionaryWordDto, PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
 import {BaseStore} from "@shared/data/store.models";
 
 export interface WriterState extends BaseState {
   stories: StoryDto[],
   paragraphs: PaginatedParagraphDto | null,
   activeStory: StoryDto | null
+  possibleWordTranslations: DictionaryWordDto[]
 }
 
 const createInitialState = (): WriterState => ({
   stories: [],
   paragraphs: null,
+  possibleWordTranslations: [],
   activeStory: null,
   success: false,
   loading: false,
@@ -56,5 +58,15 @@ export class WriterStore extends BaseStore<WriterState> {
         }
       }
     )
+  }
+
+  @storeEvent("Dictionary word loaded")
+  onDictionaryWordLoaded(dictionaryWord: DictionaryWordDto[]): void {
+    this.update({ possibleWordTranslations: dictionaryWord });
+  }
+
+  @storeEvent("Reset dictionary word")
+  resetDictionaryWordsList(): void {
+    this.update({ possibleWordTranslations: [] });
   }
 }

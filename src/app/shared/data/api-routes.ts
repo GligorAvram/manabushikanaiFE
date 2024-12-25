@@ -8,7 +8,8 @@ export const apiRoutes = {
       base: `${apiUrl}/writer/stories`,
       translations: `${apiUrl}/writer/stories/translations`,
       sentences: `${apiUrl}/writer/stories/translations/sentences`,
-      dictionary: `${apiUrl}/writer/dictionary`
+      words: `${apiUrl}/writer/stories/translations/words`,
+      dictionary: `${apiUrl}/writer/dictionary`,
     },
   },
   reader: {

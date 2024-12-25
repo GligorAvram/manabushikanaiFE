@@ -24,8 +24,8 @@ import {TextInputComponent} from "@shared/ui/input/text-input.component";
 import {IconEnum} from "@shared/config/enums/icon.enum";
 import {ButtonModule} from "@shared/ui/buttons/button.module";
 import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
-
-export type PartialSentenceTranslation = { orig: string, translation: string | null }
+import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component";
+import {ButtonDirective} from "@shared/ui/buttons/button.directive";
 
 @Component({
   selector: 'app-sentence-editor',
@@ -49,14 +49,17 @@ export type PartialSentenceTranslation = { orig: string, translation: string | n
             <div
               cdkDropList
               [cdkDropListData]="sentences"
-              class="example-list"
 
               (cdkDropListDropped)="drop($event)">
               <div *ngFor="let item of sentences; let i = index">
                 <div class="example-box" cdkDrag
                      (click)="setAsSelectedSentence(item, i)"
-                >{{ item.orig }}
+                >{{ item.japaneseSentence }}
                 </div>
+                <app-delete-button
+                  appButton
+                  (click)="removeSentence(i)"
+                ></app-delete-button>
               </div>
             </div>
           </div>
@@ -77,7 +80,11 @@ export type PartialSentenceTranslation = { orig: string, translation: string | n
                   [control]="form.controls.translation"
                   formControlName="translation"
                 ></app-text-input>
-                <button type="submit" [disabled]="!form.valid">Submit</button>
+                <app-primary-button
+                  label="Add to translation list"
+                  appButton
+                  type="submit"
+                ></app-primary-button>
               </form>
             </div>
           </div>
@@ -136,7 +143,8 @@ export type PartialSentenceTranslation = { orig: string, translation: string | n
     InputModule,
     TextInputComponent,
     ButtonModule,
-    PrimaryButtonComponent
+    PrimaryButtonComponent,
+    DeleteButtonComponent
   ],
 })
 export class SentenceEditorComponent implements OnInit {
@@ -147,8 +155,8 @@ export class SentenceEditorComponent implements OnInit {
   onTranslationSubmitted: EventEmitter<{ sentences: CreateSentenceDto[], id: string }> = new EventEmitter();
 
   displayText!: SafeHtml
-  sentences: PartialSentenceTranslation[] = [];
-  selectedSentence: PartialSentenceTranslation | null = null
+  sentences: CreateSentenceDto[] = [];
+  selectedSentence: CreateSentenceDto | null = null
   selectedIndex: number | null = null;
 
   form!: FormGroup<{ orig: FormControl<string>, translation: FormControl<string> }>;
@@ -174,8 +182,8 @@ export class SentenceEditorComponent implements OnInit {
     this.onTranslationSubmitted.emit({
       sentences: this.sentences.map((e, index) => {
         return {
-          japaneseSentence: e.orig,
-          englishTranslation: e.translation!,
+          japaneseSentence: e.japaneseSentence,
+          englishTranslation: e.englishTranslation!,
           order: index
         }
       }),
@@ -187,9 +195,9 @@ export class SentenceEditorComponent implements OnInit {
     const selection = window.getSelection();
     if (!selection) return;
 
-    const orig = selection.toString().trim();
-    if (orig && !this.sentences.map(sentence => sentence.orig).includes(orig)) {
-      const sentence = {orig, translation: null}
+    const japaneseSentence = selection.toString().trim();
+    if (japaneseSentence && !this.sentences.map(sentence => sentence.japaneseSentence).includes(japaneseSentence)) {
+      const sentence = {japaneseSentence} as CreateSentenceDto
       this.sentences.push(sentence);
       this.updateTextWithAllHighlights();
       selection.removeAllRanges();
@@ -202,11 +210,11 @@ export class SentenceEditorComponent implements OnInit {
     let lastIndex = 0; // Track the last matched index for sequential validation
 
     this.sentences.forEach((text) => {
-      const regex = new RegExp(`(${text.orig})`, 'g');
+      const regex = new RegExp(`(${text.japaneseSentence})`, 'g');
       const match = updatedText.match(regex);
 
       if (match) {
-        const index = updatedText.indexOf(text.orig);
+        const index = updatedText.indexOf(text.japaneseSentence);
 
         if (index >= lastIndex) {
           // Only gray-out texts that are sequential
@@ -214,7 +222,7 @@ export class SentenceEditorComponent implements OnInit {
             regex,
             '<span class="grayed-out">$1</span>'
           );
-          lastIndex = index + text.orig.length; // Update the last matched index
+          lastIndex = index + text.japaneseSentence.length; // Update the last matched index
         }
       }
     });
@@ -227,7 +235,7 @@ export class SentenceEditorComponent implements OnInit {
 
     let updatedText = this.paragraph.originalParagraph;
     this.sentences.forEach((text) => {
-      const regex = new RegExp(`(${text.orig})`, 'g');
+      const regex = new RegExp(`(${text.japaneseSentence})`, 'g');
       updatedText = updatedText.replace(
         regex,
         '<span class="grayed-out">$1</span>'
@@ -240,23 +248,23 @@ export class SentenceEditorComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 
-  drop(event: CdkDragDrop<PartialSentenceTranslation[]>): void {
+  drop(event: CdkDragDrop<CreateSentenceDto[]>): void {
     moveItemInArray(this.sentences, event.previousIndex, event.currentIndex);
     this.updateTextWithAllHighlights();
     this.setAsSelectedSentence(this.sentences[event.currentIndex], event.currentIndex)
   }
 
-  setAsSelectedSentence(sentence: PartialSentenceTranslation, index: number) {
+  setAsSelectedSentence(sentence: CreateSentenceDto, index: number) {
     this.selectedSentence = sentence;
     this.selectedIndex = index;
-    this.form.controls.orig.setValue(sentence.orig);
-    this.form.controls.translation.setValue(sentence.translation!);
+    this.form.controls.orig.setValue(sentence.japaneseSentence);
+    this.form.controls.translation.setValue(sentence.englishTranslation!);
   }
 
   editSentence() {
     if (this.selectedIndex !== null) {
-      this.sentences[this.selectedIndex].orig = this.form.controls.orig.getRawValue();
-      this.sentences[this.selectedIndex].translation = this.form.controls.translation.getRawValue();
+      this.sentences[this.selectedIndex].japaneseSentence = this.form.controls.orig.getRawValue();
+      this.sentences[this.selectedIndex].englishTranslation = this.form.controls.translation.getRawValue();
     }
 
     this.selectedIndex = null;
