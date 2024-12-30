@@ -86,7 +86,6 @@ export abstract class AbstractForm<
     validators?: ValidatorFn[],
     ...fieldsArgs: any
   ): FormGroupTyped<FormData> {
-    console.log("heeee")
     // @ts-ignore
     return this.fb.nonNullable.group<FormData>(this.formFields(...fieldsArgs), {
       validators,

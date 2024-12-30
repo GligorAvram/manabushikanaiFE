@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -46,12 +46,13 @@ import {valueIsNotEmpty} from "@shared/functions";
   ],
 })
 @UntilDestroy()
-export class Search_dropdownInputComponent<T extends { id: string }> {
+export class SearchDropdownInputComponent<T extends { id: string }> implements OnChanges {
   @Input() label = 'Search';
   @Input() placeholder = 'Type to search...';
   @Input() control!: FormControl<any>;
   @Input() searchResults: T[] = [];
   @Input() clearOptionsListAfterSearch: boolean = true;
+  @Input() initialValue?: T;
   @Output() search = new EventEmitter<string>();
   @Output() clearOptionsList = new EventEmitter();
   searchControl = new FormControl<string>('');
@@ -71,6 +72,12 @@ export class Search_dropdownInputComponent<T extends { id: string }> {
     this.searchControl.setValue(this.displayFn(option), {emitEvent: false});
     if (this.clearOptionsListAfterSearch) {
       this.clearOptionsList.emit();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["initialValue"] && this.initialValue !== undefined) {
+      this.onSelect(this.initialValue!)
     }
   }
 }

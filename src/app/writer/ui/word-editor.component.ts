@@ -17,7 +17,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
 import {TextInputComponent} from "@shared/ui/input/text-input.component";
 import {WriterPipesModule} from "@writer/pipes/writer-pipes.module";
-import {Search_dropdownInputComponent} from "@shared/ui/input/search_dropdown-input.component";
+import {SearchDropdownInputComponent} from "@shared/ui/input/search-dropdown-input.component";
 import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component";
 
 @Component({
@@ -86,8 +86,7 @@ import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component"
                                            [control]="form.controls.dictionaryWordId"
                                            [searchResults]="possibleTranslations"
                                            [displayFn]="displayDictionaryWord"
-
-
+                                           [initialValue]="initialValue"
                 />
                 <app-text-input
                   class="displayBlock"
@@ -129,7 +128,7 @@ import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component"
   `,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, CdkDrag, CdkDropList, ContainerComponent, FormsModule, InputModule, MatCard, MatCardContent, NgForOf, NgIf, PrimaryButtonComponent, ReactiveFormsModule, TextInputComponent, WriterPipesModule, Search_dropdownInputComponent, DeleteButtonComponent],
+  imports: [ButtonModule, CdkDrag, CdkDropList, ContainerComponent, FormsModule, InputModule, MatCard, MatCardContent, NgForOf, NgIf, PrimaryButtonComponent, ReactiveFormsModule, TextInputComponent, WriterPipesModule, SearchDropdownInputComponent, DeleteButtonComponent],
 })
 export class WordEditorComponent implements OnInit {
   @Input()
@@ -162,14 +161,10 @@ export class WordEditorComponent implements OnInit {
     observation: FormControl<string>,
   }>;
 
+  initialValue: DictionaryWordDto | undefined;
 
   constructor(private sanitizer: DomSanitizer,
               private _formBuilder: FormBuilder) {
-  }
-
-  ngOnInit(): void {
-    this.displayText = this.sanitizeText(this.paragraph.originalParagraph);
-    this.createFormBuilder();
   }
 
   createFormBuilder() {
@@ -214,30 +209,22 @@ export class WordEditorComponent implements OnInit {
     }
   }
 
-  //TODO there can be only 1 (unite this and the one for sentences)
-  updateTextWithAllHighlights(): void {
-    let updatedText = this.paragraph.originalParagraph;
-    let lastIndex = 0; // Track the last matched index for sequential validation
-
-    this.translatedParagraph.forEach((text) => {
-      const regex = new RegExp(`(${text.originalWord})`, 'g');
-      const match = updatedText.match(regex);
-
-      if (match) {
-        const index = updatedText.indexOf(text.originalWord);
-
-        if (index >= lastIndex) {
-          // Only gray-out texts that are sequential
-          updatedText = updatedText.replace(
-            regex,
-            '<span class="grayed-out">$1</span>'
-          );
-          lastIndex = index + text.originalWord.length; // Update the last matched index
-        }
-      }
-    });
-
-    this.displayText = this.sanitizeText(updatedText);
+  ngOnInit(): void {
+    // @ts-ignore
+    this.translatedParagraph = this.paragraph.words ? this.paragraph.words.map(word => ({
+        originalWord: word.originalWord,
+        wordKanji: word.wordKanji,
+        wordKana: word.wordKana,
+        dictionaryWordId: word.translation ?? "",
+        observation: word.observation,
+        order:
+        word.order
+      })) :
+      [];
+    this.displayText = this.sanitizeText(this.paragraph.originalParagraph);
+    this.createFormBuilder();
+    //todo subscribe
+    this.dictionaryWordInitialValue()
   }
 
   removeWord(index: number): void {
@@ -277,6 +264,7 @@ export class WordEditorComponent implements OnInit {
     if (word.observation != null) {
       this.form.controls.observation.setValue(word.observation);
     }
+    this.dictionaryWordInitialValue(word)
   }
 
   editWord() {
@@ -304,5 +292,37 @@ export class WordEditorComponent implements OnInit {
 
   openAddWordToDictionaryFormModal() {
     this.onOpenAddDictionaryModalClicked.emit()
+  }
+
+  //TODO there can be only 1 (unite this and the one for sentences)
+  updateTextWithAllHighlights(): void {
+    let updatedText = this.paragraph.originalParagraph;
+    let lastIndex = 0;
+
+    this.translatedParagraph.forEach((text) => {
+      const regex = new RegExp(`(${text.originalWord})`, 'g');
+      const match = updatedText.match(regex);
+
+      if (match) {
+        const index = updatedText.indexOf(text.originalWord);
+
+        if (index >= lastIndex) {
+          // Only gray-out texts that are sequential
+          updatedText = updatedText.replace(
+            regex,
+            '<span class="grayed-out">$1</span>'
+          );
+          lastIndex = index + text.originalWord.length; // Update the last matched index
+        }
+      }
+    });
+
+    this.displayText = this.sanitizeText(updatedText);
+  }
+
+  dictionaryWordInitialValue(word?: CreateWordTranslationDto) {
+    if (word) {
+      this.initialValue = this.paragraph.words?.find(m => m.originalWord === word?.originalWord)?.translation;
+    }
   }
 }

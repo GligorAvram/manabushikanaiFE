@@ -33,20 +33,26 @@ export interface CreateStoryDto {
    * @maxLength 2147483647
    */
   name: string;
-  /**
-   * @format int32
-   * @min 1
-   * @max 5
-   */
-  difficulty: number;
+  description?: string;
+  difficulty: StoryDifficultyEnum;
+}
+
+export enum StoryDifficultyEnum {
+  EASIEST = "EASIEST",
+  EASY = "EASY",
+  MEDIUM = "MEDIUM",
+  DIFFICULT = "DIFFICULT",
+  CHALLENGING = "CHALLENGING",
 }
 
 export interface StoryDto {
   /** @format uuid */
   id: string;
   name: string;
-  /** @format int32 */
-  difficulty: number;
+  description?: string;
+  published: boolean;
+  difficulty: StoryDifficultyEnum;
+  image: string[];
 }
 
 export interface CreateDictionaryWordDto {
@@ -144,6 +150,7 @@ export interface WordDto {
   translation: DictionaryWordDto;
   /** @format int32 */
   order: number;
+  originalWord: string;
   wordKanji?: string;
   wordKana: string;
   englishTranslation: string;
@@ -428,6 +435,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data: {
         /** @format binary */
         file: File;
+        /** @format binary */
+        image: File;
         storyData: CreateStoryDto;
       },
       params: RequestParams = {},

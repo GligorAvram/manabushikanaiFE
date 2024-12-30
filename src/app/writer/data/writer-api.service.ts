@@ -14,7 +14,6 @@ import {WriterStore} from "./writer.store";
 import {ApiResult} from "@shared/data/api-result";
 import {apiRoutes} from "@shared/data/api-routes";
 import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component";
-import {DifficultyEnum} from "@shared/config/enums/difficulty.enum";
 import {HttpParams} from "@angular/common/http";
 
 @Injectable({
@@ -43,8 +42,9 @@ export class WriterApiService extends ApiService {
     //todo check data
     const formData = new FormData();
     const storyData = {
-      name: data.name!,
-      difficulty: DifficultyEnum[data.difficulty!],
+      name: data.name,
+      description: data.description,
+      difficulty: data.difficulty,
     };
 
     formData.append(
@@ -53,7 +53,8 @@ export class WriterApiService extends ApiService {
     );
 
     // @ts-ignore
-    formData.append('file', data.file[0]!);
+    formData.append('file', data.file);
+    formData.append("image", data.image);
 
     return this.postWithFormData(
       apiRoutes.writer.stories.base,

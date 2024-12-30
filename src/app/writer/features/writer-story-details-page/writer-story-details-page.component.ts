@@ -1,12 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
 import {WriterStoryDetailsDataService} from "./writer-story-details-data.service";
 import {UntilDestroy} from "ngx-reactivetoolkit";
 import {
   CreateDictionaryWordDto,
   CreateParagraphTranslationDto,
-  CreateWordTranslationDto, CreateWordTranslationForParagraphDto,
-  DictionaryWordDto,
-  ParagraphDto
+  CreateWordTranslationForParagraphDto
 } from "app/models/Api";
 import {FormBuilder} from "@angular/forms";
 import {IconEnum} from "@shared/config/enums/icon.enum";
@@ -14,20 +12,33 @@ import {CreateDictionaryWordFormModalData} from "@writer/config/writer.interface
 import {AddWordToDictionaryFormModalComponent} from "@writer/ui/add-word-to-dictionary-form-modal.component";
 import {of} from "rxjs";
 import {ModalService} from "@shared/features/modal/modal.service";
+import {PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-writer-story-details-page',
   template: `
     <app-container *ngIf="dataService.data$ | async as data">
+      <app-loading-bar [visible]="data.loading"></app-loading-bar>
       <app-slider
         [rightOption]="sentenceView"
         [leftOption]="wordView"
         (onChange)="setSelected($event)"
       ></app-slider>
 
-      <app-container>
+      <app-container *ngIf="data">
+        <div>
+          <mat-paginator [length]="data.paragraphs?.totalItems"
+                         [pageSize]="10"
+                         [pageSizeOptions]="[10]"
+                         (page)="handlePageEvent($event)"
+                         [hidePageSize]="true"
+                         aria-label="Select page">
+          </mat-paginator>
+        </div>
+
         <mat-stepper [linear]="false" #stepper>
           <mat-step *ngFor="let paragraph of data.paragraphs!.paragraphs" [stepControl]="firstFormGroup">
+
             <app-container *ngIf="selected===sentenceView">
               <app-sentence-editor
                 [paragraph]="paragraph"
@@ -46,6 +57,7 @@ import {ModalService} from "@shared/features/modal/modal.service";
             </app-container>
           </mat-step>
         </mat-stepper>
+
       </app-container>
     </app-container>
   `,
@@ -93,7 +105,7 @@ export class WriterStoryDetailsPageComponent implements OnInit {
     this.dataService.clearPossibleDictionaryWordList();
   }
 
-  submitWordsTranslation(data: CreateWordTranslationForParagraphDto ) {
+  submitWordsTranslation(data: CreateWordTranslationForParagraphDto) {
     this.dataService.submitWordTranslationToParagraph(data)
   }
 
@@ -120,5 +132,9 @@ export class WriterStoryDetailsPageComponent implements OnInit {
 
   closeAddWordToDictionaryFormModal(): void {
     this.modalService.close(AddWordToDictionaryFormModalComponent);
+  }
+
+  handlePageEvent($event: PageEvent) {
+    this.dataService.loadParagraphs({pageSize: 10, pageNumber: $event.pageIndex})
   }
 }

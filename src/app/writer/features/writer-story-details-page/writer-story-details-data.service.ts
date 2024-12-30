@@ -52,7 +52,7 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
     }
   }
 
-  private loadParagraphs(page: { pageNumber: number, pageSize: number, sort?: string }) {
+  loadParagraphs(page: { pageNumber: number, pageSize: number, sort?: string }) {
     const storyId = getParamFromRoute('id', this._route);
 
     if (storyId) {

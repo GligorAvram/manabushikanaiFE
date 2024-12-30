@@ -25,7 +25,6 @@ import {IconEnum} from "@shared/config/enums/icon.enum";
 import {ButtonModule} from "@shared/ui/buttons/button.module";
 import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
 import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component";
-import {ButtonDirective} from "@shared/ui/buttons/button.directive";
 
 @Component({
   selector: 'app-sentence-editor',
@@ -167,6 +166,11 @@ export class SentenceEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.sentences = this.paragraph.sentences ? this.paragraph.sentences.map(sentence => ({
+      japaneseSentence: sentence.japaneseSentence,
+      englishTranslation: sentence.englishTranslation,
+      order: sentence.order
+    })).sort((s1, s2) => s1.order - s2.order) : [];
     this.displayText = this.sanitizeText(this.paragraph.originalParagraph);
     this.createFormBuilder();
   }
