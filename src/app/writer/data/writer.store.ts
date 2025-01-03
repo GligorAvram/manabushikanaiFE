@@ -69,4 +69,9 @@ export class WriterStore extends BaseStore<WriterState> {
   resetDictionaryWordsList(): void {
     this.update({ possibleWordTranslations: [] });
   }
+
+  @storeEvent('Story published')
+  onStoryPublished(story: StoryDto): void {
+    this.update({activeStory: story});
+  }
 }

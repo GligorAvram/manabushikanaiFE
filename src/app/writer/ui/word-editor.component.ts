@@ -68,7 +68,7 @@ import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component"
 
           <div>
             <div>
-              <form [formGroup]="form" (ngSubmit)="editWord()">
+              <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
                 <app-text-input
                   class="displayBlock"
                   appInput
@@ -200,7 +200,7 @@ export class WordEditorComponent implements OnInit {
     if (!selection) return;
 
     const originalWord = selection.toString().trim();
-    if (originalWord && !this.translatedParagraph.map(word => word.originalWord).includes(originalWord)) {
+    if (originalWord) {
       const word: CreateWordTranslationDto = {originalWord} as CreateWordTranslationDto
       this.translatedParagraph.push(word);
       this.updateTextWithAllHighlights();
@@ -223,7 +223,6 @@ export class WordEditorComponent implements OnInit {
       [];
     this.displayText = this.sanitizeText(this.paragraph.originalParagraph);
     this.createFormBuilder();
-    //todo subscribe
     this.dictionaryWordInitialValue()
   }
 

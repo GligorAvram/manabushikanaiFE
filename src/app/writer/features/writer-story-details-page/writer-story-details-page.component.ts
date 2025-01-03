@@ -4,7 +4,8 @@ import {UntilDestroy} from "ngx-reactivetoolkit";
 import {
   CreateDictionaryWordDto,
   CreateParagraphTranslationDto,
-  CreateWordTranslationForParagraphDto
+  CreateWordTranslationForParagraphDto,
+  ParagraphDto
 } from "app/models/Api";
 import {FormBuilder} from "@angular/forms";
 import {IconEnum} from "@shared/config/enums/icon.enum";
@@ -37,7 +38,8 @@ import {PageEvent} from "@angular/material/paginator";
         </div>
 
         <mat-stepper [linear]="false" #stepper>
-          <mat-step *ngFor="let paragraph of data.paragraphs!.paragraphs" [stepControl]="firstFormGroup">
+          <mat-step *ngFor="let paragraph of data.paragraphs!.paragraphs" [stepControl]="firstFormGroup"
+                    [completed]="checkIfCompleted(paragraph)">
 
             <app-container *ngIf="selected===sentenceView">
               <app-sentence-editor
@@ -57,7 +59,7 @@ import {PageEvent} from "@angular/material/paginator";
             </app-container>
           </mat-step>
         </mat-stepper>
-
+        <app-primary-button appButton (click)="publishStory()" label="Publish story"></app-primary-button>
       </app-container>
     </app-container>
   `,
@@ -136,5 +138,16 @@ export class WriterStoryDetailsPageComponent implements OnInit {
 
   handlePageEvent($event: PageEvent) {
     this.dataService.loadParagraphs({pageSize: 10, pageNumber: $event.pageIndex})
+  }
+
+  checkIfCompleted(paragraph: ParagraphDto) {
+    if (this.selected === this.sentenceView) {
+      return paragraph.translationDone;
+    }
+    return paragraph.wordsDone;
+  }
+
+  publishStory() {
+    this.dataService.publishStory()
   }
 }

@@ -5,7 +5,8 @@ import {WriterActions} from '@writer/data/writer.actions';
 import {WriterQueries} from '@writer/data/writer.queries';
 import {
   CreateDictionaryWordDto,
-  CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto,
+  CreateParagraphTranslationDto,
+  CreateWordTranslationForParagraphDto,
   DictionaryWordDto,
   PaginatedParagraphDto,
   StoryDto
@@ -79,5 +80,13 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
 
   submitWordTranslationToParagraph(data: CreateWordTranslationForParagraphDto) {
     this.writerActions.submitWordTranslationForParagraph(data);
+  }
+
+  publishStory() {
+    const id = getParamFromRoute('id', this._route);
+
+    if (id) {
+      this.writerActions.publishStory(id);
+    }
   }
 }

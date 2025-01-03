@@ -15,16 +15,16 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatStepperModule} from '@angular/material/stepper';
 import {CreateSentenceDto, ParagraphDto} from 'app/models/Api';
-import {ContainerComponent} from '@shared/ui/container.component';
 import {MatChipsModule} from "@angular/material/chips";
 import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 import {CdkDragDrop, DragDropModule, moveItemInArray} from "@angular/cdk/drag-drop";
 import {InputModule} from "@shared/ui/input/input.module";
-import {TextInputComponent} from "@shared/ui/input/text-input.component";
 import {IconEnum} from "@shared/config/enums/icon.enum";
 import {ButtonModule} from "@shared/ui/buttons/button.module";
+import {ContainerComponent} from "@shared/ui/container.component";
 import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
 import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component";
+import {TextInputComponent} from "@shared/ui/input/text-input.component";
 
 @Component({
   selector: 'app-sentence-editor',
@@ -136,14 +136,14 @@ import {DeleteButtonComponent} from "@shared/ui/buttons/delete-button.component"
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
-    ContainerComponent,
     MatChipsModule,
     DragDropModule,
     InputModule,
-    TextInputComponent,
     ButtonModule,
+    ContainerComponent,
     PrimaryButtonComponent,
-    DeleteButtonComponent
+    DeleteButtonComponent,
+    TextInputComponent,
   ],
 })
 export class SentenceEditorComponent implements OnInit {
@@ -200,7 +200,7 @@ export class SentenceEditorComponent implements OnInit {
     if (!selection) return;
 
     const japaneseSentence = selection.toString().trim();
-    if (japaneseSentence && !this.sentences.map(sentence => sentence.japaneseSentence).includes(japaneseSentence)) {
+    if (japaneseSentence) {
       const sentence = {japaneseSentence} as CreateSentenceDto
       this.sentences.push(sentence);
       this.updateTextWithAllHighlights();

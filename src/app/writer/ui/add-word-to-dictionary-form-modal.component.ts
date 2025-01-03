@@ -18,6 +18,8 @@ import {WriterPipesModule} from "@writer/pipes/writer-pipes.module";
 import {EnumSelectInputComponent} from "@shared/ui/input/enum-select-input.component";
 import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.component";
 import {NgIf} from "@angular/common";
+import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
+import {ButtonModule} from "@shared/ui/buttons/button.module";
 
 @Component({
   selector: 'app-add-word-to-dictionary-form-modal',
@@ -80,6 +82,8 @@ import {NgIf} from "@angular/common";
           [control]="form.controls.alternativeWritings!"
         ></app-multi-value-input>
       </form>
+      <app-primary-button appButton (click)="saveAsPunctuation()" label="Save as punctuation"></app-primary-button>
+      <app-primary-button appButton (click)="saveAsIgnore()" label="Should be ignored"></app-primary-button>
     </app-form-modal>
   `,
   styles: [
@@ -101,7 +105,9 @@ import {NgIf} from "@angular/common";
     WriterPipesModule,
     EnumSelectInputComponent,
     MultiValueInputComponent,
-    NgIf
+    NgIf,
+    PrimaryButtonComponent,
+    ButtonModule
   ],
 })
 @UntilDestroy()
@@ -150,5 +156,33 @@ export class AddWordToDictionaryFormModalComponent extends AbstractForm<CreateDi
       pitchAccent: PitchAccentEnum.NONE,
       alternativeWritings: []
     };
+  }
+
+  saveAsPunctuation() {
+    const punctuation = "PUNCTUATION";
+    if (this.form.value.dictionaryWord) {
+      this.submit({
+        dictionaryWord: this.form.value.dictionaryWord,
+        kana: punctuation,
+        observation: punctuation,
+        englishTranslation: punctuation,
+        pitchAccent: PitchAccentEnum.NONE,
+        japaneseDefinition: punctuation
+      })
+    }
+  }
+
+  saveAsIgnore() {
+    const ignore = "IGNORE";
+    if (this.form.value.dictionaryWord) {
+      this.submit({
+        dictionaryWord: this.form.value.dictionaryWord,
+        kana: ignore,
+        observation: ignore,
+        englishTranslation: ignore,
+        pitchAccent: PitchAccentEnum.NONE,
+        japaneseDefinition: ignore
+      })
+    }
   }
 }

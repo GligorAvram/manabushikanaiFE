@@ -100,4 +100,8 @@ export class WriterApiService extends ApiService {
       this.writerStore.onSentenceTranslationAdded.bind(this.writerStore)
     )
   }
+
+  publishStory(id: string) {
+    return this.post<{}, StoryDto>(`${apiRoutes.writer.stories.base}/${id}/publish`, {})
+  }
 }

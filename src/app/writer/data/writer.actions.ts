@@ -59,8 +59,12 @@ export class WriterActions {
     firstValueFrom(this.writerApiService.submitWordTranslationForParagraph(data)).then();
   }
 
+  @action("Publish story")
+  publishStory(id: string) {
+    firstValueFrom(this.writerApiService.publishStory(id)).then();
+  }
+
   clearPossibleDictionaryWordList() {
     this.writerStore.resetDictionaryWordsList();
   }
-
 }
