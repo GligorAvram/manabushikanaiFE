@@ -293,30 +293,9 @@ export class WordEditorComponent implements OnInit {
     this.onOpenAddDictionaryModalClicked.emit()
   }
 
-  //TODO there can be only 1 (unite this and the one for sentences)
+  //TODO redo function and check if it can be united with the one for sentences
   updateTextWithAllHighlights(): void {
-    let updatedText = this.paragraph.originalParagraph;
-    let lastIndex = 0;
 
-    this.translatedParagraph.forEach((text) => {
-      const regex = new RegExp(`(${text.originalWord})`, 'g');
-      const match = updatedText.match(regex);
-
-      if (match) {
-        const index = updatedText.indexOf(text.originalWord);
-
-        if (index >= lastIndex) {
-          // Only gray-out texts that are sequential
-          updatedText = updatedText.replace(
-            regex,
-            '<span class="grayed-out">$1</span>'
-          );
-          lastIndex = index + text.originalWord.length; // Update the last matched index
-        }
-      }
-    });
-
-    this.displayText = this.sanitizeText(updatedText);
   }
 
   dictionaryWordInitialValue(word?: CreateWordTranslationDto) {
