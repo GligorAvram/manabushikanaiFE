@@ -40,9 +40,6 @@ export class SingleFileUploadComponent {
   accept: string = '*/*';
 
   @Input()
-  acceptMultiple = false;
-
-  @Input()
   disabled = false;
 
   @Input()
@@ -54,7 +51,6 @@ export class SingleFileUploadComponent {
   @Output()
   fileSelected = new EventEmitter<File>();
 
-  // uploadedFiles: File[] = [];
   @Input() control!: FormControl<File | null>;
 
   onFileChange(event: Event): void {

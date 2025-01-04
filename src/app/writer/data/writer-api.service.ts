@@ -5,6 +5,7 @@ import {
   CreateParagraphTranslationDto,
   CreateWordTranslationForParagraphDto,
   DictionaryWordDto,
+  PageableDto,
   PaginatedParagraphDto,
   ParagraphDto,
   StoryDto
@@ -15,6 +16,7 @@ import {ApiResult} from "@shared/data/api-result";
 import {apiRoutes} from "@shared/data/api-routes";
 import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component";
 import {HttpParams} from "@angular/common/http";
+import {valueIsNotEmpty} from "@shared/functions";
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +41,6 @@ export class WriterApiService extends ApiService {
   }
 
   createStory(data: CreateStoryWithFile): Observable<ApiResult<StoryDto>> {
-    //todo check data
     const formData = new FormData();
     const storyData = {
       name: data.name,
@@ -77,14 +78,12 @@ export class WriterApiService extends ApiService {
     return this.post<CreateDictionaryWordDto, DictionaryWordDto>(apiRoutes.writer.stories.dictionary, word)
   }
 
-  getPaginatedParagraphs(storyId: string, page: { pageNumber: number; pageSize: number; sort?: string }) {
-    // TODO refactor to a function
-    let paginationParams: HttpParams = new HttpParams();
-    const pp = paginationParams.appendAll(page);
+  getPaginatedParagraphs(storyId: string, page: PageableDto) {
+    const paginationParams = this.createPaginationParams(page);
 
     return this.getWithParams<HttpParams, PaginatedParagraphDto>(
       `${apiRoutes.writer.stories.base}/${storyId}/paragraphs`,
-      pp,
+      paginationParams,
       this.writerStore.onParagraphsLoaded.bind(this.writerStore)
     );
   }
@@ -103,5 +102,23 @@ export class WriterApiService extends ApiService {
 
   publishStory(id: string) {
     return this.post<{}, StoryDto>(`${apiRoutes.writer.stories.base}/${id}/publish`, {})
+  }
+
+  private createPaginationParams(page: PageableDto) {
+    let paginationParams: HttpParams = new HttpParams();
+
+    if (valueIsNotEmpty(page.pageSize)) {
+      paginationParams.append('pageSize', page.pageSize);
+    }
+
+    if (valueIsNotEmpty(page.pageNumber)) {
+      paginationParams.append('pageNumber', page.pageNumber);
+    }
+
+    if (valueIsNotEmpty(page.sort)) {
+      paginationParams.append('sort', page.sort);
+    }
+
+    return paginationParams;
   }
 }
