@@ -8,6 +8,7 @@ import {
   CreateParagraphTranslationDto,
   CreateWordTranslationForParagraphDto,
   DictionaryWordDto,
+  PageableDto,
   PaginatedParagraphDto,
   StoryDto
 } from 'app/models/Api';
@@ -53,7 +54,7 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
     }
   }
 
-  loadParagraphs(page: { pageNumber: number, pageSize: number, sort?: string }) {
+  loadParagraphs(page: PageableDto) {
     const storyId = getParamFromRoute('id', this._route);
 
     if (storyId) {

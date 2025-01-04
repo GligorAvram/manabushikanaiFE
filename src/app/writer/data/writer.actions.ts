@@ -7,7 +7,8 @@ import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component"
 import {
   CreateDictionaryWordDto,
   CreateParagraphTranslationDto,
-  CreateWordTranslationForParagraphDto
+  CreateWordTranslationForParagraphDto,
+  PageableDto
 } from "app/models/Api";
 
 @Injectable()
@@ -45,7 +46,7 @@ export class WriterActions {
   }
 
   @action("Load paragraphs for story")
-  loadParagraphs(storyId: string, page: { pageNumber: number; pageSize: number; sort?: string }) {
+  loadParagraphs(storyId: string, page: PageableDto) {
     firstValueFrom(this.writerApiService.getPaginatedParagraphs(storyId, page)).then()
   }
 
