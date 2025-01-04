@@ -187,6 +187,11 @@ export interface PaginatedParagraphDto {
   paragraphs?: ParagraphDto[];
 }
 
+export interface HttpErrorDto {
+  message: string;
+  error: Record<string, string>;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -454,10 +459,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags writer-controller
-     * @name CreateStory1
+     * @name PublishStory
+     * @request POST:/writer/stories/{id}/publish
+     */
+    publishStory: (id: string, params: RequestParams = {}) =>
+      this.request<StoryDto, Error>({
+        path: `/writer/stories/${id}/publish`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name CreateDictionaryWord
      * @request POST:/writer/dictionary
      */
-    createStory1: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
+    createDictionaryWord: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
       this.request<DictionaryWordDto, Error>({
         path: `/writer/dictionary`,
         method: "POST",

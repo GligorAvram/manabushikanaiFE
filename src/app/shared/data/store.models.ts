@@ -1,5 +1,6 @@
-import {Store} from "@datorama/akita";
-import {BaseState} from "./base.state";
+import { Store } from '@datorama/akita';
+import { Error, HttpErrorDto } from '@models/Api';
+import { BaseState } from './base.state';
 
 export class BaseStore<State extends BaseState> extends Store<State> {
   onRequestInit(): void {
@@ -19,7 +20,7 @@ export class BaseStore<State extends BaseState> extends Store<State> {
     }
   }
 
-  onError(error: Error): void {
+    onError(error: HttpErrorDto | Error): void {
     this.setLoading(false);
     this.setError(error);
   }
