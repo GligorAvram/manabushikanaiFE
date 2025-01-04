@@ -1,13 +1,14 @@
 import {CommonModule} from "@angular/common";
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from "@angular/core";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {InputModule} from "./input.module";
+import {valueIsEmpty} from "@shared/functions";
 
 @Component({
   standalone: true,
-  selector: 'app-text-input',
+  selector: 'app-text-nullable-input',
   template: `
     <mat-form-field appearance="outline">
       <mat-label>{{ label }}</mat-label>
@@ -17,19 +18,19 @@ import {InputModule} from "./input.module";
         [required]="required"
       />
       <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
-      <mat-error *ngIf="control.invalid && control.touched">
+      <mat-error *ngIf="control!.invalid && control.touched">
         <ul class="error-list">
           <li *ngFor="let error of getErrors()">{{ error }}</li>
         </ul>
       </mat-error>
     </mat-form-field>
   `,
-  styles:[
+  styles: [
     `
-    mat-form-field{
-      width: 100%;
-      padding-top:5px;
-    }
+      mat-form-field {
+        width: 100%;
+        padding-top: 5px;
+      }
     `
   ],
   imports: [
@@ -42,7 +43,7 @@ import {InputModule} from "./input.module";
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextInputComponent {
+export class TextNullableInputComponent implements OnInit {
   @Output()
   keyUp = new EventEmitter<KeyboardEvent>();
 
@@ -50,9 +51,15 @@ export class TextInputComponent {
   @Input() required = false;
   @Input() hint?: string;
 
-  @Input() control!: FormControl<string>;
+  @Input() control!: FormControl<string | null | undefined>;
 
   constructor() {
+  }
+
+  ngOnInit() {
+    if (!this.control) {
+      this.control = new FormControl<undefined>(undefined);
+    }
   }
 
   onKeyUp(event: KeyboardEvent): void {
@@ -60,6 +67,9 @@ export class TextInputComponent {
   }
 
   getErrors(): string[] {
+    if (valueIsEmpty(this.control)) {
+      return [];
+    }
     return Object.keys(this.control.errors || {}).map(
       (key) => this.control.errors![key]
     );

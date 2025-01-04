@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { MatTableModule } from "@angular/material/table"
 import { WriterPipesModule } from "@writer/pipes/writer-pipes.module";
 import { valueIsNotEmpty } from "@shared/functions";
+import {ByteArrayImage} from "@shared/ui/byte-array-image.component";
 
 
 @Component({
@@ -23,6 +24,12 @@ import { valueIsNotEmpty } from "@shared/functions";
           <th mat-header-cell *matHeaderCellDef>Difficulty</th>
           <td mat-cell *matCellDef="let story">
             <strong>{{ story | storyDifficulty }}</strong>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="image">
+          <th mat-header-cell *matHeaderCellDef>Thumbnail</th>
+          <td mat-cell *matCellDef="let story">
+            <app-byte-array-image [image]="story.image"></app-byte-array-image>
           </td>
         </ng-container>
 
@@ -47,6 +54,7 @@ import { valueIsNotEmpty } from "@shared/functions";
     CommonModule,
     WriterPipesModule,
     MatTableModule,
+    ByteArrayImage,
   ],
 })
 export class StoryListTableComponent implements OnInit {
@@ -72,6 +80,6 @@ export class StoryListTableComponent implements OnInit {
   }
 
   private setColumns(): void {
-    this.columns = ['name', 'difficulty'];
+    this.columns = ['name', 'difficulty', 'image'];
   }
 }

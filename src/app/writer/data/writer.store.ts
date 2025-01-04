@@ -1,55 +1,77 @@
-import { Injectable } from '@angular/core';
-import { StoreConfig } from '@datorama/akita';
-import { BaseEntityState } from '@shared/data/base.state';
-import { StoreNameEnum } from '@shared/data/store.constants';
-import { storeEvent } from '@shared/data/store.decorators';
-import { BaseEntityStore } from '@shared/data/store.models';
-import { SentenceDto, StoryDto } from 'app/models/Api';
+import {Injectable} from '@angular/core';
+import {StoreConfig} from '@datorama/akita';
+import {BaseState} from '@shared/data/base.state';
+import {StoreNameEnum} from '@shared/data/store.constants';
+import {storeEvent} from '@shared/data/store.decorators';
+import {DictionaryWordDto, PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
+import {BaseStore} from "@shared/data/store.models";
 
-export interface WriterState extends BaseEntityState<StoryDto> {}
+export interface WriterState extends BaseState {
+  stories: StoryDto[],
+  paragraphs: PaginatedParagraphDto | null,
+  activeStory: StoryDto | null
+  possibleWordTranslations: DictionaryWordDto[]
+}
 
 const createInitialState = (): WriterState => ({
-  entities: [],
-  active: null,
+  stories: [],
+  paragraphs: null,
+  possibleWordTranslations: [],
+  activeStory: null,
   success: false,
   loading: false,
 });
 
 @Injectable()
 @StoreConfig({ name: StoreNameEnum.Writer })
-export class WriterStore extends BaseEntityStore<StoryDto, WriterState> {
+export class WriterStore extends BaseStore<WriterState> {
   constructor() {
     super(createInitialState());
   }
 
   @storeEvent('Story list loaded')
   onStoryListLoaded(storyList: StoryDto[]): void {
-    this.update({ entities: storyList });
+    this.update({stories: storyList});
   }
 
   @storeEvent('Story loaded')
   onStoryLoaded(story: StoryDto): void {
-    this.update({ active: story });
+    this.update({activeStory: story});
   }
 
   @storeEvent('Story created')
   onStoryCreated(story: StoryDto): void {
-    this.update({ entities: [story, ...this.getValue().entities] });
+    this.update({stories: [story, ...this.getValue().stories]});
+  }
+
+  @storeEvent('Story list loaded')
+  onParagraphsLoaded(paragraphs: PaginatedParagraphDto): void {
+    this.update({paragraphs})
   }
 
   @storeEvent('Sentence translation added')
-  onSentenceTranslationAdded(sentence: SentenceDto): void {
-    if (
-      (this.getValue().active !== null || this.getValue().active !== undefined) &&
-      this.getValue().active?.id === sentence.storyID
-    ) {
-      this.update({
-        active: {
-          ...this.getValue().active,
-          sentences: this.getValue().active!.sentences!
-                          .map(oldSentence => oldSentence.id === sentence.id ? sentence : oldSentence).sort((s1, s2)=> s1.order! - s2.order!),
-        },
-      });
-    }
+  onSentenceTranslationAdded(paragraph: ParagraphDto): void {
+    this.update({
+        paragraphs: {
+          ...this.getValue().paragraphs,
+          paragraphs: this.getValue().paragraphs?.paragraphs?.map(pp => pp.id === paragraph.id ? paragraph : pp)
+        }
+      }
+    )
+  }
+
+  @storeEvent("Dictionary word loaded")
+  onDictionaryWordLoaded(dictionaryWord: DictionaryWordDto[]): void {
+    this.update({ possibleWordTranslations: dictionaryWord });
+  }
+
+  @storeEvent("Reset dictionary word")
+  resetDictionaryWordsList(): void {
+    this.update({ possibleWordTranslations: [] });
+  }
+
+  @storeEvent('Story published')
+  onStoryPublished(story: StoryDto): void {
+    this.update({activeStory: story});
   }
 }

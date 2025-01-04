@@ -32,59 +32,159 @@ export interface CreateStoryDto {
    * @minLength 3
    * @maxLength 2147483647
    */
-  name?: string;
-  /**
-   * @format int32
-   * @min 1
-   * @max 5
-   */
-  difficulty?: number;
+  name: string;
+  description?: string;
+  difficulty: StoryDifficultyEnum;
 }
 
-export interface SentenceDto {
-  /** @format uuid */
-  id?: string;
-  japaneseSentence?: string;
-  /** @format int32 */
-  order?: number;
-  englishTranslation?: string;
-  translationDone?: boolean;
-  wordsDone?: boolean;
-  /** @format uuid */
-  storyID?: string;
+export enum StoryDifficultyEnum {
+  EASIEST = "EASIEST",
+  EASY = "EASY",
+  MEDIUM = "MEDIUM",
+  DIFFICULT = "DIFFICULT",
+  CHALLENGING = "CHALLENGING",
 }
 
 export interface StoryDto {
   /** @format uuid */
-  id?: string;
-  name?: string;
-  /** @format int32 */
-  difficulty?: number;
-  sentences?: SentenceDto[];
+  id: string;
+  name: string;
+  description?: string;
+  published: boolean;
+  difficulty: StoryDifficultyEnum;
+  image: string[];
 }
 
-export interface AddWordToDictionaryDto {
+export interface CreateDictionaryWordDto {
   dictionaryWord: string;
   englishTranslation: string;
   japaneseDefinition: string;
   kana: string;
+  pitchAccent: PitchAccentEnum;
   observation?: string;
-  setPhrase?: boolean;
+  isSetPhrase?: boolean;
+  alternativeWritings?: string[];
+}
+
+export enum PitchAccentEnum {
+  NONE = "NONE",
+  HEIBAN = "HEIBAN",
+  ATAMADAKA = "ATAMADAKA",
+  NAKADAKA2 = "NAKADAKA2",
+  NAKADAKA3 = "NAKADAKA3",
+  NAKADAKA4 = "NAKADAKA4",
+  NAKADAKA5 = "NAKADAKA5",
+  NAKADAKA6 = "NAKADAKA6",
+  NAKADAKA7 = "NAKADAKA7",
+  NAKADAKA8 = "NAKADAKA8",
+  OODAKA = "OODAKA",
+}
+
+export interface AlternativeWritingDto {
+  /** @format uuid */
+  id: string;
+  alternativeWriting: string;
 }
 
 export interface DictionaryWordDto {
-  id?: string;
-  dictionaryForm?: string;
-  englishTranslation?: string;
-  kana?: string;
-  japaneseDefinition?: string;
+  id: string;
+  dictionaryForm: string;
+  englishTranslation: string;
+  kana: string;
+  japaneseDefinition: string;
+  isSetPhrase?: boolean;
+  pitchAccent: PitchAccentEnum;
   observation?: string;
-  setPhrase?: boolean;
+  alternativeWritings?: AlternativeWritingDto[];
 }
 
-export interface AddSentenceTranslationDto {
-  id?: string;
+export interface CreateWordTranslationDto {
+  originalWord: string;
+  dictionaryWordId: string;
+  /**
+   * @format int32
+   * @min 0
+   */
+  order: number;
+  wordKanji?: string;
+  /**
+   * @minLength 1
+   * @maxLength 2147483647
+   */
+  wordKana: string;
+  observation?: string;
+}
+
+export interface CreateWordTranslationForParagraphDto {
+  paragraphId: string;
+  words: CreateWordTranslationDto[];
+}
+
+export interface ParagraphDto {
+  /** @format uuid */
+  id: string;
+  originalParagraph: string;
+  /** @format int32 */
+  orderInStory: number;
+  translationDone: boolean;
+  wordsDone: boolean;
+  sentences?: SentenceDto[];
+  /** @format uuid */
+  storyId?: string;
+  words?: WordDto[];
+}
+
+export interface SentenceDto {
+  /** @format uuid */
+  id: string;
+  japaneseSentence: string;
   englishTranslation: string;
+  /** @format uuid */
+  paragraphId: string;
+  /** @format int32 */
+  order: number;
+}
+
+export interface WordDto {
+  id: string;
+  translation: DictionaryWordDto;
+  /** @format int32 */
+  order: number;
+  originalWord: string;
+  wordKanji?: string;
+  wordKana: string;
+  englishTranslation: string;
+  observation?: string;
+}
+
+export interface CreateParagraphTranslationDto {
+  id: string;
+  sentences?: CreateSentenceDto[];
+}
+
+export interface CreateSentenceDto {
+  japaneseSentence: string;
+  englishTranslation: string;
+  /** @format int32 */
+  order: number;
+}
+
+export interface PageableDto {
+  /** @format int32 */
+  pageNumber?: number;
+  /** @format int32 */
+  pageSize?: number;
+  sort?: "ASCENDING" | "DESCENDING";
+}
+
+export interface PaginatedParagraphDto {
+  /** @format int64 */
+  totalItems?: number;
+  /** @format int32 */
+  currentPage?: number;
+  /** @format int32 */
+  totalPages?: number;
+  paragraphs?: ParagraphDto[];
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -133,7 +233,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8080";
+  public baseUrl: string = "http://localhost:8080/api/v1";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -299,21 +399,27 @@ export class HttpClient<SecurityDataType = unknown> {
 
 /**
  * @title No title
- * @baseUrl http://localhost:8080
+ * @baseUrl http://localhost:8080/api/v1
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  stories = {
+  writer = {
     /**
      * No description
      *
      * @tags writer-controller
      * @name GetAllStories
-     * @request GET:/stories
+     * @request GET:/writer/stories
      */
-    getAllStories: (params: RequestParams = {}) =>
+    getAllStories: (
+      query: {
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<StoryDto[], Error>({
-        path: `/stories`,
+        path: `/writer/stories`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
@@ -323,18 +429,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags writer-controller
      * @name CreateStory
-     * @request POST:/stories
+     * @request POST:/writer/stories
      */
     createStory: (
       data: {
         /** @format binary */
         file: File;
+        /** @format binary */
+        image: File;
         storyData: CreateStoryDto;
       },
       params: RequestParams = {},
     ) =>
       this.request<StoryDto, Error>({
-        path: `/stories`,
+        path: `/writer/stories`,
         method: "POST",
         body: data,
         type: ContentType.FormData,
@@ -346,12 +454,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags writer-controller
-     * @name AddTranslation
-     * @request PATCH:/stories/translations
+     * @name CreateStory1
+     * @request POST:/writer/dictionary
      */
-    addTranslation: (data: AddSentenceTranslationDto, params: RequestParams = {}) =>
-      this.request<SentenceDto, Error>({
-        path: `/stories/translations`,
+    createStory1: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
+      this.request<DictionaryWordDto, Error>({
+        path: `/writer/dictionary`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name CreateWordTranslationForParagraph
+     * @request PATCH:/writer/stories/translations/words
+     */
+    createWordTranslationForParagraph: (data: CreateWordTranslationForParagraphDto, params: RequestParams = {}) =>
+      this.request<ParagraphDto, Error>({
+        path: `/writer/stories/translations/words`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name AddParagraphTranslation
+     * @request PATCH:/writer/stories/translations/sentences
+     */
+    addParagraphTranslation: (data: CreateParagraphTranslationDto, params: RequestParams = {}) =>
+      this.request<ParagraphDto, Error>({
+        path: `/writer/stories/translations/sentences`,
         method: "PATCH",
         body: data,
         type: ContentType.Json,
@@ -363,29 +503,118 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags writer-controller
      * @name GetStoryById
-     * @request GET:/stories/{id}
+     * @request GET:/writer/stories/{id}
      */
     getStoryById: (id: string, params: RequestParams = {}) =>
       this.request<StoryDto, Error>({
-        path: `/stories/${id}`,
+        path: `/writer/stories/${id}`,
         method: "GET",
         ...params,
       }),
-  };
-  dictionary = {
+
     /**
      * No description
      *
      * @tags writer-controller
-     * @name CreateStory1
-     * @request POST:/dictionary
+     * @name GetParagraphsForStory
+     * @request GET:/writer/stories/{id}/paragraphs
      */
-    createStory1: (data: AddWordToDictionaryDto, params: RequestParams = {}) =>
-      this.request<DictionaryWordDto, Error>({
-        path: `/dictionary`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
+    getParagraphsForStory: (
+      id: string,
+      query: {
+        dto: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PaginatedParagraphDto, Error>({
+        path: `/writer/stories/${id}/paragraphs`,
+        method: "GET",
+        query: query,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-controller
+     * @name GetTranslationForWord
+     * @request GET:/writer/dictionary/{word}
+     */
+    getTranslationForWord: (word: string, params: RequestParams = {}) =>
+      this.request<DictionaryWordDto[], Error>({
+        path: `/writer/dictionary/${word}`,
+        method: "GET",
+        ...params,
+      }),
+  };
+  reader = {
+    /**
+     * No description
+     *
+     * @tags reader-controller
+     * @name GetAllStories1
+     * @request GET:/reader/stories
+     */
+    getAllStories1: (
+      query: {
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<StoryDto[], Error>({
+        path: `/reader/stories`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags reader-controller
+     * @name GetStoryById1
+     * @request GET:/reader/stories/{id}
+     */
+    getStoryById1: (id: string, params: RequestParams = {}) =>
+      this.request<StoryDto, Error>({
+        path: `/reader/stories/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags reader-controller
+     * @name GetParagraphsForStory1
+     * @request GET:/reader/stories/{id}/paragraphs
+     */
+    getParagraphsForStory1: (
+      id: string,
+      query: {
+        dto: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PaginatedParagraphDto, Error>({
+        path: `/reader/stories/${id}/paragraphs`,
+        method: "GET",
+        query: query,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags reader-controller
+     * @name GetTranslationForWord1
+     * @request GET:/reader/dictionary/{word}
+     */
+    getTranslationForWord1: (word: string, params: RequestParams = {}) =>
+      this.request<DictionaryWordDto[], Error>({
+        path: `/reader/dictionary/${word}`,
+        method: "GET",
         ...params,
       }),
   };

@@ -1,7 +1,7 @@
-import { Component, Host } from "@angular/core";
-import { MatButtonModule } from "@angular/material/button";
-import { ButtonDirective } from "./button.directive";
-import { ButtonModule } from "./button.module";
+import {Component, Host} from "@angular/core";
+import {MatButtonModule} from "@angular/material/button";
+import {ButtonDirective} from "./button.directive";
+import {ButtonModule} from "./button.module";
 
 @Component({
   standalone: true,

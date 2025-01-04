@@ -1,20 +1,28 @@
-import { Injectable } from "@angular/core";
-import { BaseEntityQuery, BaseQuery } from "@shared/data/base.query";
-import { WriterState, WriterStore } from "./writer.store";
-import { Observable } from "rxjs";
-import { StoryDto } from "app/models/Api";
+import {Injectable} from "@angular/core";
+import {WriterState, WriterStore} from "./writer.store";
+import {Observable} from "rxjs";
+import {StoryDto} from "app/models/Api";
+import {BaseQuery} from "@shared/data/base.query";
 
 @Injectable()
-export class WriterQueries extends BaseEntityQuery<StoryDto, WriterState> {
+export class WriterQueries extends BaseQuery<WriterState> {
   constructor(private readonly writerStore: WriterStore) {
     super(writerStore);
   }
 
-  selectEntities(): Observable<StoryDto[]> {
-    return this.select((state) => state.entities ?? []);
+  selectStories(): Observable<StoryDto[]> {
+    return this.select((state) => state.stories ?? []);
   }
 
-  selectActive(): Observable<StoryDto | null> {
-    return this.select((state) => state.active ?? null);
+  selectActiveStory(): Observable<StoryDto | null> {
+    return this.select((state) => state.activeStory ?? null);
+  }
+
+  selectParagraphs() {
+    return this.select((state => state.paragraphs));
+  }
+
+  selectPossibleWordTranslations() {
+    return this.select((state => state.possibleWordTranslations));
   }
 }

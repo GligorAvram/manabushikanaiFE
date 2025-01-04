@@ -1,12 +1,22 @@
-import { Injectable } from "@angular/core";
-import { ApiService } from "@shared/data/api.service";
-import { AddWordToDictionaryDto, DictionaryWordDto, SentenceDto, StoryDto } from "app/models/Api";
-import { Observable } from "rxjs";
-import { WriterStore } from "./writer.store";
-import { ApiResult } from "@shared/data/api-result";
-import { apiRoutes } from "@shared/data/api-routes";
-import { CreateStoryWithFile } from "@writer/ui/story-create-form-modal.component";
-import { DifficultyEnum } from "@shared/config/enums/difficulty.enum";
+import {Injectable} from "@angular/core";
+import {ApiService} from "@shared/data/api.service";
+import {
+  CreateDictionaryWordDto,
+  CreateParagraphTranslationDto,
+  CreateWordTranslationForParagraphDto,
+  DictionaryWordDto,
+  PageableDto,
+  PaginatedParagraphDto,
+  ParagraphDto,
+  StoryDto
+} from "app/models/Api";
+import {Observable} from "rxjs";
+import {WriterStore} from "./writer.store";
+import {ApiResult} from "@shared/data/api-result";
+import {apiRoutes} from "@shared/data/api-routes";
+import {CreateStoryWithFile} from "@writer/ui/story-create-form-modal.component";
+import {HttpParams} from "@angular/common/http";
+import {valueIsNotEmpty} from "@shared/functions";
 
 @Injectable({
   providedIn: 'root',
@@ -31,11 +41,11 @@ export class WriterApiService extends ApiService {
   }
 
   createStory(data: CreateStoryWithFile): Observable<ApiResult<StoryDto>> {
-    //todo check data
     const formData = new FormData();
     const storyData = {
-      name: data.name!,
-      difficulty: DifficultyEnum[data.difficulty!],
+      name: data.name,
+      description: data.description,
+      difficulty: data.difficulty,
     };
 
     formData.append(
@@ -44,7 +54,8 @@ export class WriterApiService extends ApiService {
     );
 
     // @ts-ignore
-    formData.append('file', data.file[0]!);
+    formData.append('file', data.file);
+    formData.append("image", data.image);
 
     return this.postWithFormData(
       apiRoutes.writer.stories.base,
@@ -54,16 +65,60 @@ export class WriterApiService extends ApiService {
   }
 
   submitTranslationForSentence(
-    sentence: SentenceDto,
-  ): Observable<ApiResult<SentenceDto>> {
-    return this.patch<{ id: string; englishTranslation: string }, SentenceDto>(
-      apiRoutes.writer.stories.translations,
-      { id: sentence.id!, englishTranslation: sentence.englishTranslation! },
+    paragraphTranslation: CreateParagraphTranslationDto,
+  ): Observable<ApiResult<ParagraphDto>> {
+    return this.patch<CreateParagraphTranslationDto, ParagraphDto>(
+      apiRoutes.writer.stories.sentences,
+      paragraphTranslation,
       this.writerStore.onSentenceTranslationAdded.bind(this.writerStore),
     );
   }
 
-  submitDictionaryWord(word: AddWordToDictionaryDto): Observable<ApiResult<DictionaryWordDto>> {
-    return this.post<DictionaryWordDto, AddWordToDictionaryDto>(apiRoutes.writer.stories.dictionary, word) 
+  submitDictionaryWord(word: CreateDictionaryWordDto): Observable<ApiResult<DictionaryWordDto>> {
+    return this.post<CreateDictionaryWordDto, DictionaryWordDto>(apiRoutes.writer.stories.dictionary, word)
+  }
+
+  getPaginatedParagraphs(storyId: string, page: PageableDto) {
+    const paginationParams = this.createPaginationParams(page);
+
+    return this.getWithParams<HttpParams, PaginatedParagraphDto>(
+      `${apiRoutes.writer.stories.base}/${storyId}/paragraphs`,
+      paginationParams,
+      this.writerStore.onParagraphsLoaded.bind(this.writerStore)
+    );
+  }
+
+  getTranslationForWord(word: string): Observable<ApiResult<DictionaryWordDto[]>> {
+    return this.get(`${apiRoutes.writer.stories.dictionary}/${word}`, this.writerStore.onDictionaryWordLoaded.bind(this.writerStore));
+  }
+
+  submitWordTranslationForParagraph(paragraphTranslation: CreateWordTranslationForParagraphDto): Observable<ApiResult<ParagraphDto>> {
+    return this.patch<CreateWordTranslationForParagraphDto, ParagraphDto>(
+      apiRoutes.writer.stories.words,
+      paragraphTranslation,
+      this.writerStore.onSentenceTranslationAdded.bind(this.writerStore)
+    )
+  }
+
+  publishStory(id: string) {
+    return this.post<{}, StoryDto>(`${apiRoutes.writer.stories.base}/${id}/publish`, {})
+  }
+
+  private createPaginationParams(page: PageableDto) {
+    let paginationParams: HttpParams = new HttpParams();
+
+    if (valueIsNotEmpty(page.pageSize)) {
+      paginationParams.append('pageSize', page.pageSize);
+    }
+
+    if (valueIsNotEmpty(page.pageNumber)) {
+      paginationParams.append('pageNumber', page.pageNumber);
+    }
+
+    if (valueIsNotEmpty(page.sort)) {
+      paginationParams.append('sort', page.sort);
+    }
+
+    return paginationParams;
   }
 }

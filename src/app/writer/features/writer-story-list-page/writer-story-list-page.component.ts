@@ -28,7 +28,7 @@ import { of } from "rxjs";
 
     <app-container *ngIf="dataService.data$ | async as data">
       <app-story-list-table
-        [stories]="data.entities"
+        [stories]="data.stories"
         [loading]="data.loading"
         (onRowClick)="navigationService.writerStoryDetails($event?.id!)"
       ></app-story-list-table>

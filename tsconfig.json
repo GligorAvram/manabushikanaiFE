@@ -28,6 +28,9 @@
       "@layouts/*" : [
         "app/layouts/*"
       ],
+      "@models/*": [
+        "app/models/*"
+      ],
       "@not-found/*" : [
         "app/not-found/*"
       ],

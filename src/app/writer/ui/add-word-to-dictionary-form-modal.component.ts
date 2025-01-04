@@ -1,18 +1,25 @@
-import { Component, Inject } from "@angular/core";
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { SubmitFn, FormFields, ComponentInstance } from "@shared/config/constants/shared.types";
-import { AbstractForm } from "@shared/models/abstract-form";
-import { AddWordToDictionaryFormModalData } from "@writer/config/writer.interfaces";
-import { AddWordToDictionaryDto } from "app/models/Api";
-import { UntilDestroy } from "ngx-reactivetoolkit";
-import { of } from "rxjs";
-import { ReactiveFormsModule, Validators } from "@angular/forms";
-import { SharedPipesModule } from "@shared/pipes/shared-pipes.module";
-import { FormModalComponent } from "@shared/ui/form-modal.component";
-import { InputModule } from "@shared/ui/input/input.module";
-import { SelectInputComponent } from "@shared/ui/input/select-input.component";
-import { TextInputComponent } from "@shared/ui/input/text-input.component";
-import { CheckboxInputComponent } from "../../shared/ui/input/checkbox-input.component";
+import {Component, Inject} from "@angular/core";
+import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {ComponentInstance, FormFields, SubmitFn} from "@shared/config/constants/shared.types";
+import {AbstractForm} from "@shared/models/abstract-form";
+
+import {UntilDestroy} from "ngx-reactivetoolkit";
+import {of} from "rxjs";
+import {ReactiveFormsModule} from "@angular/forms";
+import {SharedPipesModule} from "@shared/pipes/shared-pipes.module";
+import {FormModalComponent} from "@shared/ui/form-modal.component";
+import {InputModule} from "@shared/ui/input/input.module";
+import {TextInputComponent} from "@shared/ui/input/text-input.component";
+import {CheckboxInputComponent} from "@shared/ui/input/checkbox-input.component";
+import {CreateDictionaryWordDto, PitchAccentEnum} from "@models/Api";
+import {CreateDictionaryWordFormModalData} from "@writer/config/writer.interfaces";
+import {TextNullableInputComponent} from "@shared/ui/input/text-nullable-input.component";
+import {WriterPipesModule} from "@writer/pipes/writer-pipes.module";
+import {EnumSelectInputComponent} from "@shared/ui/input/enum-select-input.component";
+import {MultiValueInputComponent} from "@shared/ui/input/multi-value-input.component";
+import {NgIf} from "@angular/common";
+import {PrimaryButtonComponent} from "@shared/ui/buttons/primary-button.component";
+import {ButtonModule} from "@shared/ui/buttons/button.module";
 
 @Component({
   selector: 'app-add-word-to-dictionary-form-modal',
@@ -24,44 +31,59 @@ import { CheckboxInputComponent } from "../../shared/ui/input/checkbox-input.com
       (onSaveBtnClick)="submit()"
       (onCancelBtnClick)="cancel()"
     >
-      <form [formGroup]="form">
+      <form *ngIf="form" [formGroup]="form">
         <app-text-input
           class="displayBlock"
           appInput
-          label="Dictionary form"
-          formControlName="dictionaryWord"
+          label="Dictionary word"
+          [control]="form.controls.dictionaryWord"
         ></app-text-input>
         <app-text-input
           class="displayBlock"
           appInput
           label="English translation"
-          formControlName="englishTranslation"
+          [control]="form.controls.englishTranslation"
         ></app-text-input>
         <app-text-input
           class="displayBlock"
           appInput
           label="Japanese definition"
-          formControlName="japaneseDefinition"
+          [control]="form.controls.japaneseDefinition"
         ></app-text-input>
         <app-text-input
           class="displayBlock"
           appInput
           label="Kana writing"
-          formControlName="kana"
+          [control]="form.controls.kana"
         ></app-text-input>
-        <app-text-input
+        <app-text-nullable-input
           class="displayBlock"
           appInput
           label="Observation"
-          formControlName="observation"
-        ></app-text-input>
+          [control]="form.controls.observation!"
+        ></app-text-nullable-input>
+        <app-enum-select-input
+          class="displayBlock"
+          appInput
+          [enumType]="PitchAccentEnum"
+          label="Pitch accent"
+          [control]="form.controls.pitchAccent"
+        ></app-enum-select-input>
         <app-checkbox-input
           class="displayBlock"
           appInput
           label="Is a set phrase"
-          formControlName="setPhrase"
+          [control]="form.controls.isSetPhrase!"
         ></app-checkbox-input>
+        <app-multi-value-input
+          class="displayBlock"
+          appInput
+          label="Alternative writings"
+          [control]="form.controls.alternativeWritings!"
+        ></app-multi-value-input>
       </form>
+      <app-primary-button appButton (click)="saveAsPunctuation()" label="Save as punctuation"></app-primary-button>
+      <app-primary-button appButton (click)="saveAsIgnore()" label="Should be ignored"></app-primary-button>
     </app-form-modal>
   `,
   styles: [
@@ -73,24 +95,37 @@ import { CheckboxInputComponent } from "../../shared/ui/input/checkbox-input.com
     `,
   ],
   imports: [
-    SelectInputComponent,
     TextInputComponent,
     SharedPipesModule,
     FormModalComponent,
     ReactiveFormsModule,
     InputModule,
     CheckboxInputComponent,
+    TextNullableInputComponent,
+    WriterPipesModule,
+    EnumSelectInputComponent,
+    MultiValueInputComponent,
+    NgIf,
+    PrimaryButtonComponent,
+    ButtonModule
   ],
 })
 @UntilDestroy()
-export class AddWordToDictionaryFormModalComponent extends AbstractForm<AddWordToDictionaryDto> {
+export class AddWordToDictionaryFormModalComponent extends AbstractForm<CreateDictionaryWordDto> {
   override loading: boolean = false;
-  override onSubmit: SubmitFn<AddWordToDictionaryDto>;
+  override onSubmit: SubmitFn<CreateDictionaryWordDto>;
   override initialValues: any = null;
+  protected readonly PitchAccentEnum = PitchAccentEnum;
+
+
+  override cancel(): void {
+    super.cancel();
+    this.data.onCancel();
+  }
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
-    public readonly data: AddWordToDictionaryFormModalData,
+    public readonly data: CreateDictionaryWordFormModalData,
   ) {
     super({ loadingSrc$: of(false) });
     this.onSubmit = (formData: {
@@ -98,32 +133,56 @@ export class AddWordToDictionaryFormModalComponent extends AbstractForm<AddWordT
       englishTranslation: string;
       japaneseDefinition: string;
       kana: string;
+      pitchAccent: PitchAccentEnum,
       observation?: string;
-      setPhrase?: boolean;
+      isSetPhrase?: boolean;
+      alternativeWritings?: string[]
     }) => data.onSubmit(formData);
+    this.init([], true)
   }
 
-  ngOnInit(): void {
-    this.init();
+  protected override componentInstance(): ComponentInstance | null {
+    return this;
   }
 
-  override cancel(): void {
-    super.cancel();
-    this.data.onCancel();
-  }
-
-  protected override formFields(): FormFields<AddWordToDictionaryDto> {
+  protected override formFields(): FormFields<CreateDictionaryWordDto> {
     return {
       dictionaryWord: '',
       englishTranslation: '',
       japaneseDefinition: '',
       kana: '',
       observation: '',
-      setPhrase: false,
+      isSetPhrase: false,
+      pitchAccent: PitchAccentEnum.NONE,
+      alternativeWritings: []
     };
   }
 
-  protected override componentInstance(): ComponentInstance | null {
-    return this;
+  saveAsPunctuation() {
+    const punctuation = "PUNCTUATION";
+    if (this.form.value.dictionaryWord) {
+      this.submit({
+        dictionaryWord: this.form.value.dictionaryWord,
+        kana: punctuation,
+        observation: punctuation,
+        englishTranslation: punctuation,
+        pitchAccent: PitchAccentEnum.NONE,
+        japaneseDefinition: punctuation
+      })
+    }
+  }
+
+  saveAsIgnore() {
+    const ignore = "IGNORE";
+    if (this.form.value.dictionaryWord) {
+      this.submit({
+        dictionaryWord: this.form.value.dictionaryWord,
+        kana: ignore,
+        observation: ignore,
+        englishTranslation: ignore,
+        pitchAccent: PitchAccentEnum.NONE,
+        japaneseDefinition: ignore
+      })
+    }
   }
 }

@@ -1,18 +1,16 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { Observable, tap, map, catchError, of } from "rxjs";
-import { BaseStore, BaseEntityStore } from "./store.models";
-import { ApiResult } from "./api-result";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {inject} from "@angular/core";
+import {catchError, map, Observable, of, tap} from "rxjs";
+import {BaseStore} from "./store.models";
+import {ApiResult} from "./api-result";
 
 export class ApiService {
 //   private readonly messageService = inject(MessageService);
   private readonly http = inject(HttpClient);
-  private readonly store: BaseStore<any>    
+  private readonly store: BaseStore<any>
 
   constructor(
-    store:
-      | BaseEntityStore<any, any>
-      | BaseStore<any>
+    store: BaseStore<any>
   ) {
     this.store = store;
   }

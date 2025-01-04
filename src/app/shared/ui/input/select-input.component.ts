@@ -1,20 +1,13 @@
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Host,
-  Input,
-  Output,
-} from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { valueIsNotEmpty } from '@shared/functions';
-import { InputDirective } from '@shared/ui/input/input.directive';
-import { InputViewComponent } from './input-view.component';
-import { InputModule } from './input.module';
+import {ChangeDetectionStrategy, Component, EventEmitter, Host, Input, Output} from "@angular/core";
+import {CommonModule} from "@angular/common";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectChange, MatSelectModule} from "@angular/material/select";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {InputModule} from "@shared/ui/input/input.module";
+import {MatInputModule} from "@angular/material/input";
+import {InputViewComponent} from "@shared/ui/input/input-view.component";
+import {valueIsNotEmpty} from "@shared/functions";
+import {InputDirective} from "@shared/ui/input/input.directive";
 
 export interface ISelectInputOption {
   id: string;
@@ -36,9 +29,7 @@ export type SelectInputOptions = ISelectInputOption[];
       <mat-label>{{ input.label }}</mat-label>
       <mat-select
         [(ngModel)]="input.value"
-        [disabled]="input.disabled"
         [required]="input.required"
-        [class.disabled]="input.disabled"
         [errorStateMatcher]="input.errorStateMatcher"
         (selectionChange)="onSelectionChange($event)"
         (blur)="input.onTouch()"
@@ -125,25 +116,23 @@ export type SelectInputOptions = ISelectInputOption[];
 })
 export class SelectInputComponent {
   @Input()
-  set options(value: SelectInputOptions) {
-    this.initialOptions = value;
-    this.filteredOptions = valueIsNotEmpty(value) ? value.slice() : [];
-  }
-
-  @Input()
   optionsLoading!: boolean;
-
   @Input()
   enableSearch = false;
-
   @Output()
   onSelect = new EventEmitter<string>();
-
   initialOptions: SelectInputOptions = [];
   filteredOptions: SelectInputOptions = [];
   searchQuery: string | null = null;
 
-  constructor(@Host() public readonly input: InputDirective<string | null>) {}
+  constructor(@Host() public readonly input: InputDirective<string | null>) {
+  }
+
+  @Input()
+  set options(value: SelectInputOptions) {
+    this.initialOptions = value;
+    this.filteredOptions = valueIsNotEmpty(value) ? value.slice() : [];
+  }
 
   onSelectionChange(event: MatSelectChange): void {
     this.input.onChange(event.value);
