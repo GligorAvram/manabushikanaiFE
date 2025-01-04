@@ -1,1 +1,14 @@
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+.error-snack-bar {
+    --mdc-snackbar-container-color: #f44336;
+    --mat-snack-bar-button-color: black;
+    --mdc-snackbar-supporting-text-color: white;
+}
+
+.success-snack-bar {
+    --mdc-snackbar-container-color: #22bb33;
+    --mat-snack-bar-button-color: black;
+    --mdc-snackbar-supporting-text-color: white;
+}
+

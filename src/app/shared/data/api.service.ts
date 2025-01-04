@@ -1,11 +1,13 @@
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {inject} from "@angular/core";
-import {catchError, map, Observable, of, tap} from "rxjs";
-import {BaseStore} from "./store.models";
-import {ApiResult} from "./api-result";
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Error, HttpErrorDto } from '@models/Api';
+import { MessageService } from '@shared/features/message/message.service';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { ApiResult } from './api-result';
+import { BaseStore } from './store.models';
 
 export class ApiService {
-//   private readonly messageService = inject(MessageService);
+    private readonly messageService = inject( MessageService );
   private readonly http = inject(HttpClient);
   private readonly store: BaseStore<any>
 
@@ -146,14 +148,13 @@ export class ApiService {
     );
   }
 
-  private handleError<Return>(error: any): Observable<ApiResult<Return>> {
-    if (Error(error)) {
-      this.store.onError(error);
-      //todo
-    //   this.messageService.error(error);
+    private handleError<Return>(error: HttpErrorResponse): Observable<ApiResult<Return>> {
+        if( Error( error.error ) ) {
+            this.store.onError( error.error as HttpErrorDto | Error );
+            this.messageService.error( error.error as HttpErrorDto | Error );
     } else {
       this.store.setLoading(false);
-      console.error(error);
+            console.error( error.error );
     }
 
     return of(new ApiResult<Return>({ error }));
