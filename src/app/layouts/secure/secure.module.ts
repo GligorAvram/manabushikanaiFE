@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
-import { TopBarComponent } from "@shared/ui/top-bar.component";
-import { SideMenuComponent } from "@shared/ui/side-menu.component";
-import { SecureComponent } from './secure.component';
+import { SideMenuComponent } from '@shared/ui/side-menu.component';
+import { TopBarComponent } from '@shared/ui/top-bar.component';
 import { SecureRoutingModule } from './secure-routing.module';
+import { SecureComponent } from './secure.component';
 
-@NgModule({
-    declarations: [SecureComponent],
-    imports: [SecureRoutingModule, TopBarComponent, SideMenuComponent]
-})
-export class SecureModule {}
+@NgModule( {
+               declarations: [ SecureComponent ],
+               imports     : [ SecureRoutingModule, TopBarComponent, SideMenuComponent ]
+           } )
+export class SecureModule {
+}
