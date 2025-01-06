@@ -7,7 +7,9 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
     {
         selector       : 'app-reader-story-details-page',
         template       : `
-            <app-container *ngIf="dataService.data$ | async as data">
+            <app-container
+                [height]="'100%'"
+                *ngIf="dataService.data$ | async as data">
                 <app-loading-bar [visible]="data.loading"></app-loading-bar>
                 <app-slider
                     [rightOption]="sentenceView"
@@ -16,7 +18,7 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
                 ></app-slider>
 
                 <app-container *ngIf="data">
-                    <div>
+                    <div class="mat-paginator-container">
                         <mat-paginator [length]="data.paragraphs?.totalItems"
                                        [pageSize]="10"
                                        [pageSizeOptions]="[10]"
@@ -26,12 +28,11 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
                         </mat-paginator>
                     </div>
 
-
                     <app-container *ngIf="selected===sentenceView">
-                        <app-sentence-display-component></app-sentence-display-component>
+                        <app-sentence-display-component [paragraphs]="data.paragraphs?.paragraphs"></app-sentence-display-component>
                     </app-container>
                     <app-container *ngIf="selected===wordView">
-                        <app-word-display-component></app-word-display-component>
+                        <app-word-display-component [paragraphs]="data.paragraphs?.paragraphs"></app-word-display-component>
                     </app-container>
                 </app-container>
             </app-container>
@@ -58,6 +59,6 @@ export class ReaderStoryDetailsPageComponent implements OnInit {
     }
 
     handlePageEvent($event: PageEvent) {
-        this.dataService.loadParagraphs({pageSize: 10, pageNumber: $event.pageIndex})
+        this.dataService.loadParagraphs( { pageSize: 10, pageNumber: $event.pageIndex } );
     }
 }

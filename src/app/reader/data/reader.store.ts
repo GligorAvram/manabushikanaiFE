@@ -40,7 +40,7 @@ export class ReaderStore extends BaseStore<ReaderState> {
     }
 
     @storeEvent( 'Paragraphs loaded' )
-    onParagraphsLoaded(paragraphs: PaginatedParagraphDto): void {
-        this.update( { paragraphs } );
+    onParagraphsLoaded(paragraphPage: PaginatedParagraphDto): void {
+        this.update( { paragraphs: { ...paragraphPage, paragraphs: paragraphPage.paragraphs?.sort( (p1, p2) => p1.orderInStory - p2.orderInStory ) } } );
     }
 }

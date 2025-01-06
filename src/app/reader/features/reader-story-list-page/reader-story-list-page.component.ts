@@ -8,7 +8,7 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
     {
         selector       : 'app-reader-story-list-page',
         template       : `
-            <app-container>
+            <app-container height="100%">
                 <app-header>
                     <app-title headerLeft title="Stories" [icon]="icon.Stories"></app-title>
                 </app-header>

@@ -98,20 +98,20 @@ export function getParamFromRoute(
     return route.snapshot.paramMap.get( paramName );
 }
 
-export function createPaginationParams(page: PageableDto) {
+export const createPaginationParams = (page: PageableDto) => {
     let paginationParams: HttpParams = new HttpParams();
 
-    if( valueIsNotEmpty( page.pageSize ) ) {
-        paginationParams.append( 'pageSize', page.pageSize );
+    if( page.pageSize !== undefined ) {
+        paginationParams = paginationParams.append( 'pageSize', page.pageSize );
     }
 
-    if( valueIsNotEmpty( page.pageNumber ) ) {
-        paginationParams.append( 'pageNumber', page.pageNumber );
+    if( page.pageNumber !== undefined ) {
+        paginationParams = paginationParams.append( 'pageNumber', page.pageNumber );
     }
 
     if( valueIsNotEmpty( page.sort ) ) {
-        paginationParams.append( 'sort', page.sort );
+        paginationParams = paginationParams.append( 'sort', page.sort );
     }
 
     return paginationParams;
-}
+};
