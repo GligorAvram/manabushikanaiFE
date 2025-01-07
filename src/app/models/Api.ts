@@ -33,7 +33,13 @@ export interface CreateStoryDto {
    * @maxLength 2147483647
    */
   name: string;
+  /**
+   * @minLength 3
+   * @maxLength 2147483647
+   */
+  japaneseName: string;
   description?: string;
+  japaneseDescription?: string;
   difficulty: StoryDifficultyEnum;
 }
 
@@ -49,7 +55,9 @@ export interface StoryDto {
   /** @format uuid */
   id: string;
   name: string;
+  japaneseName: string;
   description?: string;
+  japaneseDescription?: string;
   published: boolean;
   difficulty: StoryDifficultyEnum;
   image: string[];

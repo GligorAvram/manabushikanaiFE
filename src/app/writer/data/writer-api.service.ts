@@ -34,9 +34,11 @@ export class WriterApiService extends ApiService {
     createStory(data: CreateStoryWithFile): Observable<ApiResult<StoryDto>> {
         const formData = new FormData();
         const storyData = {
-            name       : data.name,
-            description: data.description,
-            difficulty : data.difficulty
+            name               : data.name,
+            japaneseName       : data.japaneseName,
+            description        : data.description,
+            japaneseDescription: data.japaneseDescription,
+            difficulty         : data.difficulty
         };
 
         formData.append(
