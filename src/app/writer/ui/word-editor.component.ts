@@ -120,12 +120,12 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                 `,
                 standalone     : true,
                 changeDetection: ChangeDetectionStrategy.OnPush,
-    styles: [
-        `.missing-data {
-            color: #f44336;
-        }`
-    ],
-                imports: [
+                styles         : [
+                    `.missing-data {
+                        color: #f44336;
+                    }`
+                ],
+                imports        : [
                     ButtonModule, CdkDropList, ContainerComponent, FormsModule, InputModule, MatCard, MatCardContent, NgForOf, NgIf, PrimaryButtonComponent, ReactiveFormsModule, TextInputComponent, WriterPipesModule, SearchDropdownInputComponent, DeleteButtonComponent, NgClass,
                     CdkDrag
                 ]
@@ -201,6 +201,7 @@ export class WordEditorComponent implements OnInit {
             return;
         }
 
+        this.clearFormValues();
         const originalWord = selection.toString()
                                       .trim();
         if( originalWord ) {
@@ -309,5 +310,13 @@ export class WordEditorComponent implements OnInit {
         if( word ) {
             this.initialValue = this.paragraph.words?.find( m => m.originalWord === word?.originalWord )?.translation;
         }
+    }
+
+    clearFormValues(): void {
+        this.form.controls.originalWord.setValue( '' );
+        this.form.controls.dictionaryWordId.setValue( '' );
+        this.form.controls.wordKana.setValue( '' );
+        this.form.controls.wordKanji.setValue( '' );
+        this.form.controls.observation.setValue( '' );
     }
 }
