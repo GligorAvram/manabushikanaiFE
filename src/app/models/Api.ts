@@ -39,6 +39,7 @@ export interface CreateStoryDto {
    */
   japaneseName: string;
   description?: string;
+  storyOrigin?: string;
   japaneseDescription?: string;
   difficulty: StoryDifficultyEnum;
 }
@@ -58,7 +59,8 @@ export interface StoryDto {
   japaneseName: string;
   description?: string;
   japaneseDescription?: string;
-  published: boolean;
+  storyOrigin?: string;
+  published: "true" | "false";
   difficulty: StoryDifficultyEnum;
   image: string[];
 }
@@ -425,6 +427,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     getAllStories: (
       query: {
+        published?: "true" | "false";
         pageable: PageableDto;
       },
       params: RequestParams = {},

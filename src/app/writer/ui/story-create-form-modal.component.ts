@@ -56,6 +56,13 @@ export type CreateStoryWithFile = CreateStoryDto & { file: File, image: File }
                                 [control]="form.controls.japaneseDescription!"
                                 formControlName="japaneseDescription"
                             ></app-text-nullable-input>
+                            <app-text-nullable-input
+                                class="displayBlock"
+                                appInput
+                                label="Story origin"
+                                [control]="form.controls.storyOrigin!"
+                                formControlName="storyOrigin"
+                            ></app-text-nullable-input>
                             <app-enum-select-input
                                 class="displayBlock"
                                 appInput
@@ -122,6 +129,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             japaneseName: string,
             description?: string,
             japaneseDescription?: string,
+            storyOrigin?: string,
             difficulty: StoryDifficultyEnum,
             file: File,
             image: File
@@ -147,6 +155,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             japaneseName       : '',
             description        : '',
             japaneseDescription: '',
+            storyOrigin        : '',
             difficulty         : StoryDifficultyEnum.EASIEST,
             file               : [],
             image              : []

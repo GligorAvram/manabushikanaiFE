@@ -26,6 +26,7 @@ import { ContainerComponent } from '@shared/ui/container.component';
                                   {{ story.description }}
                               </mat-card-subtitle>
                           </mat-card-content>
+                          <mat-card-footer> Origin: {{ story.storyOrigin }}</mat-card-footer>
                       </mat-card>
                   </mat-grid-tile>
               }
