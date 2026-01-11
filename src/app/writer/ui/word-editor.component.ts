@@ -193,7 +193,7 @@ export class WordEditorComponent implements OnInit {
                                               } );
     }
 
-    displayDictionaryWord = (word: DictionaryWordDto) => word.dictionaryForm;
+    displayDictionaryWord = (word: DictionaryWordDto) => `${ word.dictionaryForm } (${ word.kana })`;
 
     addWord(event: MouseEvent) {
         const selection = window.getSelection();
@@ -229,7 +229,7 @@ export class WordEditorComponent implements OnInit {
             ) )
                                    :
                                    [];
-        this.displayText = this.sanitizeText( this.paragraph.originalParagraph );
+        this.updateTextWithAllHighlights();
         this.createFormBuilder();
         this.dictionaryWordInitialValue();
     }
@@ -303,7 +303,21 @@ export class WordEditorComponent implements OnInit {
 
     //TODO redo function and check if it can be united with the one for sentences
     updateTextWithAllHighlights(): void {
+        let updatedText = '';
 
+        for( const text of this.translatedParagraph ) {
+            if( this.paragraph.originalParagraph.startsWith( updatedText + text.originalWord ) ) {
+                updatedText += text.originalWord;
+            } else {
+                break;
+            }
+        }
+
+        const restOfText = this.paragraph.originalParagraph.slice( updatedText.length );
+
+        this.displayText = this.sanitizeText(
+            `<span style="color: gray; pointer-events: none;">${ updatedText }</span>${ restOfText }`
+        );
     }
 
     dictionaryWordInitialValue(word?: CreateWordTranslationDto) {
