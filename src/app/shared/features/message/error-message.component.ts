@@ -4,6 +4,7 @@ import { Error, HttpErrorDto } from '@models/Api';
 
 @Component( {
                 selector       : 'app-error-message',
+                standalone     : false,
                 template       : `
                     <div class="d-flex flex-column align-items-start justify-content-center">
                         <ng-container>

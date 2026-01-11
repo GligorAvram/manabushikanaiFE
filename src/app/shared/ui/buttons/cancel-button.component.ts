@@ -4,7 +4,6 @@ import { ButtonDirective } from "./button.directive";
 import { ButtonModule } from "./button.module";
 
 @Component({
-  standalone: true,
   selector: 'app-cancel-button',
   template: `
     <button

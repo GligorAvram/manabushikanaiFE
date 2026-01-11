@@ -8,7 +8,6 @@ import { ButtonType } from './button.types';
 
 
 @Component({
-  standalone: true,
   selector: 'app-primary-button',
   template: `
     <button

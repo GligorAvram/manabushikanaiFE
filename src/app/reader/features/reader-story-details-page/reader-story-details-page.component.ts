@@ -6,6 +6,7 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
 @Component(
     {
         selector       : 'app-reader-story-details-page',
+        standalone     : false,
         template       : `
             <app-container
                 [height]="'100%'"

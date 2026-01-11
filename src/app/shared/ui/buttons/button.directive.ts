@@ -1,13 +1,13 @@
-import { Directive, Input, Output, EventEmitter } from "@angular/core";
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 
-@Directive({ selector: '[appButton]' })
+@Directive( { selector: '[appButton]', standalone: false } )
 export class ButtonDirective {
-  @Input()
-  disabled: boolean = false;
+    @Input()
+    disabled: boolean = false;
 
-  @Input()
-  fullWidth: boolean = false;
+    @Input()
+    fullWidth: boolean = false;
 
-  @Output()
-  onClick: EventEmitter<void> = new EventEmitter<void>();
+    @Output()
+    onClick: EventEmitter<void> = new EventEmitter<void>();
 }

@@ -45,70 +45,74 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                                     <div
                                         cdkDropList
                                         [cdkDropListData]="translatedParagraph"
+                                        cdkDropListOrientation="mixed"
                                         class="example-list"
                                         (cdkDropListDropped)="drop($event)">
-                                        <div *ngFor="let item of translatedParagraph; let i = index">
-                                            <div [ngClass]="[!item.dictionaryWordId || !item.wordKana ? 'missing-data' : '']" class="example-box" cdkDrag (click)="setAsSelectedWord(item, i)">
+                                        <span *ngFor="let item of translatedParagraph; let i = index">
+                                            <span [ngClass]="[!item.dictionaryWordId || !item.wordKana ? 'missing-data' : '']" class="example-box" cdkDrag (click)="setAsSelectedWord(item, i)">
                                                 {{ item.originalWord }}
-                                            </div>
+                                            </span>
                                             <app-delete-button
                                                 appButton
+                                                label="x"
                                                 (click)="removeWord(i)"
                                             ></app-delete-button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div>
-                                        <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
-                                            <app-text-input
-                                                class="displayBlock"
-                                                appInput
-                                                label="Original word"
-                                                [control]="form.controls.originalWord"
-                                                formControlName="originalWord"
-                                            ></app-text-input>
-                                            <app-search-dropdown-input class="displayBlock"
-                                                                       appInput
-                                                                       formControlName="dictionaryWordId"
-                                                                       (search)="handleGetWordTranslation($event)"
-                                                                       (clearOptionsList)="clearDictionaryWordList()"
-                                                                       [label]="'Search for translation'"
-                                                                       [placeholder]="'Search for a translation...'"
-                                                                       [control]="form.controls.dictionaryWordId"
-                                                                       [searchResults]="possibleTranslations"
-                                                                       [displayFn]="displayDictionaryWord"
-                                                                       [initialValue]="initialValue"/>
-                                            <app-text-input
-                                                class="displayBlock"
-                                                appInput
-                                                label="Kanji"
-                                                [control]="form.controls.wordKanji"
-                                                formControlName="wordKanji"
-                                            ></app-text-input>
-                                            <app-text-input
-                                                class="displayBlock"
-                                                appInput
-                                                label="Kana"
-                                                [control]="form.controls.wordKana"
-                                                formControlName="wordKana"
-                                            ></app-text-input>
-                                            <app-text-input
-                                                class="displayBlock"
-                                                appInput
-                                                label="Observation"
-                                                [control]="form.controls.observation"
-                                                formControlName="observation"
-                                            ></app-text-input>
-                                            <button type="submit" [disabled]="!form.valid">Submit</button>
-                                        </form>
+                                        </span>
                                     </div>
                                 </div>
 
                             </mat-card-content>
                         </mat-card>
                         <div>
+
+                            <div>
+                                <div>
+                                    <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
+                                        <app-text-input
+                                            class="displayBlock"
+                                            appInput
+                                            label="Original word"
+                                            [control]="form.controls.originalWord"
+                                            formControlName="originalWord"
+                                        ></app-text-input>
+                                        <app-search-dropdown-input class="displayBlock"
+                                                                   appInput
+                                                                   formControlName="dictionaryWordId"
+                                                                   (search)="handleGetWordTranslation($event)"
+                                                                   (clearOptionsList)="clearDictionaryWordList()"
+                                                                   [label]="'Search for translation'"
+                                                                   [placeholder]="'Search for a translation...'"
+                                                                   [control]="form.controls.dictionaryWordId"
+                                                                   [searchResults]="possibleTranslations"
+                                                                   [displayFn]="displayDictionaryWord"
+                                                                   [initialValue]="initialValue"/>
+                                        <app-text-input
+                                            class="displayBlock"
+                                            appInput
+                                            label="Kanji"
+                                            [control]="form.controls.wordKanji"
+                                            formControlName="wordKanji"
+                                        ></app-text-input>
+                                        <app-text-input
+                                            class="displayBlock"
+                                            appInput
+                                            label="Kana"
+                                            [control]="form.controls.wordKana"
+                                            formControlName="wordKana"
+                                        ></app-text-input>
+                                        <app-text-input
+                                            class="displayBlock"
+                                            appInput
+                                            label="Observation"
+                                            [control]="form.controls.observation"
+                                            formControlName="observation"
+                                        ></app-text-input>
+                                        <button type="submit" [disabled]="!form.valid">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+
+
                             <app-primary-button
                                 label="Add paragraph translation"
                                 [icon]="icon.Add"

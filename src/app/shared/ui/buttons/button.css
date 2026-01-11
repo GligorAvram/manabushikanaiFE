@@ -35,22 +35,20 @@ mat-icon.lg {
   cursor: not-allowed !important;
 }
 
-:host ::ng-deep {
-
-  .mat-mdc-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,
-  .mat-button:focus:not(.mat-button-disabled) .mat-button-focus-overlay {
-    opacity: 1 !important;
-    background: none !important;
-    text-decoration: underline !important;
-    transition: none !important;
-  }
-
-  .mat-button-focus-overlay {
-    transition: none !important;
-  }
+:host ::ng-deep .mat-mdc-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,
+:host ::ng-deep .mat-button:focus:not(.mat-button-disabled) .mat-button-focus-overlay {
+  opacity: 1 !important;
+  background: none !important;
+  text-decoration: underline !important;
+  transition: none !important;
+}
+:host ::ng-deep .mat-button-focus-overlay {
+  transition: none !important;
 }
 
 button.mat-mdc-icon-button {
   padding: 0 !important;
   height: auto;
 }
+
+/*# sourceMappingURL=button.css.map */

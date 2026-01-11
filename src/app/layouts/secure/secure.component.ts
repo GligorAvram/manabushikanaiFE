@@ -3,8 +3,9 @@ import { NavigationService } from '@shared/features/navigation/navigation.servic
 
 @Component(
     {
-        selector: 'app-secure',
-        template: `
+        selector  : 'app-secure',
+        standalone: false,
+        template  : `
             <app-top-bar></app-top-bar>
             <app-side-menu>
                 <router-outlet></router-outlet>
