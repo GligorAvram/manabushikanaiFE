@@ -3,7 +3,7 @@ import { IconEnum } from '@shared/config/enums/icon.enum';
 import { ModalService } from '@shared/features/modal/modal.service';
 import { NavigationService } from '@shared/features/navigation/navigation.service';
 import { StoryCreateFormModalData } from '@writer/config/writer.interfaces';
-import { CreateStoryWithFile, StoryCreateFormModalComponent } from '@writer/ui/story-create-form-modal.component';
+import { CreateStoryWithFiles, StoryCreateFormModalComponent } from '@writer/ui/story-create-form-modal.component';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { of } from 'rxjs';
 import { WriterStoryListDataService } from './writer-story-list-data.service';
@@ -64,7 +64,7 @@ export class WriterStoryListPageComponent implements OnInit {
         );
     }
 
-    createStory(data: CreateStoryWithFile): void {
+    createStory(data: CreateStoryWithFiles): void {
         this.dataService.create( data );
         this.onCreateStorySuccess();
     }

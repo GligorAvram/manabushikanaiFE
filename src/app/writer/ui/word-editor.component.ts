@@ -21,6 +21,12 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                     <app-container *ngIf="paragraph">
                         <div>
                             <app-primary-button
+                                label="Process with AI"
+                                [icon]="icon.Add"
+                                appButton
+                                (click)="processWithAi()"
+                            ></app-primary-button>
+                            <app-primary-button
                                 label="Add word to dictionary"
                                 [icon]="icon.Add"
                                 appButton
@@ -40,78 +46,71 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                     <app-container>
                         <mat-card>
                             <mat-card-content style="display: flex; flex-direction: row;">
-
                                 <div style="min-width: 5rem">
                                     <div
                                         cdkDropList
                                         [cdkDropListData]="translatedParagraph"
                                         cdkDropListOrientation="mixed"
-                                        class="example-list"
                                         (cdkDropListDropped)="drop($event)">
                                         <span *ngFor="let item of translatedParagraph; let i = index">
-                                            <span [ngClass]="[!item.dictionaryWordId || !item.wordKana ? 'missing-data' : '']" class="example-box" cdkDrag (click)="setAsSelectedWord(item, i)">
+                                            <span [ngClass]="[!item.dictionaryWordId || !item.wordKana ? 'missing-data' : 'word-span']" class="example-box" cdkDrag (click)="setAsSelectedWord(item, i)">
                                                 {{ item.originalWord }}
                                             </span>
                                             <app-delete-button
                                                 appButton
-                                                label="x"
+                                                class="no-touch-target"
                                                 (click)="removeWord(i)"
                                             ></app-delete-button>
                                         </span>
                                     </div>
                                 </div>
-
                             </mat-card-content>
                         </mat-card>
+                    </app-container>
+                    <app-container class="mx-3">
                         <div>
-
-                            <div>
-                                <div>
-                                    <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
-                                        <app-text-input
-                                            class="displayBlock"
-                                            appInput
-                                            label="Original word"
-                                            [control]="form.controls.originalWord"
-                                            formControlName="originalWord"
-                                        ></app-text-input>
-                                        <app-search-dropdown-input class="displayBlock"
-                                                                   appInput
-                                                                   formControlName="dictionaryWordId"
-                                                                   (search)="handleGetWordTranslation($event)"
-                                                                   (clearOptionsList)="clearDictionaryWordList()"
-                                                                   [label]="'Search for translation'"
-                                                                   [placeholder]="'Search for a translation...'"
-                                                                   [control]="form.controls.dictionaryWordId"
-                                                                   [searchResults]="possibleTranslations"
-                                                                   [displayFn]="displayDictionaryWord"
-                                                                   [initialValue]="initialValue"/>
-                                        <app-text-input
-                                            class="displayBlock"
-                                            appInput
-                                            label="Kanji"
-                                            [control]="form.controls.wordKanji"
-                                            formControlName="wordKanji"
-                                        ></app-text-input>
-                                        <app-text-input
-                                            class="displayBlock"
-                                            appInput
-                                            label="Kana"
-                                            [control]="form.controls.wordKana"
-                                            formControlName="wordKana"
-                                        ></app-text-input>
-                                        <app-text-input
-                                            class="displayBlock"
-                                            appInput
-                                            label="Observation"
-                                            [control]="form.controls.observation"
-                                            formControlName="observation"
-                                        ></app-text-input>
-                                        <button type="submit" [disabled]="!form.valid">Submit</button>
-                                    </form>
-                                </div>
-                            </div>
-
+                            <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
+                                <app-text-input
+                                    class="displayBlock"
+                                    appInput
+                                    label="Original word"
+                                    [control]="form.controls.originalWord"
+                                    formControlName="originalWord"
+                                ></app-text-input>
+                                <app-search-dropdown-input class="displayBlock"
+                                                           appInput
+                                                           formControlName="dictionaryWordId"
+                                                           (search)="handleGetWordTranslation($event)"
+                                                           (clearOptionsList)="clearDictionaryWordList()"
+                                                           [label]="'Search for translation'"
+                                                           [placeholder]="'Search for a translation...'"
+                                                           [control]="form.controls.dictionaryWordId"
+                                                           [searchResults]="possibleTranslations"
+                                                           [displayFn]="displayDictionaryWord"
+                                                           [initialValue]="initialValue"/>
+                                <app-text-input
+                                    class="displayBlock"
+                                    appInput
+                                    label="Kanji"
+                                    [control]="form.controls.wordKanji"
+                                    formControlName="wordKanji"
+                                ></app-text-input>
+                                <app-text-input
+                                    class="displayBlock"
+                                    appInput
+                                    label="Kana"
+                                    [control]="form.controls.wordKana"
+                                    formControlName="wordKana"
+                                ></app-text-input>
+                                <app-text-input
+                                    class="displayBlock"
+                                    appInput
+                                    label="Observation"
+                                    [control]="form.controls.observation"
+                                    formControlName="observation"
+                                ></app-text-input>
+                                <button type="submit" [disabled]="!form.valid">Submit</button>
+                            </form>
 
                             <app-primary-button
                                 label="Add paragraph translation"
@@ -127,7 +126,13 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                 styles         : [
                     `.missing-data {
                         color: #f44336;
-                    }`
+                    }
+
+                    .word-span {
+                        display: inline-block;
+                        min-width: 2rem;
+                    }
+                    `
                 ],
                 imports        : [
                     ButtonModule, CdkDropList, ContainerComponent, FormsModule, InputModule, MatCard, MatCardContent, NgForOf, NgIf, PrimaryButtonComponent, ReactiveFormsModule, TextInputComponent, WriterPipesModule, SearchDropdownInputComponent, DeleteButtonComponent, NgClass,
@@ -151,6 +156,8 @@ export class WordEditorComponent implements OnInit {
     onOpenAddDictionaryModalClicked = new EventEmitter();
     @Output()
     onWordTranslationSubmitted: EventEmitter<CreateWordTranslationForParagraphDto> = new EventEmitter();
+    @Output()
+    onProcessWithAiClicked: EventEmitter<string> = new EventEmitter();
 
     displayText!: SafeHtml;
     translatedParagraph: CreateWordTranslationDto[] = [];
@@ -179,6 +186,10 @@ export class WordEditorComponent implements OnInit {
                                                              wordKana        : '',
                                                              observation     : ''
                                                          } );
+    }
+
+    processWithAi() {
+        this.onProcessWithAiClicked.emit( this.paragraph.id );
     }
 
     submitTranslation() {

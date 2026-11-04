@@ -16,6 +16,10 @@ mat-icon {
   transform: translateX(6px) translateY(-1px);
 }
 
+.no-touch-target button .mat-mdc-button-touch-target {
+  display: none;
+}
+
 mat-icon.lg {
   font-size: 1.7rem;
 }

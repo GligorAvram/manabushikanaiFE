@@ -41,6 +41,7 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                                         <app-sentence-editor
                                             [paragraph]="paragraph"
                                             (onTranslationSubmitted)="submitTranslationForParagraph($event)"
+                                            (onProcessWithAiClicked)="generateSentenceTranslationWithAi($event)"
                                         ></app-sentence-editor>
                                     </app-container>
                                     <app-container *ngIf="selected===wordView">
@@ -50,6 +51,7 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                                             (onClearDictionaryWordsList)="clearWordTranslations()"
                                             [possibleTranslations]="data.possibleWordTranslations"
                                             (onWordTranslationSubmitted)="submitWordsTranslation($event)"
+                                            (onProcessWithAiClicked)="generateWordTranslationWithAi($event)"
                                             (onOpenAddDictionaryModalClicked)="this.openAddWordToDictionaryFormModal()"
                                         ></app-word-editor>
                                     </app-container>
@@ -93,6 +95,14 @@ export class WriterStoryDetailsPageComponent implements OnInit {
 
     submitTranslationForParagraph(paragraphTranslation: CreateParagraphTranslationDto) {
         this.dataService.submitTranslationForParagraph( paragraphTranslation );
+    }
+
+    generateSentenceTranslationWithAi(paragraphId: string) {
+        this.dataService.generateSentenceTranslationWithAI( paragraphId );
+    }
+
+    generateWordTranslationWithAi(paragraphId: string) {
+        this.dataService.generateWordTranslationWithAI( paragraphId );
     }
 
     getTranslationForWord(word: string) {

@@ -4,9 +4,9 @@ import { ApiResult } from '@shared/data/api-result';
 import { apiRoutes } from '@shared/data/api-routes';
 import { ApiService } from '@shared/data/api.service';
 import { createPaginationParams } from '@shared/functions';
-import { CreateStoryWithFile } from '@writer/ui/story-create-form-modal.component';
-import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedParagraphDto, ParagraphDto, StoryDto } from 'app/models/Api';
-import { Observable } from 'rxjs';
+import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
+import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, FileDto, FileTypeEnum, PageableDto, PaginatedParagraphDto, ParagraphDto, StoryDto } from 'app/models/Api';
+import { forkJoin, Observable, switchMap } from 'rxjs';
 import { WriterStore } from './writer.store';
 
 @Injectable( {
@@ -31,30 +31,27 @@ export class WriterApiService extends ApiService {
         );
     }
 
-    createStory(data: CreateStoryWithFile): Observable<ApiResult<StoryDto>> {
-        const formData = new FormData();
-        const storyData = {
-            name               : data.name,
-            japaneseName       : data.japaneseName,
-            description        : data.description,
-            japaneseDescription: data.japaneseDescription,
-            difficulty         : data.difficulty
-        };
-
-        formData.append(
-            'storyData',
-            new Blob( [ JSON.stringify( storyData ) ], { type: 'application/json' } )
-        );
-
-        // @ts-ignore
-        formData.append( 'file', data.file );
-        formData.append( 'image', data.image );
-
-        return this.postWithFormData(
-            apiRoutes.writer.stories.base,
-            formData,
-            this.writerStore.onStoryCreated.bind( this.writerStore )
-        );
+    createStory(data: CreateStoryWithFiles): Observable<ApiResult<StoryDto>> {
+        return forkJoin( {
+                             thumbnail: this.uploadFile( data.image, FileTypeEnum.THUMBNAIL ),
+                             file     : this.uploadFile( data.file, FileTypeEnum.STORY )
+                         } )
+            .pipe(
+                switchMap( ({ thumbnail, file }) => {
+                    return this.post<CreateStoryDto, StoryDto>(
+                        apiRoutes.writer.stories.base,
+                        {
+                            name               : data.name,
+                            japaneseName       : data.japaneseName,
+                            description        : data.description,
+                            japaneseDescription: data.japaneseDescription,
+                            difficulty         : data.difficulty,
+                            thumbnailId        : thumbnail.data?.id,
+                            fileId             : file.data!.id!
+                        },
+                        this.writerStore.onStoryCreated.bind( this.writerStore ) );
+                } )
+            );
     }
 
     submitTranslationForSentence(
@@ -95,5 +92,37 @@ export class WriterApiService extends ApiService {
 
     publishStory(id: string) {
         return this.post<{}, StoryDto>( `${ apiRoutes.writer.stories.base }/${ id }/publish`, {} );
+    }
+
+    generateSentenceTranslationWithAI(paragraphId: string): Observable<ApiResult<ParagraphDto>> {
+        return this.post<{}, ParagraphDto>(
+            `${ apiRoutes.writer.stories.base }/paragraphs/${ paragraphId }/ai/sentences`,
+            {},
+            this.writerStore.onSentenceTranslationAdded.bind( this.writerStore )
+        );
+    }
+
+    generateWordTranslationWithAI(paragraphId: string): Observable<ApiResult<ParagraphDto>> {
+        return this.post<{}, ParagraphDto>(
+            `${ apiRoutes.writer.stories.base }/paragraphs/${ paragraphId }/ai/words`,
+            {},
+            this.writerStore.onSentenceTranslationAdded.bind( this.writerStore )
+        );
+    }
+
+    uploadFile(file: File, type: FileTypeEnum): Observable<ApiResult<FileDto>> {
+        const formData = new FormData();
+
+        formData.append( 'file', file );
+
+        formData.append(
+            'dto',
+            new Blob( [ JSON.stringify( { 'fileType': type } ) ], { type: 'application/json' } )
+        );
+
+        return this.postWithFormData<FileDto>(
+            apiRoutes.writer.files.base,
+            formData
+        );
     }
 }

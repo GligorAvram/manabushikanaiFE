@@ -22,6 +22,14 @@ import { CreateSentenceDto, ParagraphDto } from 'app/models/Api';
                 selector       : 'app-sentence-editor',
                 template       : `
                     <app-container *ngIf="paragraph">
+                        <div>
+                            <app-primary-button
+                                label="Process with AI"
+                                [icon]="icon.Add"
+                                appButton
+                                (click)="processWithAi()"
+                            ></app-primary-button>
+                        </div>
                         <mat-card>
                             <div
                                 [innerHTML]="displayText"
@@ -144,6 +152,9 @@ export class SentenceEditorComponent implements OnInit {
     @Output()
     onTranslationSubmitted: EventEmitter<{ sentences: CreateSentenceDto[], id: string }> = new EventEmitter();
 
+    @Output()
+    onProcessWithAiClicked: EventEmitter<string> = new EventEmitter();
+
     displayText!: SafeHtml;
     sentences: CreateSentenceDto[] = [];
     selectedSentence: CreateSentenceDto | null = null;
@@ -176,6 +187,10 @@ export class SentenceEditorComponent implements OnInit {
                                                              orig       : '',
                                                              translation: ''
                                                          } );
+    }
+
+    processWithAi() {
+        this.onProcessWithAiClicked.emit( this.paragraph.id );
     }
 
     submitTranslation() {

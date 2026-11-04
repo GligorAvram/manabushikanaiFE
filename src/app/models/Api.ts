@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -10,406 +11,481 @@
  */
 
 export interface Error {
-  /** @format int32 */
-  status?: number;
-  message?: string;
-  fieldErrors?: FieldError[];
+    /** @format int32 */
+    status?: number;
+    message?: string;
+    fieldErrors?: FieldError[];
 }
 
 export interface FieldError {
-  codes?: string[];
-  arguments?: object[];
-  defaultMessage?: string;
-  objectName?: string;
-  field?: string;
-  rejectedValue?: object;
-  bindingFailure?: boolean;
-  code?: string;
+    codes?: string[];
+    arguments?: object[];
+    defaultMessage?: string;
+    objectName?: string;
+    field?: string;
+    rejectedValue?: object;
+    bindingFailure?: boolean;
+    code?: string;
 }
 
 export interface CreateStoryDto {
-  /**
-   * @minLength 3
-   * @maxLength 2147483647
-   */
-  name: string;
-  /**
-   * @minLength 3
-   * @maxLength 2147483647
-   */
-  japaneseName: string;
-  description?: string;
-  storyOrigin?: string;
-  japaneseDescription?: string;
-  difficulty: StoryDifficultyEnum;
+    /**
+     * @minLength 3
+     * @maxLength 2147483647
+     */
+    name: string;
+    /**
+     * @minLength 3
+     * @maxLength 2147483647
+     */
+    japaneseName: string;
+    difficulty: StoryDifficultyEnum;
+    fileId?: string;
+    thumbnailId?: string;
+    description?: string;
+    storyOrigin?: string;
+    japaneseDescription?: string;
 }
 
 export enum StoryDifficultyEnum {
-  EASIEST = "EASIEST",
-  EASY = "EASY",
-  MEDIUM = "MEDIUM",
-  DIFFICULT = "DIFFICULT",
-  CHALLENGING = "CHALLENGING",
+    EASIEST     = 'EASIEST',
+    EASY        = 'EASY',
+    MEDIUM      = 'MEDIUM',
+    DIFFICULT   = 'DIFFICULT',
+    CHALLENGING = 'CHALLENGING',
 }
 
 export interface StoryDto {
-  /** @format uuid */
-  id: string;
-  name: string;
-  japaneseName: string;
-  description?: string;
-  japaneseDescription?: string;
-  storyOrigin?: string;
-  published: "true" | "false";
-  difficulty: StoryDifficultyEnum;
-  image: string[];
+    /** @format uuid */
+    id: string;
+    name: string;
+    japaneseName: string;
+    published: 'true' | 'false';
+    difficulty: StoryDifficultyEnum;
+    description?: string;
+    japaneseDescription?: string;
+    storyOrigin?: string;
+    thumbnailPath?: string;
+}
+
+export enum FileTypeEnum {
+    THUMBNAIL = 'THUMBNAIL',
+    STORY     = 'STORY',
+}
+
+export interface UploadFileDto {
+    fileName?: string;
+    /** @format uuid */
+    id?: string;
+    fileType: FileTypeEnum;
+}
+
+export interface FileDto {
+    /** @format uuid */
+    id?: string;
+    name?: string;
+    type?: string;
 }
 
 export interface CreateDictionaryWordDto {
-  dictionaryWord: string;
-  englishTranslation: string;
-  japaneseDefinition: string;
-  kana: string;
-  pitchAccent: PitchAccentEnum;
-  observation?: string;
-  isSetPhrase?: boolean;
-  alternativeWritings?: string[];
+    dictionaryWord: string;
+    englishTranslation: string;
+    japaneseDefinition: string;
+    kana: string;
+    pitchAccent: PitchAccentEnum;
+    observation?: string;
+    isSetPhrase?: boolean;
+    alternativeWritings?: string[];
 }
 
 export enum PitchAccentEnum {
-  NONE = "NONE",
-  HEIBAN = "HEIBAN",
-  ATAMADAKA = "ATAMADAKA",
-  NAKADAKA2 = "NAKADAKA2",
-  NAKADAKA3 = "NAKADAKA3",
-  NAKADAKA4 = "NAKADAKA4",
-  NAKADAKA5 = "NAKADAKA5",
-  NAKADAKA6 = "NAKADAKA6",
-  NAKADAKA7 = "NAKADAKA7",
-  NAKADAKA8 = "NAKADAKA8",
-  OODAKA = "OODAKA",
+    NONE      = 'NONE',
+    HEIBAN    = 'HEIBAN',
+    ATAMADAKA = 'ATAMADAKA',
+    NAKADAKA2 = 'NAKADAKA2',
+    NAKADAKA3 = 'NAKADAKA3',
+    NAKADAKA4 = 'NAKADAKA4',
+    NAKADAKA5 = 'NAKADAKA5',
+    NAKADAKA6 = 'NAKADAKA6',
+    NAKADAKA7 = 'NAKADAKA7',
+    NAKADAKA8 = 'NAKADAKA8',
+    OODAKA    = 'OODAKA',
 }
 
 export interface AlternativeWritingDto {
-  /** @format uuid */
-  id: string;
-  alternativeWriting: string;
+    /** @format uuid */
+    id: string;
+    alternativeWriting: string;
 }
 
 export interface DictionaryWordDto {
-  id: string;
-  dictionaryForm: string;
-  englishTranslation: string;
-  kana: string;
-  japaneseDefinition: string;
-  isSetPhrase?: boolean;
-  pitchAccent: PitchAccentEnum;
-  observation?: string;
-  alternativeWritings?: AlternativeWritingDto[];
+    id: string;
+    dictionaryForm: string;
+    englishTranslation: string;
+    kana: string;
+    japaneseDefinition: string;
+    isSetPhrase?: boolean;
+    pitchAccent: PitchAccentEnum;
+    observation?: string;
+    alternativeWritings?: AlternativeWritingDto[];
 }
 
 export interface CreateWordTranslationDto {
-  originalWord: string;
-  dictionaryWordId: string;
-  /**
-   * @format int32
-   * @min 0
-   */
-  order: number;
-  wordKanji?: string;
-  /**
-   * @minLength 1
-   * @maxLength 2147483647
-   */
-  wordKana: string;
-  observation?: string;
+    originalWord: string;
+    dictionaryWordId: string;
+    /**
+     * @format int32
+     * @min 0
+     */
+    order: number;
+    wordKanji?: string;
+    /**
+     * @minLength 1
+     * @maxLength 2147483647
+     */
+    wordKana: string;
+    observation?: string;
 }
 
 export interface CreateWordTranslationForParagraphDto {
-  paragraphId: string;
-  words: CreateWordTranslationDto[];
+    paragraphId: string;
+    words: CreateWordTranslationDto[];
 }
 
 export interface ParagraphDto {
-  /** @format uuid */
-  id: string;
-  originalParagraph: string;
-  /** @format int32 */
-  orderInStory: number;
-  translationDone: boolean;
-  wordsDone: boolean;
-  sentences?: SentenceDto[];
-  /** @format uuid */
-  storyId?: string;
-  words?: WordDto[];
+    /** @format uuid */
+    id: string;
+    originalParagraph: string;
+    /** @format int32 */
+    orderInStory: number;
+    translationDone: boolean;
+    wordsDone: boolean;
+    sentences?: SentenceDto[];
+    /** @format uuid */
+    storyId?: string;
+    words?: WordDto[];
 }
 
 export interface SentenceDto {
-  /** @format uuid */
-  id: string;
-  japaneseSentence: string;
-  englishTranslation: string;
-  /** @format uuid */
-  paragraphId: string;
-  /** @format int32 */
-  order: number;
+    /** @format uuid */
+    id: string;
+    japaneseSentence: string;
+    englishTranslation: string;
+    /** @format uuid */
+    paragraphId: string;
+    /** @format int32 */
+    order: number;
 }
 
 export interface WordDto {
-  id: string;
-  translation: DictionaryWordDto;
-  /** @format int32 */
-  order: number;
-  originalWord: string;
-  wordKanji?: string;
-  wordKana: string;
-  englishTranslation: string;
-  observation?: string;
+    id: string;
+    translation: DictionaryWordDto;
+    /** @format int32 */
+    order: number;
+    originalWord: string;
+    wordKanji?: string;
+    wordKana: string;
+    englishTranslation: string;
+    observation?: string;
 }
 
 export interface CreateParagraphTranslationDto {
-  id: string;
-  sentences?: CreateSentenceDto[];
+    id: string;
+    sentences?: CreateSentenceDto[];
 }
 
 export interface CreateSentenceDto {
-  japaneseSentence: string;
-  englishTranslation: string;
-  /** @format int32 */
-  order: number;
+    japaneseSentence: string;
+    englishTranslation: string;
+    /** @format int32 */
+    order: number;
 }
 
 export interface PageableDto {
-  /** @format int32 */
-  pageNumber?: number;
-  /** @format int32 */
-  pageSize?: number;
-  sort?: "ASCENDING" | "DESCENDING";
+    /** @format int32 */
+    pageNumber?: number;
+    /** @format int32 */
+    pageSize?: number;
+    sort?: 'ASCENDING' | 'DESCENDING';
 }
 
 export interface PaginatedParagraphDto {
-  /** @format int64 */
-  totalItems?: number;
-  /** @format int32 */
-  currentPage?: number;
-  /** @format int32 */
-  totalPages?: number;
-  paragraphs?: ParagraphDto[];
+    /** @format int64 */
+    totalItems?: number;
+    /** @format int32 */
+    currentPage?: number;
+    /** @format int32 */
+    totalPages?: number;
+    paragraphs?: ParagraphDto[];
 }
 
 export interface HttpErrorDto {
-  message: string;
-  error: Record<string, string>;
+    message: string;
+    error: Record<string, string>;
 }
 
 export type QueryParamsType = Record<string | number, any>;
-export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
+export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
 
-export interface FullRequestParams extends Omit<RequestInit, "body"> {
-  /** set parameter to `true` for call `securityWorker` for this request */
-  secure?: boolean;
-  /** request path */
-  path: string;
-  /** content type of request body */
-  type?: ContentType;
-  /** query params */
-  query?: QueryParamsType;
-  /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseFormat;
-  /** request body */
-  body?: unknown;
-  /** base url */
-  baseUrl?: string;
-  /** request cancellation token */
-  cancelToken?: CancelToken;
+export interface FullRequestParams extends Omit<RequestInit, 'body'> {
+    /** set parameter to `true` for call `securityWorker` for this request */
+    secure?: boolean;
+    /** request path */
+    path: string;
+    /** content type of request body */
+    type?: ContentType;
+    /** query params */
+    query?: QueryParamsType;
+    /** format of response (i.e. response.json() -> format: "json") */
+    format?: ResponseFormat;
+    /** request body */
+    body?: unknown;
+    /** base url */
+    baseUrl?: string;
+    /** request cancellation token */
+    cancelToken?: CancelToken;
 }
 
-export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
 
 export interface ApiConfig<SecurityDataType = unknown> {
-  baseUrl?: string;
-  baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
-  securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void;
-  customFetch?: typeof fetch;
+    baseUrl?: string;
+    baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>;
+    securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void;
+    customFetch?: typeof fetch;
 }
 
 export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
-  data: D;
-  error: E;
+    data: D;
+    error: E;
 }
 
 type CancelToken = Symbol | string | number;
 
 export enum ContentType {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+    Json       = 'application/json',
+    FormData   = 'multipart/form-data',
+    UrlEncoded = 'application/x-www-form-urlencoded',
+    Text       = 'text/plain',
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8080/api/v1";
-  private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
-  private abortControllers = new Map<CancelToken, AbortController>();
-  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams);
+    public baseUrl: string = 'http://localhost:8080/api/v1';
+    private securityData: SecurityDataType | null = null;
+    private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
+    private abortControllers = new Map<CancelToken, AbortController>();
+    private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch( ...fetchParams );
 
-  private baseApiParams: RequestParams = {
-    credentials: "same-origin",
-    headers: {},
-    redirect: "follow",
-    referrerPolicy: "no-referrer",
-  };
-
-  constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
-    Object.assign(this, apiConfig);
-  }
-
-  public setSecurityData = (data: SecurityDataType | null) => {
-    this.securityData = data;
-  };
-
-  protected encodeQueryParam(key: string, value: any) {
-    const encodedKey = encodeURIComponent(key);
-    return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
-  }
-
-  protected addQueryParam(query: QueryParamsType, key: string) {
-    return this.encodeQueryParam(key, query[key]);
-  }
-
-  protected addArrayQueryParam(query: QueryParamsType, key: string) {
-    const value = query[key];
-    return value.map((v: any) => this.encodeQueryParam(key, v)).join("&");
-  }
-
-  protected toQueryString(rawQuery?: QueryParamsType): string {
-    const query = rawQuery || {};
-    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
-    return keys
-      .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
-      .join("&");
-  }
-
-  protected addQueryParams(rawQuery?: QueryParamsType): string {
-    const queryString = this.toQueryString(rawQuery);
-    return queryString ? `?${queryString}` : "";
-  }
-
-  private contentFormatters: Record<ContentType, (input: any) => any> = {
-    [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string") ? JSON.stringify(input) : input,
-    [ContentType.Text]: (input: any) => (input !== null && typeof input !== "string" ? JSON.stringify(input) : input),
-    [ContentType.FormData]: (input: any) =>
-      Object.keys(input || {}).reduce((formData, key) => {
-        const property = input[key];
-        formData.append(
-          key,
-          property instanceof Blob
-            ? property
-            : typeof property === "object" && property !== null
-            ? JSON.stringify(property)
-            : `${property}`,
-        );
-        return formData;
-      }, new FormData()),
-    [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
-  };
-
-  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
-    return {
-      ...this.baseApiParams,
-      ...params1,
-      ...(params2 || {}),
-      headers: {
-        ...(this.baseApiParams.headers || {}),
-        ...(params1.headers || {}),
-        ...((params2 && params2.headers) || {}),
-      },
+    private baseApiParams: RequestParams = {
+        credentials   : 'same-origin',
+        headers       : {},
+        redirect      : 'follow',
+        referrerPolicy: 'no-referrer'
     };
-  }
 
-  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
-    if (this.abortControllers.has(cancelToken)) {
-      const abortController = this.abortControllers.get(cancelToken);
-      if (abortController) {
+    constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
+        Object.assign( this, apiConfig );
+    }
+
+    public setSecurityData = (data: SecurityDataType | null) => {
+        this.securityData = data;
+    };
+
+    protected encodeQueryParam(key: string, value: any) {
+        const encodedKey = encodeURIComponent( key );
+        return `${ encodedKey }=${ encodeURIComponent( typeof value === 'number'
+                                                       ? value
+                                                       : `${ value }` ) }`;
+    }
+
+    protected addQueryParam(query: QueryParamsType, key: string) {
+        return this.encodeQueryParam( key, query[key] );
+    }
+
+    protected addArrayQueryParam(query: QueryParamsType, key: string) {
+        const value = query[key];
+        return value.map( (v: any) => this.encodeQueryParam( key, v ) )
+                    .join( '&' );
+    }
+
+    protected toQueryString(rawQuery?: QueryParamsType): string {
+        const query = rawQuery || {};
+        const keys = Object.keys( query )
+                           .filter( (key) => 'undefined' !== typeof query[key] );
+        return keys
+            .map( (key) => (
+                Array.isArray( query[key] )
+                ? this.addArrayQueryParam( query, key )
+                : this.addQueryParam( query, key )
+            ) )
+            .join( '&' );
+    }
+
+    protected addQueryParams(rawQuery?: QueryParamsType): string {
+        const queryString = this.toQueryString( rawQuery );
+        return queryString
+               ? `?${ queryString }`
+               : '';
+    }
+
+    private contentFormatters: Record<ContentType, (input: any) => any> = {
+        [ContentType.Json]      : (input: any) =>
+            input !== null && (
+                typeof input === 'object' || typeof input === 'string'
+            )
+            ? JSON.stringify( input )
+            : input,
+        [ContentType.Text]      : (input: any) => (
+            input !== null && typeof input !== 'string'
+            ? JSON.stringify( input )
+            : input
+        ),
+        [ContentType.FormData]  : (input: any) =>
+            Object.keys( input || {} )
+                  .reduce( (formData, key) => {
+                      const property = input[key];
+                      formData.append(
+                          key,
+                          property instanceof Blob
+                          ? property
+                          : typeof property === 'object' && property !== null
+                            ? JSON.stringify( property )
+                            : `${ property }`
+                      );
+                      return formData;
+                  }, new FormData() ),
+        [ContentType.UrlEncoded]: (input: any) => this.toQueryString( input )
+    };
+
+    protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
+        return {
+            ...this.baseApiParams,
+            ...params1,
+            ...(
+                params2 || {}
+            ),
+            headers: {
+                ...(
+                    this.baseApiParams.headers || {}
+                ),
+                ...(
+                    params1.headers || {}
+                ),
+                ...(
+                    (
+                        params2 && params2.headers
+                    ) || {}
+                )
+            }
+        };
+    }
+
+    protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+        if( this.abortControllers.has( cancelToken ) ) {
+            const abortController = this.abortControllers.get( cancelToken );
+            if( abortController ) {
+                return abortController.signal;
+            }
+            return void 0;
+        }
+
+        const abortController = new AbortController();
+        this.abortControllers.set( cancelToken, abortController );
         return abortController.signal;
-      }
-      return void 0;
-    }
+    };
 
-    const abortController = new AbortController();
-    this.abortControllers.set(cancelToken, abortController);
-    return abortController.signal;
-  };
+    public abortRequest = (cancelToken: CancelToken) => {
+        const abortController = this.abortControllers.get( cancelToken );
 
-  public abortRequest = (cancelToken: CancelToken) => {
-    const abortController = this.abortControllers.get(cancelToken);
+        if( abortController ) {
+            abortController.abort();
+            this.abortControllers.delete( cancelToken );
+        }
+    };
 
-    if (abortController) {
-      abortController.abort();
-      this.abortControllers.delete(cancelToken);
-    }
-  };
+    public request = async <T = any, E = any>({
+                                                  body,
+                                                  secure,
+                                                  path,
+                                                  type,
+                                                  query,
+                                                  format,
+                                                  baseUrl,
+                                                  cancelToken,
+                                                  ...params
+                                              }: FullRequestParams): Promise<HttpResponse<T, E>> => {
+        const secureParams =
+                  (
+                      (
+                          typeof secure === 'boolean'
+                          ? secure
+                          : this.baseApiParams.secure
+                      ) &&
+                      this.securityWorker &&
+                      (
+                          await this.securityWorker( this.securityData )
+                      )
+                  ) ||
+                  {};
+        const requestParams = this.mergeRequestParams( params, secureParams );
+        const queryString = query && this.toQueryString( query );
+        const payloadFormatter = this.contentFormatters[type || ContentType.Json];
+        const responseFormat = format || requestParams.format;
 
-  public request = async <T = any, E = any>({
-    body,
-    secure,
-    path,
-    type,
-    query,
-    format,
-    baseUrl,
-    cancelToken,
-    ...params
-  }: FullRequestParams): Promise<HttpResponse<T, E>> => {
-    const secureParams =
-      ((typeof secure === "boolean" ? secure : this.baseApiParams.secure) &&
-        this.securityWorker &&
-        (await this.securityWorker(this.securityData))) ||
-      {};
-    const requestParams = this.mergeRequestParams(params, secureParams);
-    const queryString = query && this.toQueryString(query);
-    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
-    const responseFormat = format || requestParams.format;
+        return this.customFetch( `${ baseUrl || this.baseUrl || '' }${ path }${ queryString
+                                                                                ? `?${ queryString }`
+                                                                                : '' }`, {
+                                     ...requestParams,
+                                     headers: {
+                                         ...(
+                                             requestParams.headers || {}
+                                         ),
+                                         ...(
+                                             type && type !== ContentType.FormData
+                                             ? { 'Content-Type': type }
+                                             : {}
+                                         )
+                                     },
+                                     signal : (
+                                         cancelToken
+                                         ? this.createAbortSignal( cancelToken )
+                                         : requestParams.signal
+                                     ) || null,
+                                     body   : typeof body === 'undefined' || body === null
+                                              ? null
+                                              : payloadFormatter( body )
+                                 } )
+                   .then( async (response) => {
+                       const r = response as HttpResponse<T, E>;
+                       r.data = null as unknown as T;
+                       r.error = null as unknown as E;
 
-    return this.customFetch(`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`, {
-      ...requestParams,
-      headers: {
-        ...(requestParams.headers || {}),
-        ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
-      },
-      signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
-      body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
-    }).then(async (response) => {
-      const r = response as HttpResponse<T, E>;
-      r.data = null as unknown as T;
-      r.error = null as unknown as E;
+                       const data = !responseFormat
+                                    ? r
+                                    : await response[responseFormat]()
+                               .then( (data) => {
+                                   if( r.ok ) {
+                                       r.data = data;
+                                   } else {
+                                       r.error = data;
+                                   }
+                                   return r;
+                               } )
+                               .catch( (e) => {
+                                   r.error = e;
+                                   return r;
+                               } );
 
-      const data = !responseFormat
-        ? r
-        : await response[responseFormat]()
-            .then((data) => {
-              if (r.ok) {
-                r.data = data;
-              } else {
-                r.error = data;
-              }
-              return r;
-            })
-            .catch((e) => {
-              r.error = e;
-              return r;
-            });
+                       if( cancelToken ) {
+                           this.abortControllers.delete( cancelToken );
+                       }
 
-      if (cancelToken) {
-        this.abortControllers.delete(cancelToken);
-      }
-
-      if (!response.ok) throw data;
-      return data;
-    });
-  };
+                       if( !response.ok ) {
+                           throw data;
+                       }
+                       return data;
+                   } );
+    };
 }
 
 /**
@@ -417,235 +493,299 @@ export class HttpClient<SecurityDataType = unknown> {
  * @baseUrl http://localhost:8080/api/v1
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  writer = {
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name GetAllStories
-     * @request GET:/writer/stories
-     */
-    getAllStories: (
-      query: {
-        published?: "true" | "false";
-        pageable: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<StoryDto[], Error>({
-        path: `/writer/stories`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
+    writer = {
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name GetAllStories
+         * @request GET:/writer/stories
+         */
+        getAllStories: (
+            query: {
+                published?: 'true' | 'false';
+                pageable: PageableDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<StoryDto[], Error>( {
+                                                 path  : `/writer/stories`,
+                                                 method: 'GET',
+                                                 query : query,
+                                                 format: 'json',
+                                                 ...params
+                                             } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name CreateStory
-     * @request POST:/writer/stories
-     */
-    createStory: (
-      data: {
-        /** @format binary */
-        file: File;
-        /** @format binary */
-        image: File;
-        storyData: CreateStoryDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<StoryDto, Error>({
-        path: `/writer/stories`,
-        method: "POST",
-        body: data,
-        type: ContentType.FormData,
-        format: "json",
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name CreateStory
+         * @request POST:/writer/stories
+         */
+        createStory: (
+            data: {
+                /** @format binary */
+                file: File;
+                storyData: CreateStoryDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<StoryDto, Error>( {
+                                               path  : `/writer/stories`,
+                                               method: 'POST',
+                                               body  : data,
+                                               type  : ContentType.FormData,
+                                               format: 'json',
+                                               ...params
+                                           } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name PublishStory
-     * @request POST:/writer/stories/{id}/publish
-     */
-    publishStory: (id: string, params: RequestParams = {}) =>
-      this.request<StoryDto, Error>({
-        path: `/writer/stories/${id}/publish`,
-        method: "POST",
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name PublishStory
+         * @request POST:/writer/stories/{id}/publish
+         */
+        publishStory: (id: string, params: RequestParams = {}) =>
+            this.request<StoryDto, Error>( {
+                                               path  : `/writer/stories/${ id }/publish`,
+                                               method: 'POST',
+                                               ...params
+                                           } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name CreateDictionaryWord
-     * @request POST:/writer/dictionary
-     */
-    createDictionaryWord: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
-      this.request<DictionaryWordDto, Error>({
-        path: `/writer/dictionary`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name ProcessWordsWithAi
+         * @request POST:/writer/stories/ai/{id}/words
+         */
+        processWordsWithAi: (id: string, params: RequestParams = {}) =>
+            this.request<Record<string, string>, Error>( {
+                                                             path  : `/writer/stories/ai/${ id }/words`,
+                                                             method: 'POST',
+                                                             ...params
+                                                         } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name CreateWordTranslationForParagraph
-     * @request PATCH:/writer/stories/translations/words
-     */
-    createWordTranslationForParagraph: (data: CreateWordTranslationForParagraphDto, params: RequestParams = {}) =>
-      this.request<ParagraphDto, Error>({
-        path: `/writer/stories/translations/words`,
-        method: "PATCH",
-        body: data,
-        type: ContentType.Json,
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name ProcessSentencesWithAi
+         * @request POST:/writer/stories/ai/{id}/sentences
+         */
+        processSentencesWithAi: (id: string, params: RequestParams = {}) =>
+            this.request<Record<string, string>, Error>( {
+                                                             path  : `/writer/stories/ai/${ id }/sentences`,
+                                                             method: 'POST',
+                                                             ...params
+                                                         } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name AddParagraphTranslation
-     * @request PATCH:/writer/stories/translations/sentences
-     */
-    addParagraphTranslation: (data: CreateParagraphTranslationDto, params: RequestParams = {}) =>
-      this.request<ParagraphDto, Error>({
-        path: `/writer/stories/translations/sentences`,
-        method: "PATCH",
-        body: data,
-        type: ContentType.Json,
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name UploadFile
+         * @request POST:/writer/files
+         */
+        uploadFile: (
+            data: {
+                /** @format binary */
+                file: File;
+                uploadFileDto: UploadFileDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<FileDto, Error>( {
+                                              path  : `/writer/files`,
+                                              method: 'POST',
+                                              body  : data,
+                                              type  : ContentType.FormData,
+                                              format: 'json',
+                                              ...params
+                                          } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name GetStoryById
-     * @request GET:/writer/stories/{id}
-     */
-    getStoryById: (id: string, params: RequestParams = {}) =>
-      this.request<StoryDto, Error>({
-        path: `/writer/stories/${id}`,
-        method: "GET",
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name CreateDictionaryWord
+         * @request POST:/writer/dictionary
+         */
+        createDictionaryWord: (data: CreateDictionaryWordDto, params: RequestParams = {}) =>
+            this.request<DictionaryWordDto, Error>( {
+                                                        path  : `/writer/dictionary`,
+                                                        method: 'POST',
+                                                        body  : data,
+                                                        type  : ContentType.Json,
+                                                        ...params
+                                                    } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name GetParagraphsForStory
-     * @request GET:/writer/stories/{id}/paragraphs
-     */
-    getParagraphsForStory: (
-      id: string,
-      query: {
-        dto: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<PaginatedParagraphDto, Error>({
-        path: `/writer/stories/${id}/paragraphs`,
-        method: "GET",
-        query: query,
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name CreateWordTranslationForParagraph
+         * @request PATCH:/writer/stories/translations/words
+         */
+        createWordTranslationForParagraph: (data: CreateWordTranslationForParagraphDto, params: RequestParams = {}) =>
+            this.request<ParagraphDto, Error>( {
+                                                   path  : `/writer/stories/translations/words`,
+                                                   method: 'PATCH',
+                                                   body  : data,
+                                                   type  : ContentType.Json,
+                                                   ...params
+                                               } ),
 
-    /**
-     * No description
-     *
-     * @tags writer-controller
-     * @name GetTranslationForWord
-     * @request GET:/writer/dictionary/{word}
-     */
-    getTranslationForWord: (word: string, params: RequestParams = {}) =>
-      this.request<DictionaryWordDto[], Error>({
-        path: `/writer/dictionary/${word}`,
-        method: "GET",
-        ...params,
-      }),
-  };
-  reader = {
-    /**
-     * No description
-     *
-     * @tags reader-controller
-     * @name GetAllStories1
-     * @request GET:/reader/stories
-     */
-    getAllStories1: (
-      query: {
-        pageable: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<StoryDto[], Error>({
-        path: `/reader/stories`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name AddParagraphTranslation
+         * @request PATCH:/writer/stories/translations/sentences
+         */
+        addParagraphTranslation: (data: CreateParagraphTranslationDto, params: RequestParams = {}) =>
+            this.request<ParagraphDto, Error>( {
+                                                   path  : `/writer/stories/translations/sentences`,
+                                                   method: 'PATCH',
+                                                   body  : data,
+                                                   type  : ContentType.Json,
+                                                   ...params
+                                               } ),
 
-    /**
-     * No description
-     *
-     * @tags reader-controller
-     * @name GetStoryById1
-     * @request GET:/reader/stories/{id}
-     */
-    getStoryById1: (id: string, params: RequestParams = {}) =>
-      this.request<StoryDto, Error>({
-        path: `/reader/stories/${id}`,
-        method: "GET",
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name GetStoryById
+         * @request GET:/writer/stories/{id}
+         */
+        getStoryById: (id: string, params: RequestParams = {}) =>
+            this.request<StoryDto, Error>( {
+                                               path  : `/writer/stories/${ id }`,
+                                               method: 'GET',
+                                               ...params
+                                           } ),
 
-    /**
-     * No description
-     *
-     * @tags reader-controller
-     * @name GetParagraphsForStory1
-     * @request GET:/reader/stories/{id}/paragraphs
-     */
-    getParagraphsForStory1: (
-      id: string,
-      query: {
-        dto: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<PaginatedParagraphDto, Error>({
-        path: `/reader/stories/${id}/paragraphs`,
-        method: "GET",
-        query: query,
-        ...params,
-      }),
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name DeleteStoryById
+         * @request DELETE:/writer/stories/{id}
+         */
+        deleteStoryById: (id: string, params: RequestParams = {}) =>
+            this.request<boolean, Error>( {
+                                              path  : `/writer/stories/${ id }`,
+                                              method: 'DELETE',
+                                              ...params
+                                          } ),
 
-    /**
-     * No description
-     *
-     * @tags reader-controller
-     * @name GetTranslationForWord1
-     * @request GET:/reader/dictionary/{word}
-     */
-    getTranslationForWord1: (word: string, params: RequestParams = {}) =>
-      this.request<DictionaryWordDto[], Error>({
-        path: `/reader/dictionary/${word}`,
-        method: "GET",
-        ...params,
-      }),
-  };
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name GetParagraphsForStory
+         * @request GET:/writer/stories/{id}/paragraphs
+         */
+        getParagraphsForStory: (
+            id: string,
+            query: {
+                dto: PageableDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<PaginatedParagraphDto, Error>( {
+                                                            path  : `/writer/stories/${ id }/paragraphs`,
+                                                            method: 'GET',
+                                                            query : query,
+                                                            ...params
+                                                        } ),
+
+        /**
+         * No description
+         *
+         * @tags writer-controller
+         * @name GetTranslationForWord
+         * @request GET:/writer/dictionary/{word}
+         */
+        getTranslationForWord: (word: string, params: RequestParams = {}) =>
+            this.request<DictionaryWordDto[], Error>( {
+                                                          path  : `/writer/dictionary/${ word }`,
+                                                          method: 'GET',
+                                                          ...params
+                                                      } )
+    };
+    reader = {
+        /**
+         * No description
+         *
+         * @tags reader-controller
+         * @name GetAllStories1
+         * @request GET:/reader/stories
+         */
+        getAllStories1: (
+            query: {
+                pageable: PageableDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<StoryDto[], Error>( {
+                                                 path  : `/reader/stories`,
+                                                 method: 'GET',
+                                                 query : query,
+                                                 format: 'json',
+                                                 ...params
+                                             } ),
+
+        /**
+         * No description
+         *
+         * @tags reader-controller
+         * @name GetStoryById1
+         * @request GET:/reader/stories/{id}
+         */
+        getStoryById1: (id: string, params: RequestParams = {}) =>
+            this.request<StoryDto, Error>( {
+                                               path  : `/reader/stories/${ id }`,
+                                               method: 'GET',
+                                               ...params
+                                           } ),
+
+        /**
+         * No description
+         *
+         * @tags reader-controller
+         * @name GetParagraphsForStory1
+         * @request GET:/reader/stories/{id}/paragraphs
+         */
+        getParagraphsForStory1: (
+            id: string,
+            query: {
+                dto: PageableDto;
+            },
+            params: RequestParams = {}
+        ) =>
+            this.request<PaginatedParagraphDto, Error>( {
+                                                            path  : `/reader/stories/${ id }/paragraphs`,
+                                                            method: 'GET',
+                                                            query : query,
+                                                            ...params
+                                                        } ),
+
+        /**
+         * No description
+         *
+         * @tags reader-controller
+         * @name GetTranslationForWord1
+         * @request GET:/reader/dictionary/{word}
+         */
+        getTranslationForWord1: (word: string, params: RequestParams = {}) =>
+            this.request<DictionaryWordDto[], Error>( {
+                                                          path  : `/reader/dictionary/${ word }`,
+                                                          method: 'GET',
+                                                          ...params
+                                                      } ),
+    };
 }

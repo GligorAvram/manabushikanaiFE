@@ -15,7 +15,7 @@ import { CreateStoryDto, StoryDifficultyEnum } from 'app/models/Api';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { of } from 'rxjs';
 
-export type CreateStoryWithFile = CreateStoryDto & { file: File, image: File }
+export type CreateStoryWithFiles = CreateStoryDto & { file: File, image: File }
 
 @Component( {
                 selector  : 'app-story-create-modal-form',
@@ -113,10 +113,10 @@ export type CreateStoryWithFile = CreateStoryDto & { file: File, image: File }
                 ]
             } )
 @UntilDestroy()
-export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithFile> {
+export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithFiles> {
     override initialValues?: null | undefined;
     override loading: boolean = false;
-    override onSubmit: SubmitFn<CreateStoryWithFile>;
+    override onSubmit: SubmitFn<CreateStoryWithFiles>;
     protected readonly DifficultyEnum = StoryDifficultyEnum;
 
     constructor(
@@ -149,7 +149,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
         return this;
     }
 
-    protected override formFields(): FormFields<CreateStoryWithFile> {
+    protected override formFields(): FormFields<CreateStoryWithFiles> {
         return {
             name               : '',
             japaneseName       : '',
@@ -157,6 +157,8 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             japaneseDescription: '',
             storyOrigin        : '',
             difficulty         : StoryDifficultyEnum.EASIEST,
+            fileId             : '',
+            thumbnailId        : '',
             file               : [],
             image              : []
         };

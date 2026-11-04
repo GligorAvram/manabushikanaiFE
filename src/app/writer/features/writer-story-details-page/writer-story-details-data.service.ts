@@ -37,6 +37,14 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
     this.writerActions.submitTranslationForSentence(paragraphTranslation);
   }
 
+  generateSentenceTranslationWithAI(paragraphId: string) {
+    this.writerActions.generateSentenceTranslationWithAI(paragraphId);
+  }
+
+  generateWordTranslationWithAI(paragraphId: string) {
+    this.writerActions.generateWordTranslationWithAI(paragraphId);
+  }
+
   getTranslationForWord(word: string) {
     this.writerActions.getTranslationForWord(word);
   }

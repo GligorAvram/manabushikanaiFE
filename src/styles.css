@@ -12,3 +12,8 @@
     --mdc-snackbar-supporting-text-color: white;
 }
 
+.mat-mdc-button-touch-target {
+    max-width: 0;
+    max-height: 0;
+}
+
