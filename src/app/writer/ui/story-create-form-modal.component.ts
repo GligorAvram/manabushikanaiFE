@@ -157,8 +157,6 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             japaneseDescription: '',
             storyOrigin        : '',
             difficulty         : StoryDifficultyEnum.EASIEST,
-            fileId             : '',
-            thumbnailId        : '',
             file               : [],
             image              : []
         };

@@ -1,7 +1,7 @@
 import {Query} from "@datorama/akita";
 import {BaseState} from "./base.state";
 import {BaseStore} from "./store.models";
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 
 
 export class BaseQuery<S extends BaseState> extends Query<S> {
@@ -10,6 +10,6 @@ export class BaseQuery<S extends BaseState> extends Query<S> {
   }
 
   selectSuccess(): Observable<boolean> {
-    return of(true);
+    return this.select((state) => state.success);
   }
 }

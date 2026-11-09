@@ -1,10 +1,14 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Error, HttpErrorDto } from '@models/Api';
+import { HttpErrorDto } from '@models/Api';
 import { MessageService } from '@shared/features/message/message.service';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ApiResult } from './api-result';
 import { BaseStore } from './store.models';
+
+function isHttpErrorDto(value: unknown): value is HttpErrorDto {
+  return typeof value === 'object' && value !== null && 'message' in value;
+}
 
 export class ApiService {
     private readonly messageService = inject( MessageService );
@@ -142,16 +146,16 @@ export class ApiService {
           successCb(result.data!, ...successCbExtraArgs);
         }
 
-        setTimeout(() => this.store.resetBaseState(), 200);
+        this.store.scheduleReset();
       }),
       catchError((err) => this.handleError<Return>(err)),
     );
   }
 
     private handleError<Return>(error: HttpErrorResponse): Observable<ApiResult<Return>> {
-        if( Error( error.error ) ) {
-            this.store.onError( error.error as HttpErrorDto | Error );
-            this.messageService.error( error.error as HttpErrorDto | Error );
+        if( isHttpErrorDto( error.error ) ) {
+            this.store.onError( error.error );
+            this.messageService.error( error.error );
     } else {
       this.store.setLoading(false);
             console.error( error.error );

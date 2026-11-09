@@ -1,11 +1,11 @@
 import { valueIsDefined, valueIsEmpty, valueIsNotEmpty } from '@shared/functions';
-import { Error, HttpErrorDto } from 'app/models/Api';
+import { HttpErrorDto } from 'app/models/Api';
 
 export class ApiResult<T> {
   readonly data?: T | null;
-    readonly error?: Error | HttpErrorDto;
+    readonly error?: HttpErrorDto;
 
-    constructor(payload: { data?: T; error?: HttpErrorDto | Error }) {
+    constructor(payload: { data?: T; error?: HttpErrorDto }) {
     this.data = valueIsEmpty(payload.error) ? payload.data : null;
     this.error = payload.error;
   }

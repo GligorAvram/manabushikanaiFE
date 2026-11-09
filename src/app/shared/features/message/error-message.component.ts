@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
-import { Error, HttpErrorDto } from '@models/Api';
+import { HttpErrorDto } from '@models/Api';
 
 @Component( {
                 selector       : 'app-error-message',
@@ -24,7 +24,7 @@ export class ErrorMessageComponent implements OnInit {
 
     errors: Record<string, string> | undefined;
 
-    constructor(@Inject( MAT_SNACK_BAR_DATA ) readonly error: HttpErrorDto | Error) {
+    constructor(@Inject( MAT_SNACK_BAR_DATA ) readonly error: HttpErrorDto) {
     }
 
     ngOnInit(): void {

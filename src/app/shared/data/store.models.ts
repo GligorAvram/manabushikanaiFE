@@ -1,9 +1,12 @@
 import { Store } from '@datorama/akita';
-import { Error, HttpErrorDto } from '@models/Api';
+import { HttpErrorDto } from '@models/Api';
 import { BaseState } from './base.state';
 
 export class BaseStore<State extends BaseState> extends Store<State> {
+  private resetTimer?: ReturnType<typeof setTimeout>;
+
   onRequestInit(): void {
+    this.clearResetTimer();
     this.update((state) => ({
       ...state,
       loading: true,
@@ -20,7 +23,7 @@ export class BaseStore<State extends BaseState> extends Store<State> {
     }
   }
 
-    onError(error: HttpErrorDto | Error): void {
+    onError(error: HttpErrorDto): void {
     this.setLoading(false);
     this.setError(error);
   }
@@ -30,11 +33,24 @@ export class BaseStore<State extends BaseState> extends Store<State> {
   }
 
   resetBaseState(): void {
+    this.resetTimer = undefined;
     this.update((state) => ({
       ...state,
       loading: false,
       success: false,
       error: null,
     }));
+  }
+
+  scheduleReset(delay: number = 200): void {
+    this.clearResetTimer();
+    this.resetTimer = setTimeout(() => this.resetBaseState(), delay);
+  }
+
+  private clearResetTimer(): void {
+    if (this.resetTimer !== undefined) {
+      clearTimeout(this.resetTimer);
+      this.resetTimer = undefined;
+    }
   }
 }

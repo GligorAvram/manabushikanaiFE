@@ -2,7 +2,13 @@ import { logAction } from "@datorama/akita";
 
 export function storeEvent(name: string): MethodDecorator {
     return function(target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor {
-        logAction( name );
+        const originalMethod = descriptor.value;
+
+        descriptor.value = function(this: unknown, ...args: any[]): unknown {
+            logAction( name );
+            return originalMethod.apply( this, args );
+        };
+
         return descriptor;
     };
 }
