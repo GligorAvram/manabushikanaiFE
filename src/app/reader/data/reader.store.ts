@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { StoreConfig } from '@datorama/akita';
 import { PaginatedParagraphDto, StoryDto } from '@models/Api';
 import { BaseState } from '@shared/data/base.state';
 import { StoreNameEnum } from '@shared/data/store.constants';
@@ -18,15 +17,15 @@ const createInitialState = (): ReaderState => (
         activeStory: null,
         paragraphs : null,
         success    : false,
-        loading    : false
+        loading    : false,
+        error      : null
     }
 );
 
 @Injectable()
-@StoreConfig( { name: StoreNameEnum.Reader } )
 export class ReaderStore extends BaseStore<ReaderState> {
     constructor() {
-        super( createInitialState() );
+        super( StoreNameEnum.Reader, createInitialState() );
     }
 
     @storeEvent( 'Story list loaded' )

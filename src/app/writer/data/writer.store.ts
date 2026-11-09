@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {StoreConfig} from '@datorama/akita';
 import {BaseState} from '@shared/data/base.state';
 import {StoreNameEnum} from '@shared/data/store.constants';
 import {storeEvent} from '@shared/data/store.decorators';
@@ -20,13 +19,13 @@ const createInitialState = (): WriterState => ({
   activeStory: null,
   success: false,
   loading: false,
+  error: null,
 });
 
 @Injectable()
-@StoreConfig({ name: StoreNameEnum.Writer })
 export class WriterStore extends BaseStore<WriterState> {
   constructor() {
-    super(createInitialState());
+    super(StoreNameEnum.Writer, createInitialState());
   }
 
   @storeEvent('Story list loaded')

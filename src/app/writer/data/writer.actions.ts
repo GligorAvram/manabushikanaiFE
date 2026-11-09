@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { action } from '@datorama/akita';
+import { action } from '@shared/data/store.decorators';
 import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
 import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, PageableDto } from 'app/models/Api';
 import { firstValueFrom } from 'rxjs';

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { action } from '@datorama/akita';
+import { action } from '@shared/data/store.decorators';
 import { PageableDto } from '@models/Api';
 import { ReaderApiService } from '@reader/data/reader-api.service';
 import { ReaderStore } from '@reader/data/reader.store';

@@ -1,15 +1,21 @@
-import {Query} from "@datorama/akita";
-import {BaseState} from "./base.state";
-import {BaseStore} from "./store.models";
-import {Observable} from "rxjs";
+import { Observable } from "rxjs";
+import { BaseState } from "./base.state";
+import { BaseStore } from "./store.models";
 
 
-export class BaseQuery<S extends BaseState> extends Query<S> {
-  protected constructor(store: BaseStore<S>) {
-    super(store);
+export class BaseQuery<S extends BaseState> {
+  protected constructor(private readonly store: BaseStore<S>) {
+  }
+
+  select<R>(selector: (state: S) => R): Observable<R> {
+    return this.store.select(selector);
+  }
+
+  selectLoading(): Observable<boolean> {
+    return this.store.select((state) => state.loading);
   }
 
   selectSuccess(): Observable<boolean> {
-    return this.select((state) => state.success);
+    return this.store.select((state) => state.success);
   }
 }
