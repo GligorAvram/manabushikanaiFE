@@ -1,23 +1,20 @@
 import { NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ContainerComponent } from '@shared/ui/container.component';
 
 @Component( {
                 standalone     : true,
-                selector       : 'app-byte-array-image',
+                selector       : 'app-path-image',
                 template       : `
                     <div class="mb-3" *ngIf="image">
                         <app-container>
-                            <img [src]="imageSrc" [height]="height" [width]="width" alt="Dynamic Image"/>
+                            <img [src]="image" [height]="height" [width]="width" alt="Story Image"/>
                         </app-container>
                     </div>`,
                 imports        : [ ContainerComponent, NgIf ],
                 changeDetection: ChangeDetectionStrategy.OnPush
             } )
-//todo remove
-export class ByteArrayImage implements OnInit {
-    imageSrc: string | undefined;
-
+export class PathImage {
     @Input()
     height: number = 50;
 
@@ -25,9 +22,5 @@ export class ByteArrayImage implements OnInit {
     width: number = 75;
 
     @Input()
-    image!: string[];
-
-    ngOnInit() {
-        this.imageSrc = `data:image/png;base64,${ this.image }`;
-    }
+    image!: string;
 }

@@ -15,7 +15,7 @@ import { CreateStoryDto, StoryDifficultyEnum } from 'app/models/Api';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { of } from 'rxjs';
 
-export type CreateStoryWithFiles = CreateStoryDto & { file: File, image: File }
+export type CreateStoryWithFiles = CreateStoryDto & { file: File }
 
 @Component( {
                 selector  : 'app-story-create-modal-form',
@@ -73,6 +73,13 @@ export type CreateStoryWithFiles = CreateStoryDto & { file: File, image: File }
                                 [required]="true"
                             >
                             </app-enum-select-input>
+                            <app-text-input
+                                class="displayBlock"
+                                appInput
+                                label="Thumbnail URL"
+                                [control]="form.controls.image"
+                                formControlName="image"
+                            ></app-text-input>
                             <app-single-file-upload
                                 label="Select file"
                                 appInput
@@ -82,14 +89,6 @@ export type CreateStoryWithFiles = CreateStoryDto & { file: File, image: File }
                                 [control]="form.controls.file"
                             >
                             </app-single-file-upload>
-                            <app-single-file-upload
-                                label="Thumbnail"
-                                appInput
-                                formControlName="image"
-                                accept="image/*"
-                                [showSummary]="true"
-                                [control]="form.controls.image"
-                            ></app-single-file-upload>
                         </form>
                     </app-form-modal>
                 `,
@@ -132,7 +131,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             storyOrigin?: string,
             difficulty: StoryDifficultyEnum,
             file: File,
-            image: File
+            image: string
         }) => data.onSubmit( formData );
     }
 
@@ -158,7 +157,7 @@ export class StoryCreateFormModalComponent extends AbstractForm<CreateStoryWithF
             storyOrigin        : '',
             difficulty         : StoryDifficultyEnum.EASIEST,
             file               : [],
-            image              : []
+            image              : ''
         };
     }
 }

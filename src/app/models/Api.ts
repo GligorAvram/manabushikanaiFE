@@ -50,6 +50,7 @@ export interface CreateStoryDto {
   description?: string;
   storyOrigin?: string;
   japaneseDescription?: string;
+  image: string;
   difficulty: StoryDifficultyEnum;
 }
 
@@ -71,7 +72,6 @@ export interface StoryDto {
   storyOrigin?: string;
   published: "true" | "false";
   difficulty: StoryDifficultyEnum;
-  /** @format byte */
   image: string;
 }
 
@@ -226,6 +226,16 @@ export interface PaginatedParagraphDto {
   /** @format int32 */
   totalPages?: number;
   paragraphs?: ParagraphDto[];
+}
+
+export interface PaginatedCollectionDto {
+  /** @format int64 */
+  totalItems?: number;
+  /** @format int32 */
+  currentPage?: number;
+  /** @format int32 */
+  totalPages?: number;
+  collections?: CollectionDto[];
 }
 
 export interface PaginatedStoryDto {
@@ -532,6 +542,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         published?: "true" | "false";
         /** @default false */
         uncategorized?: boolean;
+        name?: string;
+        difficulty?: StoryDifficultyEnum;
         pageable: PageableDto;
       },
       params: RequestParams = {},
@@ -555,8 +567,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data: {
         /** @format binary */
         file: File;
-        /** @format binary */
-        image: File;
         storyData: CreateStoryDto;
       },
       params: RequestParams = {},
@@ -642,6 +652,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-collection-controller
+     * @name GetAllCollections
+     * @request GET:/writer/collections
+     */
+    getAllCollections: (
+      query: {
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PaginatedCollectionDto, any>({
+        path: `/writer/collections`,
+        method: "GET",
+        query: query,
+        format: "json",
         ...params,
       }),
 
@@ -868,6 +899,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query: {
         /** @default false */
         uncategorized?: boolean;
+        name?: string;
+        difficulty?: StoryDifficultyEnum;
         pageable: PageableDto;
       },
       params: RequestParams = {},
@@ -950,6 +983,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<DictionaryWordDto[], any>({
         path: `/reader/dictionary/${word}`,
         method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags reader-collection-controller
+     * @name GetAllCollections1
+     * @request GET:/reader/collections
+     */
+    getAllCollections1: (
+      query: {
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PaginatedCollectionDto, any>({
+        path: `/reader/collections`,
+        method: "GET",
+        query: query,
+        format: "json",
         ...params,
       }),
 

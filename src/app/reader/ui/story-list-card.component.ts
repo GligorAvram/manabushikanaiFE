@@ -6,6 +6,7 @@ import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { StoryDto } from '@models/Api';
 import { valueIsNotEmpty } from '@shared/functions';
 import { ContainerComponent } from '@shared/ui/container.component';
+import { PathImage } from '@shared/ui/path-image.component';
 
 @Component( {
                 selector  : 'app-story-list-cards',
@@ -17,7 +18,7 @@ import { ContainerComponent } from '@shared/ui/container.component';
                                 <mat-grid-tile>
                                     <mat-card class="story-card" appearance="outlined" (click)="cardClicked(story)">
                                         <mat-card-header>
-                                            image
+                                            <app-path-image [image]="story.image"></app-path-image>
                                         </mat-card-header>
                                         <mat-card-content>
                                             <mat-card-title>{{ story.name }}</mat-card-title>
@@ -44,7 +45,8 @@ import { ContainerComponent } from '@shared/ui/container.component';
                     MatCardModule,
                     MatButtonModule,
                     MatGridList,
-                    MatGridTile
+                    MatGridTile,
+                    PathImage
                 ]
             } )
 export class StoryListCardComponent {

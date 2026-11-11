@@ -35,7 +35,6 @@ export class WriterApiService extends ApiService {
         const formData = new FormData();
 
         formData.append( 'file', data.file );
-        formData.append( 'image', data.image );
         formData.append(
             'storyData',
             new Blob(
@@ -45,7 +44,8 @@ export class WriterApiService extends ApiService {
                     description        : data.description,
                     japaneseDescription: data.japaneseDescription,
                     storyOrigin        : data.storyOrigin,
-                    difficulty         : data.difficulty
+                    difficulty         : data.difficulty,
+                    image              : data.image
                 } as CreateStoryDto ) ],
                 { type: 'application/json' }
             )

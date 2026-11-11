@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { valueIsNotEmpty } from '@shared/functions';
-import { ByteArrayImage } from '@shared/ui/byte-array-image.component';
+import { PathImage } from '@shared/ui/path-image.component';
 import { WriterPipesModule } from '@writer/pipes/writer-pipes.module';
 import { StoryDto } from 'app/models/Api';
 import { LoadingBarComponent } from './loading-bar.component';
@@ -28,7 +28,7 @@ import { LoadingBarComponent } from './loading-bar.component';
                             <ng-container matColumnDef="image">
                                 <th mat-header-cell *matHeaderCellDef>Thumbnail</th>
                                 <td mat-cell *matCellDef="let story">
-                                    <app-byte-array-image [image]="story.image"></app-byte-array-image>
+                                    <app-path-image [image]="story.image"></app-path-image>
                                 </td>
                             </ng-container>
 
@@ -53,7 +53,7 @@ import { LoadingBarComponent } from './loading-bar.component';
                     CommonModule,
                     WriterPipesModule,
                     MatTableModule,
-                    ByteArrayImage
+                    PathImage
                 ]
             } )
 export class StoryListTableComponent implements OnInit {
