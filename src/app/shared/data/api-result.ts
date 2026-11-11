@@ -11,7 +11,7 @@ export class ApiResult<T> {
   }
 
   isFailed(): boolean {
-    return !valueIsNotEmpty(this.error);
+    return valueIsNotEmpty(this.error);
   }
 
   isSuccessful(): boolean {

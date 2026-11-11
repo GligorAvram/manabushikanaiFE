@@ -183,11 +183,6 @@ export class SideMenuComponent {
             routerLink: AppR.reader.collections.list.full,
             icon: IconEnum.Collections
           },
-          {
-            title: 'Browse by tag',
-            routerLink: AppR.reader.tags.list.full,
-            icon: IconEnum.Tag
-          },
         ],
       },
       {

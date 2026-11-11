@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { IconEnum } from '@shared/config/enums/icon.enum';
 import { ModalService } from '@shared/features/modal/modal.service';
+import { NavigationService } from '@shared/features/navigation/navigation.service';
 import { CreateDictionaryWordFormModalData } from '@writer/config/writer.interfaces';
 import { AddWordToDictionaryFormModalComponent } from '@writer/ui/add-word-to-dictionary-form-modal.component';
 import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, ParagraphDto } from 'app/models/Api';
@@ -81,6 +82,7 @@ export class WriterStoryDetailsPageComponent implements OnInit {
     constructor(
         public readonly dataService: WriterStoryDetailsDataService,
         public readonly modalService: ModalService,
+        private readonly navigationService: NavigationService,
         private _formBuilder: FormBuilder
     ) {
     }
@@ -154,6 +156,10 @@ export class WriterStoryDetailsPageComponent implements OnInit {
     }
 
     publishStory() {
-        this.dataService.publishStory();
+        this.dataService.publishStory()?.then( (result) => {
+            if( result?.isSuccessful() ) {
+                this.navigationService.writerStoryList();
+            }
+        } );
     }
 }

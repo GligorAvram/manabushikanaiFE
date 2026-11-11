@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CollectionDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedSearchDto, SearchScopeEnum, StoryDto } from '@models/Api';
+import { CollectionDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, StoryDto } from '@models/Api';
 import { ReaderStore } from '@reader/data/reader.store';
 import { ApiResult } from '@shared/data/api-result';
 import { apiRoutes } from '@shared/data/api-routes';
@@ -16,9 +16,12 @@ export class ReaderApiService extends ApiService {
         super( readerStore );
     }
 
-    getAllStories(): Observable<ApiResult<StoryDto[]>> {
-        return this.get(
+    getAllStories(): Observable<ApiResult<PaginatedStoryDto>> {
+        const paginationParams = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
+
+        return this.getWithParams<HttpParams, PaginatedStoryDto>(
             apiRoutes.reader.stories.base,
+            paginationParams,
             this.readerStore.onStoryListLoaded.bind( this.readerStore )
         );
     }
@@ -54,22 +57,6 @@ export class ReaderApiService extends ApiService {
         return this.get(
             `${ apiRoutes.reader.collections.base }/${ collectionId }`,
             this.readerStore.onCollectionLoaded.bind( this.readerStore )
-        );
-    }
-
-    searchByTag(
-        tag: string,
-        scope: SearchScopeEnum = SearchScopeEnum.ALL,
-        page: PageableDto = { pageNumber: 0, pageSize: 100 }
-    ): Observable<ApiResult<PaginatedSearchDto>> {
-        const params = createPaginationParams( page )
-            .append( 'tag', tag )
-            .append( 'scope', scope );
-
-        return this.getWithParams<HttpParams, PaginatedSearchDto>(
-            apiRoutes.reader.search.base,
-            params,
-            this.readerStore.onSearchResultsLoaded.bind( this.readerStore )
         );
     }
 }

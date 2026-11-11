@@ -95,7 +95,9 @@ export class WriterStoryDetailsDataService extends BaseComponentDataService<
     const id = getParamFromRoute('id', this._route);
 
     if (id) {
-      this.writerActions.publishStory(id);
+      return this.writerActions.publishStory(id);
     }
+
+    return undefined;
   }
 }

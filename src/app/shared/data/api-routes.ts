@@ -27,9 +27,6 @@ export const apiRoutes = {
         },
         collections: {
             base: `${ apiUrl }/reader/collections`
-        },
-        search: {
-            base: `${ apiUrl }/reader/search`
         }
     }
 };

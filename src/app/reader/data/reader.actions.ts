@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { action } from '@shared/data/store.decorators';
-import { PageableDto, SearchScopeEnum } from '@models/Api';
+import { PageableDto } from '@models/Api';
 import { ReaderApiService } from '@reader/data/reader-api.service';
 import { ReaderStore } from '@reader/data/reader.store';
 import { firstValueFrom } from 'rxjs';
@@ -38,12 +38,6 @@ export class ReaderActions {
     @action( 'Load collection' )
     loadCollection(collectionId: string): void {
         firstValueFrom( this.readerApiService.getCollection( collectionId ) )
-            .then();
-    }
-
-    @action( 'Search by tag' )
-    searchByTag(tag: string, scope?: SearchScopeEnum): void {
-        firstValueFrom( this.readerApiService.searchByTag( tag, scope ) )
             .then();
     }
 }

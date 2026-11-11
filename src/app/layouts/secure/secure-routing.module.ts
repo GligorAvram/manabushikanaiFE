@@ -51,13 +51,6 @@ const routes: Routes = [
                         ).then( (m) => m.ReaderCollectionShellModule )
             },
             {
-                path        : AppR.reader.tags.list.simple,
-                loadChildren: () =>
-                    import(
-                        '@reader/features/reader-tag-search-page/reader-tag-search-page.module'
-                        ).then( (m) => m.ReaderTagSearchPageModule )
-            },
-            {
                 path        : AppR.writer.collections.list.simple,
                 loadChildren: () =>
                     import(

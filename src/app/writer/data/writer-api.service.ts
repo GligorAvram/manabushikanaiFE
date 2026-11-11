@@ -5,7 +5,7 @@ import { apiRoutes } from '@shared/data/api-routes';
 import { ApiService } from '@shared/data/api.service';
 import { createPaginationParams } from '@shared/functions';
 import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
-import { CollectionDto, CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateTagDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedTagDto, ParagraphDto, ReorderCollectionDto, StoryDto, TagDto } from 'app/models/Api';
+import { CollectionDto, CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateTagDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, PaginatedTagDto, ParagraphDto, ReorderCollectionDto, StoryDto, TagDto } from 'app/models/Api';
 import { Observable } from 'rxjs';
 import { WriterStore } from './writer.store';
 
@@ -17,9 +17,12 @@ export class WriterApiService extends ApiService {
         super( writerStore );
     }
 
-    getAllStories(): Observable<ApiResult<StoryDto[]>> {
-        return this.get(
+    getAllStories(): Observable<ApiResult<PaginatedStoryDto>> {
+        const paginationParams = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
+
+        return this.getWithParams<HttpParams, PaginatedStoryDto>(
             apiRoutes.writer.stories.base,
+            paginationParams,
             this.writerStore.onStoryListLoaded.bind( this.writerStore )
         );
     }
@@ -142,40 +145,40 @@ export class WriterApiService extends ApiService {
     getUncategorizedStories(
         name?: string,
         page: PageableDto = { pageNumber: 0, pageSize: 20 }
-    ): Observable<ApiResult<StoryDto[]>> {
+    ): Observable<ApiResult<PaginatedStoryDto>> {
         let params = createPaginationParams( page ).append( 'uncategorized', true );
 
         if( name && name.trim() ) {
             params = params.append( 'name', name.trim() );
         }
 
-        return this.getWithParams<HttpParams, StoryDto[]>(
+        return this.getWithParams<HttpParams, PaginatedStoryDto>(
             apiRoutes.writer.stories.base,
             params,
             this.writerStore.onUncategorizedStoriesLoaded.bind( this.writerStore )
         );
     }
 
+    // These mutations return a CollectionDto whose nested `stories` is not populated the way
+    // GET /collections/{id} populates it, so we don't let the response overwrite the active
+    // collection — the caller reloads the collection afterwards for authoritative state.
     addStoryToCollection(collectionId: string, storyId: string): Observable<ApiResult<CollectionDto>> {
         return this.post<{}, CollectionDto>(
             `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/${ storyId }`,
-            {},
-            this.writerStore.onCollectionLoaded.bind( this.writerStore )
+            {}
         );
     }
 
     removeStoryFromCollection(collectionId: string, storyId: string): Observable<ApiResult<CollectionDto>> {
         return this.delete<CollectionDto>(
-            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/${ storyId }`,
-            this.writerStore.onCollectionLoaded.bind( this.writerStore )
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/${ storyId }`
         );
     }
 
     reorderCollectionStories(collectionId: string, data: ReorderCollectionDto): Observable<ApiResult<CollectionDto>> {
         return this.put<ReorderCollectionDto, CollectionDto>(
             `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/order`,
-            data,
-            this.writerStore.onCollectionLoaded.bind( this.writerStore )
+            data
         );
     }
 

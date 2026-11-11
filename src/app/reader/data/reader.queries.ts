@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CollectionDto, PaginatedParagraphDto, SearchResultDto, SearchResultTypeEnum, StoryDto } from '@models/Api';
+import { CollectionDto, PaginatedParagraphDto, StoryDto } from '@models/Api';
 import { ReaderState, ReaderStore } from '@reader/data/reader.store';
 import { BaseQuery } from '@shared/data/base.query';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ export class ReaderQueries extends BaseQuery<ReaderState> {
     }
 
     selectStories(): Observable<StoryDto[]> {
-        return this.select( (state) => state.stories ?? [] );
+        return this.select( (state) => this.asArray<StoryDto>( state.stories ) );
     }
 
     selectActiveStory(): Observable<StoryDto | null> {
@@ -23,7 +23,7 @@ export class ReaderQueries extends BaseQuery<ReaderState> {
     }
 
     selectCollections(): Observable<CollectionDto[]> {
-        return this.select( (state) => state.collections ?? [] );
+        return this.select( (state) => this.asArray<CollectionDto>( state.collections ) );
     }
 
     selectActiveCollection(): Observable<CollectionDto | null> {
@@ -31,26 +31,6 @@ export class ReaderQueries extends BaseQuery<ReaderState> {
     }
 
     selectCollectionStories(): Observable<StoryDto[]> {
-        return this.select( (state) => state.activeCollection?.stories ?? [] );
-    }
-
-    selectSearchResults(): Observable<SearchResultDto[]> {
-        return this.select( (state) => state.searchResults ?? [] );
-    }
-
-    selectSearchStories(): Observable<StoryDto[]> {
-        return this.select( (state) =>
-            (state.searchResults ?? [])
-                .filter( (result) => result.type === SearchResultTypeEnum.STORY && !!result.story )
-                .map( (result) => result.story! )
-        );
-    }
-
-    selectSearchCollections(): Observable<CollectionDto[]> {
-        return this.select( (state) =>
-            (state.searchResults ?? [])
-                .filter( (result) => result.type === SearchResultTypeEnum.COLLECTION && !!result.collection )
-                .map( (result) => result.collection! )
-        );
+        return this.select( (state) => this.asArray<StoryDto>( state.activeCollection?.stories ) );
     }
 }

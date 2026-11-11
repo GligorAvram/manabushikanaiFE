@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CollectionDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedSearchDto, SearchResultDto, StoryDto } from '@models/Api';
+import { CollectionDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, StoryDto } from '@models/Api';
 import { BaseState } from '@shared/data/base.state';
 import { StoreNameEnum } from '@shared/data/store.constants';
 import { storeEvent } from '@shared/data/store.decorators';
@@ -10,8 +10,7 @@ export interface ReaderState extends BaseState {
     activeStory: StoryDto | null,
     paragraphs: PaginatedParagraphDto | null,
     collections: CollectionDto[],
-    activeCollection: CollectionDto | null,
-    searchResults: SearchResultDto[]
+    activeCollection: CollectionDto | null
 }
 
 const createInitialState = (): ReaderState => (
@@ -21,7 +20,6 @@ const createInitialState = (): ReaderState => (
         paragraphs       : null,
         collections      : [],
         activeCollection : null,
-        searchResults    : [],
         success          : false,
         loading          : false,
         error            : null
@@ -35,8 +33,8 @@ export class ReaderStore extends BaseStore<ReaderState> {
     }
 
     @storeEvent( 'Story list loaded' )
-    onStoryListLoaded(stories: StoryDto[]): void {
-        this.update( { stories } );
+    onStoryListLoaded(page: PaginatedStoryDto): void {
+        this.update( { stories: page.stories ?? [] } );
     }
 
     @storeEvent( 'Story loaded' )
@@ -57,10 +55,5 @@ export class ReaderStore extends BaseStore<ReaderState> {
     @storeEvent( 'Collection loaded' )
     onCollectionLoaded(collection: CollectionDto): void {
         this.update( { activeCollection: collection } );
-    }
-
-    @storeEvent( 'Search results loaded' )
-    onSearchResultsLoaded(page: PaginatedSearchDto): void {
-        this.update( { searchResults: page.results ?? [] } );
     }
 }

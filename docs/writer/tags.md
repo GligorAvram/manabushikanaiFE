@@ -18,6 +18,8 @@ delete tags, and add/remove tags on an entity (create-or-reuse by name). A per-r
   the extra arg to `onTagDeleted(_ok, tagId)`.
 - Tag search inputs (the manage-tags modal autocomplete **and** the admin page search box)
   only query after **3+ characters**; clearing the admin search box reloads the full list.
+  The manage-tags modal uses the shared `SearchDropdownInputComponent` with
+  `[minSearchLength]="3"` and `[valueFn]` set to the tag name — see [shared/inputs](../shared/inputs.md).
 
 ## Gotchas
 

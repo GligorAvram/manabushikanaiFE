@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BaseState} from '@shared/data/base.state';
 import {StoreNameEnum} from '@shared/data/store.constants';
 import {storeEvent} from '@shared/data/store.decorators';
-import {CollectionDto, DictionaryWordDto, PaginatedCollectionDto, PaginatedParagraphDto, ParagraphDto, PaginatedTagDto, StoryDto, TagDto} from 'app/models/Api';
+import {CollectionDto, DictionaryWordDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, ParagraphDto, PaginatedTagDto, StoryDto, TagDto} from 'app/models/Api';
 import {BaseStore} from "@shared/data/store.models";
 
 export interface WriterState extends BaseState {
@@ -42,8 +42,8 @@ export class WriterStore extends BaseStore<WriterState> {
   }
 
   @storeEvent('Story list loaded')
-  onStoryListLoaded(storyList: StoryDto[]): void {
-    this.update({stories: storyList});
+  onStoryListLoaded(page: PaginatedStoryDto): void {
+    this.update({stories: page.stories ?? []});
   }
 
   @storeEvent('Story loaded')
@@ -103,8 +103,8 @@ export class WriterStore extends BaseStore<WriterState> {
   }
 
   @storeEvent('Uncategorized stories loaded')
-  onUncategorizedStoriesLoaded(stories: StoryDto[]): void {
-    this.update({uncategorizedStories: stories});
+  onUncategorizedStoriesLoaded(page: PaginatedStoryDto): void {
+    this.update({uncategorizedStories: page.stories ?? []});
   }
 
   @storeEvent('Tag list loaded')

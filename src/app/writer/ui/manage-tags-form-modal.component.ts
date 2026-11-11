@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { IconEnum } from '@shared/config/enums/icon.enum';
 import { ButtonModule } from '@shared/ui/buttons/button.module';
 import { PrimaryButtonComponent } from '@shared/ui/buttons/primary-button.component';
 import { FormModalComponent } from '@shared/ui/form-modal.component';
+import { SearchDropdownInputComponent } from '@shared/ui/input/search-dropdown-input.component';
 import { TagChipListComponent } from '@shared/ui/tag-chip-list.component';
 import { ManageTagsModalData } from '@writer/config/writer.interfaces';
 import { TagDto } from 'app/models/Api';
@@ -25,22 +23,20 @@ import { combineLatest, map, Observable } from 'rxjs';
                         [showActionButtons]="false"
                     >
                         <div class="add-row">
-                            <mat-form-field class="tag-input" appearance="outline">
-                                <mat-label>Add a tag</mat-label>
-                                <input
-                                    matInput
-                                    [formControl]="nameControl"
-                                    [matAutocomplete]="auto"
-                                    placeholder="Type a tag name..."
-                                    (input)="onInput()"
-                                    (keydown.enter)="add(); $event.preventDefault()"
-                                />
-                                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSuggestionSelected($event.option.value)">
-                                    <mat-option *ngFor="let tag of (suggestions$ | async)" [value]="tag.name">
-                                        {{ tag.name }}
-                                    </mat-option>
-                                </mat-autocomplete>
-                            </mat-form-field>
+                            <app-search-dropdown-input
+                                class="tag-input"
+                                label="Add a tag"
+                                placeholder="Type a tag name..."
+                                [control]="nameControl"
+                                [searchResults]="(suggestions$ | async) ?? []"
+                                [displayFn]="displayTag"
+                                [valueFn]="tagName"
+                                [minSearchLength]="3"
+                                [clearOptionsListAfterSearch]="false"
+                                (search)="onSearch($event)"
+                                (textChange)="nameControl.setValue($event)"
+                                (enter)="add()"
+                            ></app-search-dropdown-input>
                             <app-primary-button
                                 appButton
                                 label="Add"
@@ -96,10 +92,7 @@ import { combineLatest, map, Observable } from 'rxjs';
                 ],
                 imports   : [
                     CommonModule,
-                    ReactiveFormsModule,
-                    MatFormFieldModule,
-                    MatInputModule,
-                    MatAutocompleteModule,
+                    SearchDropdownInputComponent,
                     FormModalComponent,
                     PrimaryButtonComponent,
                     ButtonModule,
@@ -111,6 +104,9 @@ export class ManageTagsFormModalComponent {
     readonly icon = IconEnum;
     readonly nameControl = new FormControl<string>( '', { nonNullable: true } );
     readonly suggestions$: Observable<TagDto[]>;
+
+    @ViewChild( SearchDropdownInputComponent )
+    private readonly dropdown?: SearchDropdownInputComponent<TagDto>;
 
     constructor(
         @Inject( MAT_DIALOG_DATA )
@@ -125,15 +121,12 @@ export class ManageTagsFormModalComponent {
             );
     }
 
-    onInput(): void {
-        const value = this.nameControl.value?.trim();
-        if( value && value.length >= 3 ) {
-            this.data.searchSuggestions( value );
-        }
-    }
+    displayTag = (tag: TagDto): string => tag.name;
+    tagName = (tag: TagDto): string => tag.name;
 
-    onSuggestionSelected(name: string): void {
-        this.nameControl.setValue( name );
+    onSearch(value: string): void {
+        // The dropdown only emits once the 3-char minimum is met.
+        this.data.searchSuggestions( value.trim() );
     }
 
     add(): void {
@@ -142,6 +135,7 @@ export class ManageTagsFormModalComponent {
             return;
         }
         this.data.onAdd( name );
+        this.dropdown?.clear();
         this.nameControl.setValue( '' );
     }
 

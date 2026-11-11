@@ -32,7 +32,15 @@
   stories: this.asArray<StoryDto>(state.stories).map(...)
   ```
   Use this for every array touched by a handler, including nested ones (`s.tags`).
-- **Ref:** `writer.store.ts` tag handlers (`onTagUpdated`, `onTagDeleted`, …).
+- **Rule (read path):** the same drift reaches the **view through query selectors**, not
+  just handlers. A non-array `stories`/`collections` slice read via `state.stories ?? []`
+  flows into `mat-table` and throws **`NG0900: Only arrays and iterables are allowed`** on
+  first render (the hydrated value renders before the GET resolves). Read every list slice
+  through `BaseQuery.asArray(...)` instead of `?? []`, and guard before `.find(...)` on a
+  slice too (`.find` is not a function on a non-array object). Self-heals once the GET
+  stores a real array, and clearing the store's `sessionStorage` key clears a bad value.
+- **Ref:** `base.query.ts` `asArray`; `writer.queries.ts` / `reader.queries.ts` selectors;
+  `writer.store.ts` tag handlers (`onTagUpdated`, `onTagDeleted`, …).
 
 ### `sessionStorage` shape drift after you change a state interface
 - **Symptom:** odd restored values (stale slices, old shapes) only in a browser that has

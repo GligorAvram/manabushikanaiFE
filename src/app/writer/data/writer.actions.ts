@@ -66,8 +66,7 @@ export class WriterActions {
 
     @action( 'Publish story' )
     publishStory(id: string) {
-        firstValueFrom( this.writerApiService.publishStory( id ) )
-            .then();
+        return firstValueFrom( this.writerApiService.publishStory( id ) );
     }
 
     clearPossibleDictionaryWordList() {
@@ -113,19 +112,19 @@ export class WriterActions {
     @action( 'Add story to collection' )
     addStoryToCollection(collectionId: string, storyId: string): void {
         firstValueFrom( this.writerApiService.addStoryToCollection( collectionId, storyId ) )
-            .then();
+            .then( () => this.loadCollection( collectionId ) );
     }
 
     @action( 'Remove story from collection' )
     removeStoryFromCollection(collectionId: string, storyId: string): void {
         firstValueFrom( this.writerApiService.removeStoryFromCollection( collectionId, storyId ) )
-            .then();
+            .then( () => this.loadCollection( collectionId ) );
     }
 
     @action( 'Reorder collection stories' )
     reorderCollectionStories(collectionId: string, data: ReorderCollectionDto): void {
         firstValueFrom( this.writerApiService.reorderCollectionStories( collectionId, data ) )
-            .then();
+            .then( () => this.loadCollection( collectionId ) );
     }
 
     @action( 'Load all tags' )

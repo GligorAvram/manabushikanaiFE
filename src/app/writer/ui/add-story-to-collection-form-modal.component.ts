@@ -32,12 +32,11 @@ import { of } from 'rxjs';
                                 [control]="form.controls.storyId"
                                 [searchResults]="searchResults"
                                 [displayFn]="displayStory"
+                                [minSearchLength]="minSearchLength"
                                 [clearOptionsListAfterSearch]="false"
                                 (search)="onSearch($event)"
+                                (textChange)="onText($event)"
                             ></app-search-dropdown-input>
-                            <em *ngIf="query.trim().length > 0 && query.trim().length < minSearchLength" class="hint">
-                                Type at least {{ minSearchLength }} characters to search.
-                            </em>
                             <em *ngIf="query.trim().length >= minSearchLength && searchResults.length === 0" class="hint">
                                 No stories found.
                             </em>
@@ -105,13 +104,18 @@ export class AddStoryToCollectionFormModalComponent extends AbstractForm<AddStor
 
     displayStory = (story: StoryDto): string => story.name;
 
-    onSearch(query: string): void {
-        this.query = query;
-        if( query.trim().length >= this.minSearchLength ) {
-            this.data.search( query );
-        } else {
+    onText(text: string): void {
+        // The dropdown only fires `search` once the minimum is met; keep `query` in sync for
+        // the "no results" hint and clear stale results while below the threshold.
+        this.query = text;
+        if( text.trim().length < this.minSearchLength ) {
             this.searchResults = [];
         }
+    }
+
+    onSearch(query: string): void {
+        this.query = query;
+        this.data.search( query );
     }
 
     protected override componentInstance(): ComponentInstance | null {

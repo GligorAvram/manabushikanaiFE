@@ -11,7 +11,7 @@ export class WriterQueries extends BaseQuery<WriterState> {
   }
 
   selectStories(): Observable<StoryDto[]> {
-    return this.select((state) => state.stories ?? []);
+    return this.select((state) => this.asArray<StoryDto>(state.stories));
   }
 
   selectActiveStory(): Observable<StoryDto | null> {
@@ -27,7 +27,7 @@ export class WriterQueries extends BaseQuery<WriterState> {
   }
 
   selectCollections(): Observable<CollectionDto[]> {
-    return this.select((state) => state.collections ?? []);
+    return this.select((state) => this.asArray<CollectionDto>(state.collections));
   }
 
   selectActiveCollection(): Observable<CollectionDto | null> {
@@ -35,22 +35,22 @@ export class WriterQueries extends BaseQuery<WriterState> {
   }
 
   selectCollectionStories(): Observable<StoryDto[]> {
-    return this.select((state) => state.activeCollection?.stories ?? []);
+    return this.select((state) => this.asArray<StoryDto>(state.activeCollection?.stories));
   }
 
   selectUncategorizedStories(): Observable<StoryDto[]> {
-    return this.select((state) => state.uncategorizedStories ?? []);
+    return this.select((state) => this.asArray<StoryDto>(state.uncategorizedStories));
   }
 
   selectTags(): Observable<TagDto[]> {
-    return this.select((state) => state.tags ?? []);
+    return this.select((state) => this.asArray<TagDto>(state.tags));
   }
 
   selectStoryTags(storyId: string): Observable<TagDto[]> {
-    return this.select((state) => state.stories.find((story) => story.id === storyId)?.tags ?? []);
+    return this.select((state) => this.asArray<TagDto>(this.asArray<StoryDto>(state.stories).find((story) => story.id === storyId)?.tags));
   }
 
   selectCollectionTags(collectionId: string): Observable<TagDto[]> {
-    return this.select((state) => state.collections.find((collection) => collection.id === collectionId)?.tags ?? []);
+    return this.select((state) => this.asArray<TagDto>(this.asArray<CollectionDto>(state.collections).find((collection) => collection.id === collectionId)?.tags));
   }
 }
