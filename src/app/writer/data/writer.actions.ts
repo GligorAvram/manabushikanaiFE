@@ -98,39 +98,33 @@ export class WriterActions {
             .then();
     }
 
-    @action( 'Load stories for collection' )
-    loadCollectionStories(collectionId: string): void {
-        firstValueFrom( this.writerApiService.getStoriesForCollection( collectionId ) )
+    @action( 'Load collection' )
+    loadCollection(collectionId: string): void {
+        firstValueFrom( this.writerApiService.getCollection( collectionId ) )
             .then();
     }
 
     @action( 'Load uncategorized stories' )
-    loadUncategorizedStories(): void {
-        firstValueFrom( this.writerApiService.getUncategorizedStories() )
+    loadUncategorizedStories(name?: string): void {
+        firstValueFrom( this.writerApiService.getUncategorizedStories( name ) )
             .then();
     }
 
     @action( 'Add story to collection' )
     addStoryToCollection(collectionId: string, storyId: string): void {
         firstValueFrom( this.writerApiService.addStoryToCollection( collectionId, storyId ) )
-            .then( () => {
-                this.loadCollectionStories( collectionId );
-                this.loadUncategorizedStories();
-            } );
+            .then();
     }
 
     @action( 'Remove story from collection' )
     removeStoryFromCollection(collectionId: string, storyId: string): void {
         firstValueFrom( this.writerApiService.removeStoryFromCollection( collectionId, storyId ) )
-            .then( () => {
-                this.loadCollectionStories( collectionId );
-                this.loadUncategorizedStories();
-            } );
+            .then();
     }
 
     @action( 'Reorder collection stories' )
     reorderCollectionStories(collectionId: string, data: ReorderCollectionDto): void {
         firstValueFrom( this.writerApiService.reorderCollectionStories( collectionId, data ) )
-            .then( () => this.loadCollectionStories( collectionId ) );
+            .then();
     }
 }

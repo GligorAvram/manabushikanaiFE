@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CollectionDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, StoryDto } from '@models/Api';
+import { CollectionDto, PaginatedCollectionDto, PaginatedParagraphDto, StoryDto } from '@models/Api';
 import { BaseState } from '@shared/data/base.state';
 import { StoreNameEnum } from '@shared/data/store.constants';
 import { storeEvent } from '@shared/data/store.decorators';
@@ -10,7 +10,7 @@ export interface ReaderState extends BaseState {
     activeStory: StoryDto | null,
     paragraphs: PaginatedParagraphDto | null,
     collections: CollectionDto[],
-    collectionStories: StoryDto[]
+    activeCollection: CollectionDto | null
 }
 
 const createInitialState = (): ReaderState => (
@@ -19,7 +19,7 @@ const createInitialState = (): ReaderState => (
         activeStory      : null,
         paragraphs       : null,
         collections      : [],
-        collectionStories: [],
+        activeCollection : null,
         success          : false,
         loading          : false,
         error            : null
@@ -52,8 +52,8 @@ export class ReaderStore extends BaseStore<ReaderState> {
         this.update( { collections: page.collections ?? [] } );
     }
 
-    @storeEvent( 'Collection stories loaded' )
-    onCollectionStoriesLoaded(page: PaginatedStoryDto): void {
-        this.update( { collectionStories: page.stories ?? [] } );
+    @storeEvent( 'Collection loaded' )
+    onCollectionLoaded(collection: CollectionDto): void {
+        this.update( { activeCollection: collection } );
     }
 }

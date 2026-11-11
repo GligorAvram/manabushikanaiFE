@@ -56,7 +56,6 @@ import { WriterCollectionDetailsDataService } from './writer-collection-details-
                             appButton
                             label="Add a story"
                             [icon]="icon.Add"
-                            [disabled]="data.uncategorizedStories.length === 0"
                             (onClick)="openAddStoryModal()"
                         ></app-primary-button>
                     </app-container>
@@ -143,6 +142,7 @@ export class WriterCollectionDetailsPageComponent implements OnInit {
             this,
             {
                 stories$: this.dataService.source!.uncategorizedStories,
+                search  : this.dataService.searchUncategorizedStories.bind( this.dataService ),
                 loading$: of( false ),
                 onSubmit: this.addStory.bind( this ),
                 onCancel: this.closeAddStoryModal.bind( this )

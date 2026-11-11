@@ -35,9 +35,9 @@ export class ReaderActions {
             .then();
     }
 
-    @action( 'Load stories for collection' )
-    loadCollectionStories(collectionId: string): void {
-        firstValueFrom( this.readerApiService.getStoriesForCollection( collectionId ) )
+    @action( 'Load collection' )
+    loadCollection(collectionId: string): void {
+        firstValueFrom( this.readerApiService.getCollection( collectionId ) )
             .then();
     }
 }

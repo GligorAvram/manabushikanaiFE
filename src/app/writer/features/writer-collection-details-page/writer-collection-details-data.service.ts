@@ -5,7 +5,6 @@ import { getParamFromRoute } from '@shared/functions';
 import { WriterActions } from '@writer/data/writer.actions';
 import { WriterQueries } from '@writer/data/writer.queries';
 import { CollectionDto, StoryDto } from 'app/models/Api';
-import { map, Observable } from 'rxjs';
 
 interface WriterCollectionDetailsComponentData {
     collection: CollectionDto | null;
@@ -26,21 +25,22 @@ export class WriterCollectionDetailsDataService extends BaseComponentDataService
     }
 
     protected override onInit(): void {
-        this.writerActions.loadAllCollections();
-        this.writerActions.loadUncategorizedStories();
-
         const id = this.collectionId;
         if( id ) {
-            this.writerActions.loadCollectionStories( id );
+            this.writerActions.loadCollection( id );
         }
     }
 
     protected override dataSource(): ComponentDataSource<WriterCollectionDetailsComponentData> {
         return {
-            collection          : this.selectActiveCollection(),
+            collection          : this.writerQueries.selectActiveCollection(),
             stories             : this.writerQueries.selectCollectionStories(),
             uncategorizedStories: this.writerQueries.selectUncategorizedStories()
         };
+    }
+
+    searchUncategorizedStories(name: string): void {
+        this.writerActions.loadUncategorizedStories( name );
     }
 
     addStory(storyId: string): void {
@@ -62,14 +62,6 @@ export class WriterCollectionDetailsDataService extends BaseComponentDataService
         if( id ) {
             this.writerActions.reorderCollectionStories( id, { storyIds } );
         }
-    }
-
-    private selectActiveCollection(): Observable<CollectionDto | null> {
-        const id = this.collectionId;
-
-        return this.writerQueries
-                   .selectCollections()
-                   .pipe( map( (collections) => collections.find( (c) => c.id === id ) ?? null ) );
     }
 
     private get collectionId(): string | null {

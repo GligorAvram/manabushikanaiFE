@@ -20,6 +20,28 @@ export interface CollectionDto {
   name: string;
   japaneseName: string;
   description?: string;
+  stories?: StoryDto[];
+}
+
+export enum StoryDifficultyEnum {
+  EASIEST = "EASIEST",
+  EASY = "EASY",
+  MEDIUM = "MEDIUM",
+  DIFFICULT = "DIFFICULT",
+  CHALLENGING = "CHALLENGING",
+}
+
+export interface StoryDto {
+  /** @format uuid */
+  id: string;
+  name: string;
+  japaneseName: string;
+  description?: string;
+  japaneseDescription?: string;
+  storyOrigin?: string;
+  published: "true" | "false";
+  difficulty: StoryDifficultyEnum;
+  image: string;
 }
 
 export interface CreateTagDto {
@@ -52,27 +74,6 @@ export interface CreateStoryDto {
   japaneseDescription?: string;
   image: string;
   difficulty: StoryDifficultyEnum;
-}
-
-export enum StoryDifficultyEnum {
-  EASIEST = "EASIEST",
-  EASY = "EASY",
-  MEDIUM = "MEDIUM",
-  DIFFICULT = "DIFFICULT",
-  CHALLENGING = "CHALLENGING",
-}
-
-export interface StoryDto {
-  /** @format uuid */
-  id: string;
-  name: string;
-  japaneseName: string;
-  description?: string;
-  japaneseDescription?: string;
-  storyOrigin?: string;
-  published: "true" | "false";
-  difficulty: StoryDifficultyEnum;
-  image: string;
 }
 
 export interface AlternativeWritingDto {
@@ -218,6 +219,16 @@ export interface PageableDto {
   sort?: "ASCENDING" | "DESCENDING";
 }
 
+export interface PaginatedStoryDto {
+  /** @format int64 */
+  totalItems?: number;
+  /** @format int32 */
+  currentPage?: number;
+  /** @format int32 */
+  totalPages?: number;
+  stories?: StoryDto[];
+}
+
 export interface PaginatedParagraphDto {
   /** @format int64 */
   totalItems?: number;
@@ -236,16 +247,6 @@ export interface PaginatedCollectionDto {
   /** @format int32 */
   totalPages?: number;
   collections?: CollectionDto[];
-}
-
-export interface PaginatedStoryDto {
-  /** @format int64 */
-  totalItems?: number;
-  /** @format int32 */
-  currentPage?: number;
-  /** @format int32 */
-  totalPages?: number;
-  stories?: StoryDto[];
 }
 
 export enum SearchScopeEnum {
@@ -548,7 +549,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {},
     ) =>
-      this.request<StoryDto[], any>({
+      this.request<PaginatedStoryDto, any>({
         path: `/writer/stories`,
         method: "GET",
         query: query,
@@ -839,20 +840,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags writer-collection-controller
-     * @name GetStoriesForCollection
-     * @request GET:/writer/collections/{collectionId}/stories
+     * @name GetCollection
+     * @request GET:/writer/collections/{collectionId}
      */
-    getStoriesForCollection: (
-      collectionId: string,
-      query: {
-        pageable: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<PaginatedStoryDto, any>({
-        path: `/writer/collections/${collectionId}/stories`,
+    getCollection: (collectionId: string, params: RequestParams = {}) =>
+      this.request<CollectionDto, any>({
+        path: `/writer/collections/${collectionId}`,
         method: "GET",
-        query: query,
         format: "json",
         ...params,
       }),
@@ -905,7 +899,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {},
     ) =>
-      this.request<StoryDto[], any>({
+      this.request<PaginatedStoryDto, any>({
         path: `/reader/stories`,
         method: "GET",
         query: query,
@@ -1011,20 +1005,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags reader-collection-controller
-     * @name GetStoriesForCollection1
-     * @request GET:/reader/collections/{collectionId}/stories
+     * @name GetCollection1
+     * @request GET:/reader/collections/{collectionId}
      */
-    getStoriesForCollection1: (
-      collectionId: string,
-      query: {
-        pageable: PageableDto;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<PaginatedStoryDto, any>({
-        path: `/reader/collections/${collectionId}/stories`,
+    getCollection1: (collectionId: string, params: RequestParams = {}) =>
+      this.request<CollectionDto, any>({
+        path: `/reader/collections/${collectionId}`,
         method: "GET",
-        query: query,
         format: "json",
         ...params,
       }),

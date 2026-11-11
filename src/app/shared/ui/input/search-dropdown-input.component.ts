@@ -78,7 +78,6 @@ export class SearchDropdownInputComponent<T extends { id: string }> implements O
   clear(): void {
     this.control.setValue(null);
     this.searchControl.setValue('', {emitEvent: false});
-    this.clearOptionsList.emit();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

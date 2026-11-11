@@ -23,4 +23,5 @@ export interface CollectionCreateFormModalData extends IFormModalData<CreateColl
 export interface AddStoryToCollectionFormModalData
   extends IFormModalData<AddStoryToCollectionFormData> {
   stories$: Observable<StoryDto[]>;
+  search: (name: string) => void;
 }

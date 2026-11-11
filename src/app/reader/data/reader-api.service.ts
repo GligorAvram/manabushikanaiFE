@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, StoryDto } from '@models/Api';
+import { CollectionDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, StoryDto } from '@models/Api';
 import { ReaderStore } from '@reader/data/reader.store';
 import { ApiResult } from '@shared/data/api-result';
 import { apiRoutes } from '@shared/data/api-routes';
@@ -50,13 +50,10 @@ export class ReaderApiService extends ApiService {
         );
     }
 
-    getStoriesForCollection(collectionId: string): Observable<ApiResult<PaginatedStoryDto>> {
-        const paginationParams = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
-
-        return this.getWithParams<HttpParams, PaginatedStoryDto>(
-            `${ apiRoutes.reader.collections.base }/${ collectionId }/stories`,
-            paginationParams,
-            this.readerStore.onCollectionStoriesLoaded.bind( this.readerStore )
+    getCollection(collectionId: string): Observable<ApiResult<CollectionDto>> {
+        return this.get(
+            `${ apiRoutes.reader.collections.base }/${ collectionId }`,
+            this.readerStore.onCollectionLoaded.bind( this.readerStore )
         );
     }
 }

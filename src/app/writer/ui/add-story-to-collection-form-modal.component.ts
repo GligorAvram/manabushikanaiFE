@@ -28,15 +28,18 @@ import { of } from 'rxjs';
                                 class="displayBlock"
                                 appInput
                                 label="Story"
-                                placeholder="Search for a story..."
+                                placeholder="Search for a story by name..."
                                 [control]="form.controls.storyId"
                                 [searchResults]="searchResults"
                                 [displayFn]="displayStory"
+                                [clearOptionsListAfterSearch]="false"
                                 (search)="onSearch($event)"
-                                (clearOptionsList)="applyFilter()"
                             ></app-search-dropdown-input>
-                            <em *ngIf="allStories.length === 0" class="empty">
-                                No more stories available to add.
+                            <em *ngIf="query.trim().length > 0 && query.trim().length < minSearchLength" class="hint">
+                                Type at least {{ minSearchLength }} characters to search.
+                            </em>
+                            <em *ngIf="query.trim().length >= minSearchLength && searchResults.length === 0" class="hint">
+                                No stories found.
                             </em>
                         </form>
                     </app-form-modal>
@@ -48,7 +51,7 @@ import { of } from 'rxjs';
                             width: 100%;
                         }
 
-                        .empty {
+                        .hint {
                             display: block;
                             color: #5b5b5b;
                         }
@@ -68,13 +71,12 @@ export class AddStoryToCollectionFormModalComponent extends AbstractForm<AddStor
     override initialValues?: null | undefined;
     override loading: boolean = false;
     override onSubmit: SubmitFn<AddStoryToCollectionFormData>;
-    allStories: StoryDto[] = [];
+    readonly minSearchLength = 3;
     searchResults: StoryDto[] = [];
+    query = '';
 
     @ViewChild( SearchDropdownInputComponent )
     private readonly dropdown?: SearchDropdownInputComponent<StoryDto>;
-
-    private query = '';
 
     constructor(
         @Inject( MAT_DIALOG_DATA )
@@ -89,8 +91,10 @@ export class AddStoryToCollectionFormModalComponent extends AbstractForm<AddStor
         this.data.stories$
             .pipe( takeUntilDestroy( this ) )
             .subscribe( (stories) => {
-                this.allStories = stories;
-                this.applyFilter();
+                // Ignore stale emissions while the query is below the search threshold.
+                if( this.query.trim().length >= this.minSearchLength ) {
+                    this.searchResults = stories;
+                }
             } );
     }
 
@@ -103,14 +107,11 @@ export class AddStoryToCollectionFormModalComponent extends AbstractForm<AddStor
 
     onSearch(query: string): void {
         this.query = query;
-        this.applyFilter();
-    }
-
-    applyFilter(): void {
-        const normalized = this.query.trim().toLowerCase();
-        this.searchResults = normalized
-            ? this.allStories.filter( (story) => story.name.toLowerCase().includes( normalized ) )
-            : [ ...this.allStories ];
+        if( query.trim().length >= this.minSearchLength ) {
+            this.data.search( query );
+        } else {
+            this.searchResults = [];
+        }
     }
 
     protected override componentInstance(): ComponentInstance | null {
@@ -127,8 +128,11 @@ export class AddStoryToCollectionFormModalComponent extends AbstractForm<AddStor
         if( !formData.storyId ) {
             return;
         }
+        // Adds the story and resets the field; the next 3+ char search re-queries the
+        // backend fresh, so the just-added (now categorized) story won't reappear.
         this.data.onSubmit( formData );
         this.query = '';
+        this.searchResults = [];
         this.dropdown?.clear();
         this.form.reset();
     }

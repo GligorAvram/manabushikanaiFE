@@ -26,7 +26,11 @@ export class ReaderQueries extends BaseQuery<ReaderState> {
         return this.select( (state) => state.collections ?? [] );
     }
 
+    selectActiveCollection(): Observable<CollectionDto | null> {
+        return this.select( (state) => state.activeCollection ?? null );
+    }
+
     selectCollectionStories(): Observable<StoryDto[]> {
-        return this.select( (state) => state.collectionStories ?? [] );
+        return this.select( (state) => state.activeCollection?.stories ?? [] );
     }
 }
