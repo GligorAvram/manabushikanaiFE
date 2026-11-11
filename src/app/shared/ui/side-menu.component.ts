@@ -170,13 +170,18 @@ export class SideMenuComponent {
       },
       {
         title: 'Reader',
-      
+
         entries: [
           {
             title: 'Stories',
             routerLink: AppR.reader.stories.list.full,
             icon: IconEnum.Stories
-        
+
+          },
+          {
+            title: 'Collections',
+            routerLink: AppR.reader.collections.list.full,
+            icon: IconEnum.Collections
           },
         ],
       },
@@ -187,6 +192,11 @@ export class SideMenuComponent {
             title: 'Stories',
             routerLink: AppR.writer.list.full,
             icon: IconEnum.Stories
+          },
+          {
+            title: 'Collections',
+            routerLink: AppR.writer.collections.list.full,
+            icon: IconEnum.Collections
           },
         ],
       },

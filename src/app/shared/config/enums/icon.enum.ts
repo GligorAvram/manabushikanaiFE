@@ -3,8 +3,11 @@ Dashboard='dashboard',
 Profile='account_circle',
 Settings='settings',
 Stories='auto_stories',
+Collections='collections_bookmark',
 Back='arrow_back',
 Add="add",
+Remove="remove",
+DragHandle="drag_handle",
 
 // svgs
 SliderRightIcon =

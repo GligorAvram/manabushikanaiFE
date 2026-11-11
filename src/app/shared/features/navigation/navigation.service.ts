@@ -41,4 +41,24 @@ export class NavigationService {
             .then();
     }
 
+    readerCollectionList(): void {
+        this.navigateTo( AppR.reader.collections.list.full )
+            .then();
+    }
+
+    readerCollectionDetails(collectionId: string): void {
+        this.navigateTo( `${ AppR.reader.collections.list.full }/${ collectionId }` )
+            .then();
+    }
+
+    writerCollectionList(): void {
+        this.navigateTo( AppR.writer.collections.list.full )
+            .then();
+    }
+
+    writerCollectionDetails(collectionId: string): void {
+        this.navigateTo( `${ AppR.writer.collections.list.full }/${ collectionId }` )
+            .then();
+    }
+
 }

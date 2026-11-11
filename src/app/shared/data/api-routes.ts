@@ -13,11 +13,17 @@ export const apiRoutes = {
             sentences   : `${ apiUrl }/writer/stories/translations/sentences`,
             words       : `${ apiUrl }/writer/stories/translations/words`,
             dictionary  : `${ apiUrl }/writer/dictionary`
+        },
+        collections: {
+            base: `${ apiUrl }/writer/collections`
         }
     },
     reader: {
         stories: {
             base: `${ apiUrl }/reader/stories`
+        },
+        collections: {
+            base: `${ apiUrl }/reader/collections`
         }
     }
 };

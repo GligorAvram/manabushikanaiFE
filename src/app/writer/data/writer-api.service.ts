@@ -5,7 +5,7 @@ import { apiRoutes } from '@shared/data/api-routes';
 import { ApiService } from '@shared/data/api.service';
 import { createPaginationParams } from '@shared/functions';
 import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
-import { CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedParagraphDto, ParagraphDto, StoryDto } from 'app/models/Api';
+import { CollectionDto, CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedStoryDto, ParagraphDto, ReorderCollectionDto, StoryDto } from 'app/models/Api';
 import { Observable } from 'rxjs';
 import { WriterStore } from './writer.store';
 
@@ -111,6 +111,64 @@ export class WriterApiService extends ApiService {
             `${ apiRoutes.writer.stories.base }/paragraphs/${ paragraphId }/ai/words`,
             {},
             this.writerStore.onSentenceTranslationAdded.bind( this.writerStore )
+        );
+    }
+
+    getAllCollections(): Observable<ApiResult<PaginatedCollectionDto>> {
+        const paginationParams = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
+
+        return this.getWithParams<HttpParams, PaginatedCollectionDto>(
+            apiRoutes.writer.collections.base,
+            paginationParams,
+            this.writerStore.onCollectionListLoaded.bind( this.writerStore )
+        );
+    }
+
+    createCollection(data: CreateCollectionDto): Observable<ApiResult<CollectionDto>> {
+        return this.post<CreateCollectionDto, CollectionDto>(
+            apiRoutes.writer.collections.base,
+            data,
+            this.writerStore.onCollectionCreated.bind( this.writerStore )
+        );
+    }
+
+    getStoriesForCollection(collectionId: string): Observable<ApiResult<PaginatedStoryDto>> {
+        const paginationParams = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
+
+        return this.getWithParams<HttpParams, PaginatedStoryDto>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories`,
+            paginationParams,
+            this.writerStore.onCollectionStoriesLoaded.bind( this.writerStore )
+        );
+    }
+
+    getUncategorizedStories(): Observable<ApiResult<StoryDto[]>> {
+        const params = new HttpParams().append( 'uncategorized', true );
+
+        return this.getWithParams<HttpParams, StoryDto[]>(
+            apiRoutes.writer.stories.base,
+            params,
+            this.writerStore.onUncategorizedStoriesLoaded.bind( this.writerStore )
+        );
+    }
+
+    addStoryToCollection(collectionId: string, storyId: string): Observable<ApiResult<CollectionDto>> {
+        return this.post<{}, CollectionDto>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/${ storyId }`,
+            {}
+        );
+    }
+
+    removeStoryFromCollection(collectionId: string, storyId: string): Observable<ApiResult<CollectionDto>> {
+        return this.delete<CollectionDto>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/${ storyId }`
+        );
+    }
+
+    reorderCollectionStories(collectionId: string, data: ReorderCollectionDto): Observable<ApiResult<CollectionDto>> {
+        return this.put<ReorderCollectionDto, CollectionDto>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/order`,
+            data
         );
     }
 
