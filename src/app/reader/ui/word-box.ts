@@ -1,51 +1,109 @@
 import { NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { MatTooltip } from '@angular/material/tooltip';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { WordDto } from '@models/Api';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { ACCENT_COLORS } from '@shared/config/constants/accent-colors';
 import { KanaTypesEnum } from '@shared/config/enums/kana-types.enum';
 import { ShowAccent } from '@shared/config/enums/show-accent.enum';
+import { InfoPopupBadge, InfoPopupCardComponent, InfoPopupRow } from '@shared/ui/info-popup-card.component';
 
 @Component( {
                 selector       : 'app-word-box',
                 standalone     : true,
                 imports        : [
-                    MatTooltip,
-                    NgStyle
+                    NgStyle,
+                    OverlayModule,
+                    InfoPopupCardComponent
                 ],
                 template       : `
                     <span
+                        cdkOverlayOrigin
+                        #origin="cdkOverlayOrigin"
                         [ngStyle]="{
-                            'background-color': hovered && (word.translation.englishTranslation !== 'PUNCTUATION' && word.translation.englishTranslation !== 'IGNORE') ? 'lightgrey' : 'white',
-                            'color': showAccent === ShowAccent.SHOW ? ACCENT_COLORS[word.translation.pitchAccent] : '#000000'
+                            'background-color': (open || hovered) && isClickable ? 'lightgrey' : 'white',
+                            'color': showAccent === ShowAccent.SHOW ? ACCENT_COLORS[word.translation.pitchAccent] : '#000000',
+                            'cursor': isClickable ? 'pointer' : 'default'
                         }"
-                        (click)="wordTooltip.toggle()"
-                        #wordTooltip="matTooltip"
+                        (click)="toggle()"
                         (mouseenter)="handleMouseOverSentence($event, true)"
-                        (mouseleave)="handleMouseOverSentence($event, false)"
-                        [matTooltipDisabled]="word.translation.englishTranslation === 'PUNCTUATION' || word.translation.englishTranslation === 'IGNORE'"
-                        matTooltip="{{word.translation.dictionaryForm}}({{word.translation.kana}}) : {{word.translation.englishTranslation}}"
-                        matTooltipPosition="above">
+                        (mouseleave)="handleMouseOverSentence($event, false)">
                         {{ getWordToDisplay(word) }}
                     </span>
+
+                    <app-info-popup-card
+                        [origin]="origin"
+                        [open]="open"
+                        [title]="word.translation.dictionaryForm"
+                        [titleColor]="ACCENT_COLORS[word.translation.pitchAccent]"
+                        [subtitle]="subtitle"
+                        [badges]="badges"
+                        [rows]="rows"
+                        (closed)="close()">
+                    </app-info-popup-card>
                 `,
                 changeDetection: ChangeDetectionStrategy.OnPush
             } )
-export class WordBoxComponent implements OnInit {
+export class WordBoxComponent {
     @Input() word!: WordDto;
     @Input() kana!: string;
     @Input() showAccent!: ShowAccent;
 
     hovered = false;
+    open = false;
+
     protected readonly ACCENT_COLORS = ACCENT_COLORS;
     protected readonly ShowAccent = ShowAccent;
+
+    get isClickable(): boolean {
+        const english = this.word.translation.englishTranslation;
+        return english !== 'PUNCTUATION' && english !== 'IGNORE';
+    }
+
+    get subtitle(): string | undefined {
+        const { kana, dictionaryForm } = this.word.translation;
+        return kana && kana !== dictionaryForm ? kana : undefined;
+    }
+
+    get badges(): InfoPopupBadge[] {
+        const result: InfoPopupBadge[] = [];
+        const { pitchAccent, isSetPhrase } = this.word.translation;
+        if( pitchAccent && pitchAccent !== 'NONE' ) {
+            result.push( { text: this.formatAccent( pitchAccent ), color: ACCENT_COLORS[pitchAccent] } );
+        }
+        if( isSetPhrase ) {
+            result.push( { text: 'Set phrase', muted: true } );
+        }
+        return result;
+    }
+
+    get rows(): InfoPopupRow[] {
+        const t = this.word.translation;
+        return [
+            { label: 'English', value: t.englishTranslation },
+            { label: '定義', value: t.japaneseDefinition },
+            { label: 'Also written', chips: t.alternativeWritings?.map( alt => alt.alternativeWriting ) },
+            { label: 'Note', value: t.observation, note: true },
+            { label: 'In context', value: this.word.observation, note: true }
+        ];
+    }
 
     handleMouseOverSentence($event: MouseEvent, hovered: boolean): void {
         $event.stopImmediatePropagation();
         this.hovered = hovered;
     }
 
-    ngOnInit(): void {
+    toggle(): void {
+        if( this.isClickable ) {
+            this.open = !this.open;
+        }
+    }
+
+    close(): void {
+        this.open = false;
+    }
+
+    formatAccent(accent: string): string {
+        return accent.charAt( 0 ) + accent.slice( 1 ).toLowerCase();
     }
 
     getWordToDisplay(word: WordDto): string {

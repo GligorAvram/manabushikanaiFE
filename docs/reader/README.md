@@ -6,4 +6,4 @@ the store/queries/actions/api service.
 
 ## Docs
 
-- (none yet — add a topic doc when a reader feature grows conventions or gotchas.)
+- [word-popup.md](word-popup.md) — the click-to-reveal cards for words & sentences (shared `app-info-popup-card`, CDK overlay).
