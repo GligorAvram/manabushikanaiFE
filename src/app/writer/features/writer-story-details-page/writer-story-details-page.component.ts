@@ -35,7 +35,7 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                             </div>
 
                             <mat-stepper [linear]="false" #stepper>
-                                <mat-step *ngFor="let paragraph of data.paragraphs!.paragraphs" [stepControl]="firstFormGroup"
+                                <mat-step *ngFor="let paragraph of data.paragraphs?.paragraphs" [stepControl]="firstFormGroup"
                                           [completed]="checkIfCompleted(paragraph)">
 
                                     <app-container *ngIf="selected===sentenceView">

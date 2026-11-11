@@ -18,3 +18,15 @@ actions/api service.
   component's `.ts`; an orphan standalone component is **not** type-checked by the build.
 
 Add a new topic doc here when a writer feature has conventions or gotchas worth keeping.
+
+## Gotchas
+
+### Template `!` (non-null assertion) does not guard at runtime
+- **Symptom:** opening a story with no translations yet throws
+  `TypeError: can't access property "paragraphs", data.paragraphs is null` in the console.
+- **Cause:** the story-details stepper iterated `data.paragraphs!.paragraphs`. The `!`
+  only silences the TS compiler; at runtime `data.paragraphs` is `null` (no paragraphs
+  loaded) so `.paragraphs` throws.
+- **Rule:** in templates use safe navigation (`?.`), never `!`, on data that can be
+  null/undefined. `*ngFor` over `null`/`undefined` is fine — it renders nothing.
+- **Ref:** `writer/features/writer-story-details-page/writer-story-details-page.component.ts:38`
