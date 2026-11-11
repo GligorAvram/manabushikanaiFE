@@ -22,6 +22,15 @@ export const AppR = {
         simple: ':id',
       },
     },
+    collections: {
+      list: {
+        full: '/reader/collections',
+        simple: 'reader/collections',
+      },
+      details: {
+        simple: ':id',
+      },
+    },
   },
   writer: {
     list: {
@@ -30,6 +39,15 @@ export const AppR = {
     },
     details: {
       simple: ':id',
+    },
+    collections: {
+      list: {
+        full: '/writer/collections',
+        simple: 'writer/collections',
+      },
+      details: {
+        simple: ':id',
+      },
     },
   },
 };

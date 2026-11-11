@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BaseState} from '@shared/data/base.state';
 import {StoreNameEnum} from '@shared/data/store.constants';
 import {storeEvent} from '@shared/data/store.decorators';
-import {DictionaryWordDto, PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
+import {CollectionDto, DictionaryWordDto, PaginatedCollectionDto, PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
 import {BaseStore} from "@shared/data/store.models";
 
 export interface WriterState extends BaseState {
@@ -10,6 +10,9 @@ export interface WriterState extends BaseState {
   paragraphs: PaginatedParagraphDto | null,
   activeStory: StoryDto | null
   possibleWordTranslations: DictionaryWordDto[]
+  collections: CollectionDto[]
+  activeCollection: CollectionDto | null
+  uncategorizedStories: StoryDto[]
 }
 
 const createInitialState = (): WriterState => ({
@@ -17,6 +20,9 @@ const createInitialState = (): WriterState => ({
   paragraphs: null,
   possibleWordTranslations: [],
   activeStory: null,
+  collections: [],
+  activeCollection: null,
+  uncategorizedStories: [],
   success: false,
   loading: false,
   error: null,
@@ -72,5 +78,25 @@ export class WriterStore extends BaseStore<WriterState> {
   @storeEvent('Story published')
   onStoryPublished(story: StoryDto): void {
     this.update({activeStory: story});
+  }
+
+  @storeEvent('Collection list loaded')
+  onCollectionListLoaded(page: PaginatedCollectionDto): void {
+    this.update({collections: page.collections ?? []});
+  }
+
+  @storeEvent('Collection created')
+  onCollectionCreated(collection: CollectionDto): void {
+    this.update({collections: [collection, ...this.getValue().collections]});
+  }
+
+  @storeEvent('Collection loaded')
+  onCollectionLoaded(collection: CollectionDto): void {
+    this.update({activeCollection: collection});
+  }
+
+  @storeEvent('Uncategorized stories loaded')
+  onUncategorizedStoriesLoaded(stories: StoryDto[]): void {
+    this.update({uncategorizedStories: stories});
   }
 }

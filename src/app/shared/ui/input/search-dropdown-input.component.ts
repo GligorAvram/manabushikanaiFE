@@ -75,6 +75,11 @@ export class SearchDropdownInputComponent<T extends { id: string }> implements O
     }
   }
 
+  clear(): void {
+    this.control.setValue(null);
+    this.searchControl.setValue('', {emitEvent: false});
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["initialValue"] && this.initialValue !== undefined) {
       this.onSelect(this.initialValue!)

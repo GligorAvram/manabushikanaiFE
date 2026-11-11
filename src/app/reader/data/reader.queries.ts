@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PaginatedParagraphDto, StoryDto } from '@models/Api';
+import { CollectionDto, PaginatedParagraphDto, StoryDto } from '@models/Api';
 import { ReaderState, ReaderStore } from '@reader/data/reader.store';
 import { BaseQuery } from '@shared/data/base.query';
 import { Observable } from 'rxjs';
@@ -20,5 +20,17 @@ export class ReaderQueries extends BaseQuery<ReaderState> {
 
     selectParagraphs(): Observable<PaginatedParagraphDto | null> {
         return this.select( state => state.paragraphs ?? null );
+    }
+
+    selectCollections(): Observable<CollectionDto[]> {
+        return this.select( (state) => state.collections ?? [] );
+    }
+
+    selectActiveCollection(): Observable<CollectionDto | null> {
+        return this.select( (state) => state.activeCollection ?? null );
+    }
+
+    selectCollectionStories(): Observable<StoryDto[]> {
+        return this.select( (state) => state.activeCollection?.stories ?? [] );
     }
 }

@@ -42,6 +42,20 @@ const routes: Routes = [
                     import(
                         '@writer/features/writer-shell/writer-shell.module'
                         ).then( (m) => m.WriterShellModule )
+            },
+            {
+                path        : AppR.reader.collections.list.simple,
+                loadChildren: () =>
+                    import(
+                        '@reader/features/reader-collection-shell/reader-collection-shell.module'
+                        ).then( (m) => m.ReaderCollectionShellModule )
+            },
+            {
+                path        : AppR.writer.collections.list.simple,
+                loadChildren: () =>
+                    import(
+                        '@writer/features/writer-collection-shell/writer-collection-shell.module'
+                        ).then( (m) => m.WriterCollectionShellModule )
             }
         ]
     }

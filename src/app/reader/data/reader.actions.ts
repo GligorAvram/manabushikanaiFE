@@ -28,4 +28,16 @@ export class ReaderActions {
     loadParagraphs(storyId: string, page: PageableDto): void {
         firstValueFrom(this.readerApiService.getPaginatedParagraphs(storyId, page)).then()
     }
+
+    @action( 'Load all collections' )
+    loadAllCollections(): void {
+        firstValueFrom( this.readerApiService.getAllCollections() )
+            .then();
+    }
+
+    @action( 'Load collection' )
+    loadCollection(collectionId: string): void {
+        firstValueFrom( this.readerApiService.getCollection( collectionId ) )
+            .then();
+    }
 }
