@@ -31,6 +31,12 @@ export const AppR = {
         simple: ':id',
       },
     },
+    tags: {
+      list: {
+        full: '/reader/tags',
+        simple: 'reader/tags',
+      },
+    },
   },
   writer: {
     list: {
@@ -47,6 +53,12 @@ export const AppR = {
       },
       details: {
         simple: ':id',
+      },
+    },
+    tags: {
+      list: {
+        full: '/writer/tags',
+        simple: 'writer/tags',
       },
     },
   },

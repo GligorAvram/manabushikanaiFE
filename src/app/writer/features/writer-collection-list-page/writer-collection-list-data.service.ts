@@ -3,7 +3,8 @@ import { BaseComponentDataService, ComponentDataSource } from '@shared/data/comp
 import { WriterActions } from '@writer/data/writer.actions';
 import { WriterQueries } from '@writer/data/writer.queries';
 import { WriterState } from '@writer/data/writer.store';
-import { CollectionDto, CreateCollectionDto } from 'app/models/Api';
+import { CollectionDto, CreateCollectionDto, TagDto } from 'app/models/Api';
+import { Observable } from 'rxjs';
 
 interface WriterCollectionListComponentData {
     collections: CollectionDto[];
@@ -37,5 +38,25 @@ export class WriterCollectionListDataService extends BaseComponentDataService<
 
     create(data: CreateCollectionDto): void {
         this.writerActions.createCollection( data );
+    }
+
+    collectionTags$(collectionId: string): Observable<TagDto[]> {
+        return this.writerQueries.selectCollectionTags( collectionId );
+    }
+
+    get tagSuggestions$(): Observable<TagDto[]> {
+        return this.writerQueries.selectTags();
+    }
+
+    searchTagSuggestions(name: string): void {
+        this.writerActions.loadAllTags( name );
+    }
+
+    addTagToCollection(collectionId: string, name: string): void {
+        this.writerActions.addTagToCollection( collectionId, { name } );
+    }
+
+    removeTagFromCollection(collectionId: string, tagId: string): void {
+        this.writerActions.removeTagFromCollection( collectionId, tagId );
     }
 }

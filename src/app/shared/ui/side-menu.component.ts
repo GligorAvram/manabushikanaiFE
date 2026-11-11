@@ -183,6 +183,11 @@ export class SideMenuComponent {
             routerLink: AppR.reader.collections.list.full,
             icon: IconEnum.Collections
           },
+          {
+            title: 'Browse by tag',
+            routerLink: AppR.reader.tags.list.full,
+            icon: IconEnum.Tag
+          },
         ],
       },
       {
@@ -197,6 +202,11 @@ export class SideMenuComponent {
             title: 'Collections',
             routerLink: AppR.writer.collections.list.full,
             icon: IconEnum.Collections
+          },
+          {
+            title: 'Tags',
+            routerLink: AppR.writer.tags.list.full,
+            icon: IconEnum.Tag
           },
         ],
       },

@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {WriterState, WriterStore} from "./writer.store";
 import {Observable} from "rxjs";
-import {CollectionDto, StoryDto} from "app/models/Api";
+import {CollectionDto, StoryDto, TagDto} from "app/models/Api";
 import {BaseQuery} from "@shared/data/base.query";
 
 @Injectable()
@@ -40,5 +40,17 @@ export class WriterQueries extends BaseQuery<WriterState> {
 
   selectUncategorizedStories(): Observable<StoryDto[]> {
     return this.select((state) => state.uncategorizedStories ?? []);
+  }
+
+  selectTags(): Observable<TagDto[]> {
+    return this.select((state) => state.tags ?? []);
+  }
+
+  selectStoryTags(storyId: string): Observable<TagDto[]> {
+    return this.select((state) => state.stories.find((story) => story.id === storyId)?.tags ?? []);
+  }
+
+  selectCollectionTags(collectionId: string): Observable<TagDto[]> {
+    return this.select((state) => state.collections.find((collection) => collection.id === collectionId)?.tags ?? []);
   }
 }

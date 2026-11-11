@@ -136,7 +136,7 @@ export class ApiService {
     response: Observable<Return>,
     fromGETRequest: boolean,
     successCb?: (data: Return, ...args: any[]) => any,
-    ...successCbExtraArgs: any[]
+    successCbExtraArgs: any[] = [],
   ): Observable<ApiResult<Return>> {
     return response.pipe(
       tap(() => this.store.onSuccess(fromGETRequest)),
@@ -158,7 +158,9 @@ export class ApiService {
             this.messageService.error( error.error );
     } else {
       this.store.setLoading(false);
-            console.error( error.error );
+            // Log the full error (including exceptions thrown inside success callbacks),
+            // not just error.error, which is undefined for non-HTTP errors.
+            console.error( error );
     }
 
     return of(new ApiResult<Return>({ error }));

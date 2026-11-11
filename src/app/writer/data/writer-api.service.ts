@@ -5,7 +5,7 @@ import { apiRoutes } from '@shared/data/api-routes';
 import { ApiService } from '@shared/data/api.service';
 import { createPaginationParams } from '@shared/functions';
 import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
-import { CollectionDto, CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, ParagraphDto, ReorderCollectionDto, StoryDto } from 'app/models/Api';
+import { CollectionDto, CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateStoryDto, CreateTagDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, PageableDto, PaginatedCollectionDto, PaginatedParagraphDto, PaginatedTagDto, ParagraphDto, ReorderCollectionDto, StoryDto, TagDto } from 'app/models/Api';
 import { Observable } from 'rxjs';
 import { WriterStore } from './writer.store';
 
@@ -176,6 +176,78 @@ export class WriterApiService extends ApiService {
             `${ apiRoutes.writer.collections.base }/${ collectionId }/stories/order`,
             data,
             this.writerStore.onCollectionLoaded.bind( this.writerStore )
+        );
+    }
+
+    getAllTags(name?: string): Observable<ApiResult<PaginatedTagDto>> {
+        let params = createPaginationParams( { pageNumber: 0, pageSize: 100 } );
+
+        if( name && name.trim() ) {
+            params = params.append( 'name', name.trim() );
+        }
+
+        return this.getWithParams<HttpParams, PaginatedTagDto>(
+            apiRoutes.writer.tags.base,
+            params,
+            this.writerStore.onTagListLoaded.bind( this.writerStore )
+        );
+    }
+
+    createTag(data: CreateTagDto): Observable<ApiResult<TagDto>> {
+        return this.post<CreateTagDto, TagDto>(
+            apiRoutes.writer.tags.base,
+            data,
+            this.writerStore.onTagCreated.bind( this.writerStore )
+        );
+    }
+
+    editTag(tagId: string, data: CreateTagDto): Observable<ApiResult<TagDto>> {
+        return this.put<CreateTagDto, TagDto>(
+            `${ apiRoutes.writer.tags.base }/${ tagId }`,
+            data,
+            this.writerStore.onTagUpdated.bind( this.writerStore )
+        );
+    }
+
+    deleteTag(tagId: string): Observable<ApiResult<boolean>> {
+        return this.delete<boolean>(
+            `${ apiRoutes.writer.tags.base }/${ tagId }`,
+            this.writerStore.onTagDeleted.bind( this.writerStore ),
+            tagId
+        );
+    }
+
+    addTagToStory(storyId: string, data: CreateTagDto): Observable<ApiResult<TagDto[]>> {
+        return this.post<CreateTagDto, TagDto[]>(
+            `${ apiRoutes.writer.stories.base }/${ storyId }/tags`,
+            data,
+            this.writerStore.onStoryTagsChanged.bind( this.writerStore ),
+            storyId
+        );
+    }
+
+    removeTagFromStory(storyId: string, tagId: string): Observable<ApiResult<TagDto[]>> {
+        return this.delete<TagDto[]>(
+            `${ apiRoutes.writer.stories.base }/${ storyId }/tags/${ tagId }`,
+            this.writerStore.onStoryTagsChanged.bind( this.writerStore ),
+            storyId
+        );
+    }
+
+    addTagToCollection(collectionId: string, data: CreateTagDto): Observable<ApiResult<TagDto[]>> {
+        return this.post<CreateTagDto, TagDto[]>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/tags`,
+            data,
+            this.writerStore.onCollectionTagsChanged.bind( this.writerStore ),
+            collectionId
+        );
+    }
+
+    removeTagFromCollection(collectionId: string, tagId: string): Observable<ApiResult<TagDto[]>> {
+        return this.delete<TagDto[]>(
+            `${ apiRoutes.writer.collections.base }/${ collectionId }/tags/${ tagId }`,
+            this.writerStore.onCollectionTagsChanged.bind( this.writerStore ),
+            collectionId
         );
     }
 

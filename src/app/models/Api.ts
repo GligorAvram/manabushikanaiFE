@@ -9,6 +9,20 @@
  * ---------------------------------------------------------------
  */
 
+export interface CreateTagDto {
+  /**
+   * @minLength 1
+   * @maxLength 2147483647
+   */
+  name: string;
+}
+
+export interface TagDto {
+  /** @format uuid */
+  id: string;
+  name: string;
+}
+
 export interface ReorderCollectionDto {
   /** @minItems 1 */
   storyIds: string[];
@@ -20,6 +34,7 @@ export interface CollectionDto {
   name: string;
   japaneseName: string;
   description?: string;
+  tags?: TagDto[];
   stories?: StoryDto[];
 }
 
@@ -42,20 +57,7 @@ export interface StoryDto {
   published: "true" | "false";
   difficulty: StoryDifficultyEnum;
   image: string;
-}
-
-export interface CreateTagDto {
-  /**
-   * @minLength 1
-   * @maxLength 2147483647
-   */
-  name: string;
-}
-
-export interface TagDto {
-  /** @format uuid */
-  id: string;
-  name: string;
+  tags?: TagDto[];
 }
 
 export interface CreateStoryDto {
@@ -65,7 +67,7 @@ export interface CreateStoryDto {
    */
   name: string;
   /**
-   * @minLength 3
+   * @minLength 1
    * @maxLength 2147483647
    */
   japaneseName: string;
@@ -217,6 +219,16 @@ export interface PageableDto {
   /** @format int32 */
   pageSize?: number;
   sort?: "ASCENDING" | "DESCENDING";
+}
+
+export interface PaginatedTagDto {
+  /** @format int64 */
+  totalItems?: number;
+  /** @format int32 */
+  currentPage?: number;
+  /** @format int32 */
+  totalPages?: number;
+  tags?: TagDto[];
 }
 
 export interface PaginatedStoryDto {
@@ -500,6 +512,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags writer-tag-controller
+     * @name EditTag
+     * @request PUT:/writer/tags/{tagId}
+     */
+    editTag: (tagId: string, data: CreateTagDto, params: RequestParams = {}) =>
+      this.request<TagDto, any>({
+        path: `/writer/tags/${tagId}`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-tag-controller
+     * @name DeleteTag
+     * @request DELETE:/writer/tags/{tagId}
+     */
+    deleteTag: (tagId: string, params: RequestParams = {}) =>
+      this.request<boolean, any>({
+        path: `/writer/tags/${tagId}`,
+        method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags writer-collection-controller
      * @name ReorderCollectionStories
      * @request PUT:/writer/collections/{collectionId}/stories/order
@@ -510,6 +554,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "PUT",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags writer-tag-controller
+     * @name GetAllTags
+     * @request GET:/writer/tags
+     */
+    getAllTags: (
+      query: {
+        name?: string;
+        pageable: PageableDto;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<PaginatedTagDto, any>({
+        path: `/writer/tags`,
+        method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),

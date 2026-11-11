@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BaseState} from '@shared/data/base.state';
 import {StoreNameEnum} from '@shared/data/store.constants';
 import {storeEvent} from '@shared/data/store.decorators';
-import {CollectionDto, DictionaryWordDto, PaginatedCollectionDto, PaginatedParagraphDto, ParagraphDto, StoryDto} from 'app/models/Api';
+import {CollectionDto, DictionaryWordDto, PaginatedCollectionDto, PaginatedParagraphDto, ParagraphDto, PaginatedTagDto, StoryDto, TagDto} from 'app/models/Api';
 import {BaseStore} from "@shared/data/store.models";
 
 export interface WriterState extends BaseState {
@@ -13,6 +13,7 @@ export interface WriterState extends BaseState {
   collections: CollectionDto[]
   activeCollection: CollectionDto | null
   uncategorizedStories: StoryDto[]
+  tags: TagDto[]
 }
 
 const createInitialState = (): WriterState => ({
@@ -23,6 +24,7 @@ const createInitialState = (): WriterState => ({
   collections: [],
   activeCollection: null,
   uncategorizedStories: [],
+  tags: [],
   success: false,
   loading: false,
   error: null,
@@ -32,6 +34,11 @@ const createInitialState = (): WriterState => ({
 export class WriterStore extends BaseStore<WriterState> {
   constructor() {
     super(StoreNameEnum.Writer, createInitialState());
+  }
+
+  /** Defensive: persisted/restored state can hold non-array values; always work off a real array. */
+  private asArray<T>(value: unknown): T[] {
+    return Array.isArray(value) ? value as T[] : [];
   }
 
   @storeEvent('Story list loaded')
@@ -98,5 +105,70 @@ export class WriterStore extends BaseStore<WriterState> {
   @storeEvent('Uncategorized stories loaded')
   onUncategorizedStoriesLoaded(stories: StoryDto[]): void {
     this.update({uncategorizedStories: stories});
+  }
+
+  @storeEvent('Tag list loaded')
+  onTagListLoaded(page: PaginatedTagDto): void {
+    this.update({tags: page.tags ?? []});
+  }
+
+  @storeEvent('Tag created')
+  onTagCreated(tag: TagDto): void {
+    this.update({tags: [tag, ...this.getValue().tags]});
+  }
+
+  @storeEvent('Tag updated')
+  onTagUpdated(tag: TagDto): void {
+    const state = this.getValue();
+    this.update({
+      tags: this.asArray<TagDto>(state.tags).map(t => t.id === tag.id ? tag : t),
+      stories: this.asArray<StoryDto>(state.stories).map(s => ({...s, tags: this.asArray<TagDto>(s.tags).map(t => t.id === tag.id ? tag : t)})),
+      collections: this.asArray<CollectionDto>(state.collections).map(c => ({...c, tags: this.asArray<TagDto>(c.tags).map(t => t.id === tag.id ? tag : t)})),
+      activeStory: state.activeStory
+        ? {...state.activeStory, tags: this.asArray<TagDto>(state.activeStory.tags).map(t => t.id === tag.id ? tag : t)}
+        : null,
+      activeCollection: state.activeCollection
+        ? {...state.activeCollection, tags: this.asArray<TagDto>(state.activeCollection.tags).map(t => t.id === tag.id ? tag : t)}
+        : null,
+    });
+  }
+
+  @storeEvent('Tag deleted')
+  onTagDeleted(_deleted: boolean, tagId: string): void {
+    const state = this.getValue();
+    const withoutTag = (tags?: TagDto[]) => this.asArray<TagDto>(tags).filter(t => t.id !== tagId);
+    this.update({
+      tags: this.asArray<TagDto>(state.tags).filter(t => t.id !== tagId),
+      stories: this.asArray<StoryDto>(state.stories).map(s => ({...s, tags: withoutTag(s.tags)})),
+      collections: this.asArray<CollectionDto>(state.collections).map(c => ({...c, tags: withoutTag(c.tags)})),
+      activeStory: state.activeStory
+        ? {...state.activeStory, tags: withoutTag(state.activeStory.tags)}
+        : null,
+      activeCollection: state.activeCollection
+        ? {...state.activeCollection, tags: withoutTag(state.activeCollection.tags)}
+        : null,
+    });
+  }
+
+  @storeEvent('Story tags changed')
+  onStoryTagsChanged(tags: TagDto[], storyId: string): void {
+    const state = this.getValue();
+    this.update({
+      stories: this.asArray<StoryDto>(state.stories).map(s => s.id === storyId ? {...s, tags} : s),
+      activeStory: state.activeStory?.id === storyId
+        ? {...state.activeStory, tags}
+        : state.activeStory,
+    });
+  }
+
+  @storeEvent('Collection tags changed')
+  onCollectionTagsChanged(tags: TagDto[], collectionId: string): void {
+    const state = this.getValue();
+    this.update({
+      collections: this.asArray<CollectionDto>(state.collections).map(c => c.id === collectionId ? {...c, tags} : c),
+      activeCollection: state.activeCollection?.id === collectionId
+        ? {...state.activeCollection, tags}
+        : state.activeCollection,
+    });
   }
 }

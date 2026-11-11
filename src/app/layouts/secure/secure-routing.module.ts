@@ -51,11 +51,25 @@ const routes: Routes = [
                         ).then( (m) => m.ReaderCollectionShellModule )
             },
             {
+                path        : AppR.reader.tags.list.simple,
+                loadChildren: () =>
+                    import(
+                        '@reader/features/reader-tag-search-page/reader-tag-search-page.module'
+                        ).then( (m) => m.ReaderTagSearchPageModule )
+            },
+            {
                 path        : AppR.writer.collections.list.simple,
                 loadChildren: () =>
                     import(
                         '@writer/features/writer-collection-shell/writer-collection-shell.module'
                         ).then( (m) => m.WriterCollectionShellModule )
+            },
+            {
+                path        : AppR.writer.tags.list.simple,
+                loadChildren: () =>
+                    import(
+                        '@writer/features/writer-tag-list-page/writer-tag-list-page.module'
+                        ).then( (m) => m.WriterTagListPageModule )
             }
         ]
     }

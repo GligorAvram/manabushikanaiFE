@@ -51,6 +51,12 @@ export class NavigationService {
             .then();
     }
 
+    readerTagBrowse(tag?: string): void {
+        this.router
+            .navigate( [ AppR.reader.tags.list.full ], tag ? { queryParams: { tag } } : undefined )
+            .then();
+    }
+
     writerCollectionList(): void {
         this.navigateTo( AppR.writer.collections.list.full )
             .then();
@@ -58,6 +64,11 @@ export class NavigationService {
 
     writerCollectionDetails(collectionId: string): void {
         this.navigateTo( `${ AppR.writer.collections.list.full }/${ collectionId }` )
+            .then();
+    }
+
+    writerTagList(): void {
+        this.navigateTo( AppR.writer.tags.list.full )
             .then();
     }
 

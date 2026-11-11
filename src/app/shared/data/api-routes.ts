@@ -16,6 +16,9 @@ export const apiRoutes = {
         },
         collections: {
             base: `${ apiUrl }/writer/collections`
+        },
+        tags: {
+            base: `${ apiUrl }/writer/tags`
         }
     },
     reader: {
@@ -24,6 +27,9 @@ export const apiRoutes = {
         },
         collections: {
             base: `${ apiUrl }/reader/collections`
+        },
+        search: {
+            base: `${ apiUrl }/reader/search`
         }
     }
 };

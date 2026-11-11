@@ -8,6 +8,7 @@ Back='arrow_back',
 Add="add",
 Remove="remove",
 DragHandle="drag_handle",
+Tag="label",
 
 // svgs
 SliderRightIcon =

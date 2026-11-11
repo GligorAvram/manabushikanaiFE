@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { IconEnum } from '@shared/config/enums/icon.enum';
 import { valueIsNotEmpty } from '@shared/functions';
 import { PathImage } from '@shared/ui/path-image.component';
+import { TagChipListComponent } from '@shared/ui/tag-chip-list.component';
 import { WriterPipesModule } from '@writer/pipes/writer-pipes.module';
-import { StoryDto } from 'app/models/Api';
+import { StoryDto, TagDto } from 'app/models/Api';
 import { LoadingBarComponent } from './loading-bar.component';
 
 @Component( {
@@ -31,6 +35,27 @@ import { LoadingBarComponent } from './loading-bar.component';
                                     <app-path-image [image]="story.image"></app-path-image>
                                 </td>
                             </ng-container>
+                            <ng-container matColumnDef="tags">
+                                <th mat-header-cell *matHeaderCellDef>Tags</th>
+                                <td mat-cell *matCellDef="let story" (click)="$event.stopPropagation()">
+                                    <div class="tags-cell">
+                                        <app-tag-chip-list
+                                            [tags]="story.tags ?? []"
+                                            [clickable]="clickableTags"
+                                            (onTagClick)="onTagClick.emit($event)"
+                                        ></app-tag-chip-list>
+                                        <button
+                                            *ngIf="manageableTags"
+                                            mat-icon-button
+                                            type="button"
+                                            aria-label="Manage tags"
+                                            (click)="onManageTags.emit(story)"
+                                        >
+                                            <mat-icon>{{ tagIcon }}</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </ng-container>
 
                             <tr mat-header-row *matHeaderRowDef="columns"></tr>
                             <tr
@@ -45,6 +70,15 @@ import { LoadingBarComponent } from './loading-bar.component';
                     </ng-template>
                 `,
                 providers      : [],
+                styles         : [
+                    `
+                        .tags-cell {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                    `
+                ],
                 styleUrl       : './table.scss',
                 changeDetection: ChangeDetectionStrategy.OnPush,
                 standalone     : true,
@@ -53,7 +87,10 @@ import { LoadingBarComponent } from './loading-bar.component';
                     CommonModule,
                     WriterPipesModule,
                     MatTableModule,
-                    PathImage
+                    MatButtonModule,
+                    MatIconModule,
+                    PathImage,
+                    TagChipListComponent
                 ]
             } )
 export class StoryListTableComponent implements OnInit {
@@ -63,9 +100,25 @@ export class StoryListTableComponent implements OnInit {
     @Input()
     loading!: boolean;
 
+    @Input()
+    showTags = false;
+
+    @Input()
+    manageableTags = false;
+
+    @Input()
+    clickableTags = false;
+
     @Output()
     onRowClick = new EventEmitter<StoryDto | undefined>();
 
+    @Output()
+    onManageTags = new EventEmitter<StoryDto>();
+
+    @Output()
+    onTagClick = new EventEmitter<TagDto>();
+
+    protected readonly tagIcon = IconEnum.Tag;
     columns: string[] = [];
 
     ngOnInit(): void {
@@ -79,6 +132,8 @@ export class StoryListTableComponent implements OnInit {
     }
 
     private setColumns(): void {
-        this.columns = [ 'name', 'difficulty', 'image' ];
+        this.columns = this.showTags
+            ? [ 'name', 'difficulty', 'image', 'tags' ]
+            : [ 'name', 'difficulty', 'image' ];
     }
 }

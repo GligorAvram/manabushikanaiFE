@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { action } from '@shared/data/store.decorators';
 import { CreateStoryWithFiles } from '@writer/ui/story-create-form-modal.component';
-import { CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateWordTranslationForParagraphDto, PageableDto, ReorderCollectionDto } from 'app/models/Api';
+import { CreateCollectionDto, CreateDictionaryWordDto, CreateParagraphTranslationDto, CreateTagDto, CreateWordTranslationForParagraphDto, PageableDto, ReorderCollectionDto } from 'app/models/Api';
 import { firstValueFrom } from 'rxjs';
 import { WriterApiService } from './writer-api.service';
 import { WriterStore } from './writer.store';
@@ -125,6 +125,54 @@ export class WriterActions {
     @action( 'Reorder collection stories' )
     reorderCollectionStories(collectionId: string, data: ReorderCollectionDto): void {
         firstValueFrom( this.writerApiService.reorderCollectionStories( collectionId, data ) )
+            .then();
+    }
+
+    @action( 'Load all tags' )
+    loadAllTags(name?: string): void {
+        firstValueFrom( this.writerApiService.getAllTags( name ) )
+            .then();
+    }
+
+    @action( 'Create tag' )
+    createTag(data: CreateTagDto): void {
+        firstValueFrom( this.writerApiService.createTag( data ) )
+            .then();
+    }
+
+    @action( 'Edit tag' )
+    editTag(tagId: string, data: CreateTagDto): void {
+        firstValueFrom( this.writerApiService.editTag( tagId, data ) )
+            .then();
+    }
+
+    @action( 'Delete tag' )
+    deleteTag(tagId: string): void {
+        firstValueFrom( this.writerApiService.deleteTag( tagId ) )
+            .then();
+    }
+
+    @action( 'Add tag to story' )
+    addTagToStory(storyId: string, data: CreateTagDto): void {
+        firstValueFrom( this.writerApiService.addTagToStory( storyId, data ) )
+            .then();
+    }
+
+    @action( 'Remove tag from story' )
+    removeTagFromStory(storyId: string, tagId: string): void {
+        firstValueFrom( this.writerApiService.removeTagFromStory( storyId, tagId ) )
+            .then();
+    }
+
+    @action( 'Add tag to collection' )
+    addTagToCollection(collectionId: string, data: CreateTagDto): void {
+        firstValueFrom( this.writerApiService.addTagToCollection( collectionId, data ) )
+            .then();
+    }
+
+    @action( 'Remove tag from collection' )
+    removeTagFromCollection(collectionId: string, tagId: string): void {
+        firstValueFrom( this.writerApiService.removeTagFromCollection( collectionId, tagId ) )
             .then();
     }
 }

@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { IconEnum } from '@shared/config/enums/icon.enum';
 import { ModalService } from '@shared/features/modal/modal.service';
 import { NavigationService } from '@shared/features/navigation/navigation.service';
-import { CollectionCreateFormModalData } from '@writer/config/writer.interfaces';
+import { CollectionCreateFormModalData, ManageTagsModalData } from '@writer/config/writer.interfaces';
 import { CollectionCreateFormModalComponent } from '@writer/ui/collection-create-form-modal.component';
-import { CreateCollectionDto } from 'app/models/Api';
+import { ManageTagsFormModalComponent } from '@writer/ui/manage-tags-form-modal.component';
+import { CollectionDto, CreateCollectionDto } from 'app/models/Api';
 import { UntilDestroy } from 'ngx-reactivetoolkit';
 import { of } from 'rxjs';
 import { WriterCollectionListDataService } from './writer-collection-list-data.service';
@@ -31,7 +32,10 @@ import { WriterCollectionListDataService } from './writer-collection-list-data.s
                         <app-collection-list-table
                             [collections]="data.collections"
                             [loading]="data.loading"
+                            [showTags]="true"
+                            [manageableTags]="true"
                             (onRowClick)="navigationService.writerCollectionDetails($event?.id!)"
+                            (onManageTags)="openManageTagsModal($event)"
                         ></app-collection-list-table>
                     </app-container>
                 `,
@@ -72,5 +76,25 @@ export class WriterCollectionListPageComponent implements OnInit {
 
     closeCollectionCreateFormModal(): void {
         this.modalService.close( CollectionCreateFormModalComponent );
+    }
+
+    openManageTagsModal(collection: CollectionDto): void {
+        this.modalService.openMdModal<ManageTagsModalData>(
+            ManageTagsFormModalComponent,
+            this,
+            {
+                title            : `Tags for "${ collection.name }"`,
+                tags$            : this.dataService.collectionTags$( collection.id ),
+                suggestions$     : this.dataService.tagSuggestions$,
+                searchSuggestions: (name: string) => this.dataService.searchTagSuggestions( name ),
+                onAdd            : (name: string) => this.dataService.addTagToCollection( collection.id, name ),
+                onRemove         : (tag) => this.dataService.removeTagFromCollection( collection.id, tag.id ),
+                onClose          : this.closeManageTagsModal.bind( this )
+            }
+        );
+    }
+
+    closeManageTagsModal(): void {
+        this.modalService.close( ManageTagsFormModalComponent );
     }
 }
