@@ -17,3 +17,57 @@
     max-height: 0;
 }
 
+/* ===== Reader design tokens =====
+   Calm "washi paper" surface + one indigo accent. Pitch-accent word colours
+   stay owned by ACCENT_COLORS (accent-colors.ts) — the only other colour system. */
+:root {
+    --reader-bg: #f7f5ef;
+    --reader-panel: #ffffff;
+    --reader-ink: #1c1b18;
+    --reader-ink-soft: #55524a;
+    --reader-muted: #8c887c;
+    --reader-line: #e7e3d8;
+    --reader-line-soft: #efece2;
+    --reader-accent: #38508c;
+    --reader-accent-soft: #eef1f8;
+    --reader-radius: 14px;
+
+    --font-ui: 'Inter', 'Roboto', system-ui, sans-serif;
+    --font-jp: 'Noto Sans JP', 'Roboto', sans-serif;
+    --font-reading: 'Shippori Mincho', 'Noto Serif JP', Georgia, serif;
+}
+
+/* Compact page action (Add story / collection / tag), token-styled to the reader palette.
+   Global so it applies inside component templates (emulated encapsulation). */
+.add-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 38px;
+    padding: 0 15px;
+    border: none;
+    border-radius: 9px;
+    background: var(--reader-accent);
+    color: #fff;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .12s ease;
+}
+
+.add-action:hover {
+    background: #2f4679;
+}
+
+.add-action:focus-visible {
+    outline: 2px solid var(--reader-accent);
+    outline-offset: 2px;
+}
+
+.add-action svg {
+    width: 16px;
+    height: 16px;
+}
+

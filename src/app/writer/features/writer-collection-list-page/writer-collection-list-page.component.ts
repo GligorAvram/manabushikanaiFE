@@ -20,13 +20,11 @@ import { WriterCollectionListDataService } from './writer-collection-list-data.s
                             title="Collection management page"
                             [icon]="icon.Collections"
                         ></app-title>
+                        <button headerRight type="button" class="add-action" (click)="openCollectionCreateFormModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                            New collection
+                        </button>
                     </app-header>
-                    <app-primary-button
-                        appButton
-                        label="Add new collection"
-                        [icon]="icon.Add"
-                        (onClick)="openCollectionCreateFormModal()"
-                    ></app-primary-button>
 
                     <app-container *ngIf="dataService.data$ | async as data">
                         <app-collection-list-table

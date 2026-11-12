@@ -16,6 +16,10 @@ actions/api service.
   (e.g. the tag admin page) are lazy-loaded directly from `secure-routing`.
 - Standalone modal components enter the build graph by being referenced from an in-graph
   component's `.ts`; an orphan standalone component is **not** type-checked by the build.
+- Primary "create" actions (Add story / collection / tag) live in the `app-header`
+  **`[headerRight]`** slot (right-aligned next to the title), not floating between the
+  header and the table. On the tag page, the search box sits in a separate toolbar row
+  below — create vs. filter are kept apart.
 
 Add a new topic doc here when a writer feature has conventions or gotchas worth keeping.
 

@@ -18,8 +18,11 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                     <app-container *ngIf="dataService.data$ | async as data">
                         <app-loading-bar [visible]="data.loading"></app-loading-bar>
                         <app-slider
-                            [rightOption]="sentenceView"
+                            leftLabel="Word"
+                            rightLabel="Sentence"
                             [leftOption]="wordView"
+                            [rightOption]="sentenceView"
+                            [checked]="selected === sentenceView"
                             (onChange)="setSelected($event)"
                         ></app-slider>
 

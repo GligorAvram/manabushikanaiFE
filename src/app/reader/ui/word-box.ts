@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { WordDto } from '@models/Api';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { ACCENT_COLORS } from '@shared/config/constants/accent-colors';
+import { DictionaryLanguageEnum } from '@shared/config/enums/dictionary-language.enum';
 import { KanaTypesEnum } from '@shared/config/enums/kana-types.enum';
 import { ShowAccent } from '@shared/config/enums/show-accent.enum';
 import { InfoPopupBadge, InfoPopupCardComponent, InfoPopupRow } from '@shared/ui/info-popup-card.component';
@@ -47,6 +48,7 @@ export class WordBoxComponent {
     @Input() word!: WordDto;
     @Input() kana!: string;
     @Input() showAccent!: ShowAccent;
+    @Input() language: DictionaryLanguageEnum = DictionaryLanguageEnum.ENGLISH;
 
     hovered = false;
     open = false;
@@ -78,9 +80,11 @@ export class WordBoxComponent {
 
     get rows(): InfoPopupRow[] {
         const t = this.word.translation;
+        const meaning: InfoPopupRow = this.language === DictionaryLanguageEnum.JAPANESE
+            ? { label: '定義', value: t.japaneseDefinition }
+            : { label: 'English', value: t.englishTranslation };
         return [
-            { label: 'English', value: t.englishTranslation },
-            { label: '定義', value: t.japaneseDefinition },
+            meaning,
             { label: 'Also written', chips: t.alternativeWritings?.map( alt => alt.alternativeWriting ) },
             { label: 'Note', value: t.observation, note: true },
             { label: 'In context', value: this.word.observation, note: true }

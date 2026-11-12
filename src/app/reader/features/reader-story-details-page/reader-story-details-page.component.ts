@@ -8,36 +8,69 @@ import { UntilDestroy } from 'ngx-reactivetoolkit';
         selector       : 'app-reader-story-details-page',
         standalone     : false,
         template       : `
-            <app-container
-                [height]="'100%'"
-                *ngIf="dataService.data$ | async as data">
+            <div class="reader" *ngIf="dataService.data$ | async as data">
                 <app-loading-bar [visible]="data.loading"></app-loading-bar>
-                <app-slider
-                    [rightOption]="sentenceView"
-                    [leftOption]="wordView"
-                    (onChange)="setSelected($event)"
-                ></app-slider>
 
-                <app-container *ngIf="data">
-                    <div class="mat-paginator-container">
-                        <mat-paginator [length]="data.paragraphs?.totalItems"
-                                       [pageSize]="10"
-                                       [pageSizeOptions]="[10]"
-                                       (page)="handlePageEvent($event)"
-                                       [hidePageSize]="true"
-                                       aria-label="Select page">
-                        </mat-paginator>
-                    </div>
+                <div class="reader__toolbar">
+                    <app-slider
+                        leftLabel="Word"
+                        rightLabel="Sentence"
+                        [leftOption]="wordView"
+                        [rightOption]="sentenceView"
+                        [checked]="selected === sentenceView"
+                        (onChange)="setSelected($event)">
+                    </app-slider>
 
-                    <app-container *ngIf="selected===sentenceView">
-                        <app-sentence-display-component [paragraphs]="data.paragraphs?.paragraphs"></app-sentence-display-component>
-                    </app-container>
-                    <app-container *ngIf="selected===wordView">
-                        <app-word-display-component [paragraphs]="data.paragraphs?.paragraphs"></app-word-display-component>
-                    </app-container>
-                </app-container>
-            </app-container>
+                    <mat-paginator class="reader__pager"
+                                   [length]="data.paragraphs?.totalItems"
+                                   [pageSize]="10"
+                                   [pageSizeOptions]="[10]"
+                                   (page)="handlePageEvent($event)"
+                                   [hidePageSize]="true"
+                                   aria-label="Select page">
+                    </mat-paginator>
+                </div>
+
+                <div class="reader__surface">
+                    <app-sentence-display-component
+                        *ngIf="selected === sentenceView"
+                        [paragraphs]="data.paragraphs?.paragraphs"></app-sentence-display-component>
+                    <app-word-display-component
+                        *ngIf="selected === wordView"
+                        [paragraphs]="data.paragraphs?.paragraphs"></app-word-display-component>
+                </div>
+            </div>
         `,
+        styles         : [
+            `
+                .reader {
+                    min-height: 100%;
+                    background: var(--reader-bg);
+                }
+
+                .reader__toolbar {
+                    position: sticky;
+                    top: 0;
+                    z-index: 2;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 12px 20px;
+                    background: var(--reader-panel);
+                    border-bottom: 1px solid var(--reader-line);
+                }
+
+                .reader__pager {
+                    margin-left: auto;
+                    background: transparent;
+                }
+
+                .reader__surface {
+                    padding: 32px 20px 64px;
+                }
+            `
+        ],
         providers      : [ ReaderStoryDetailsDataService ],
         changeDetection: ChangeDetectionStrategy.OnPush
     } )

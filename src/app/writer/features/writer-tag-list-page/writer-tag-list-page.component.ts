@@ -19,25 +19,34 @@ import { WriterTagListDataService } from './writer-tag-list-data.service';
                             title="Tag management page"
                             [icon]="icon.Tag"
                         ></app-title>
+                        <button headerRight type="button" class="add-action" (click)="openCreateModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                            New tag
+                        </button>
                     </app-header>
 
                     <div class="toolbar">
-                        <mat-form-field appearance="outline" class="search">
-                            <mat-label>Search tags</mat-label>
+                        <div class="search">
+                            <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="M21 21l-4-4"></path>
+                            </svg>
                             <input
-                                matInput
+                                class="search__input"
+                                type="text"
                                 [formControl]="searchControl"
-                                placeholder="Type to filter tags..."
+                                placeholder="Search tags…"
+                                aria-label="Search tags"
                                 (input)="onSearch()"
                             />
-                        </mat-form-field>
-                        <app-primary-button
-                            appButton
-                            label="Add tag"
-                            [type]="'button'"
-                            [icon]="icon.Add"
-                            (onClick)="openCreateModal()"
-                        ></app-primary-button>
+                            @if (searchControl.value) {
+                                <button class="search__clear" type="button" aria-label="Clear search" (click)="clearSearch()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path d="M18 6L6 18M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            }
+                        </div>
                     </div>
 
                     <app-container *ngIf="dataService.data$ | async as data">
@@ -82,21 +91,81 @@ import { WriterTagListDataService } from './writer-tag-list-data.service';
                 styles         : [
                     `
                         .toolbar {
-                            display: flex;
-                            align-items: center;
-                            gap: 16px;
-                            margin-bottom: 10px;
+                            margin-bottom: 14px;
                         }
 
                         .search {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            max-width: 360px;
+                            height: 40px;
+                            padding: 0 10px;
+                            background: var(--reader-panel);
+                            border: 1px solid var(--reader-line);
+                            border-radius: 10px;
+                            transition: border-color .12s ease, box-shadow .12s ease;
+                        }
+
+                        .search:focus-within {
+                            border-color: var(--reader-accent);
+                            box-shadow: 0 0 0 3px var(--reader-accent-soft);
+                        }
+
+                        .search__icon {
+                            flex: 0 0 auto;
+                            width: 16px;
+                            height: 16px;
+                            color: var(--reader-muted);
+                        }
+
+                        .search__input {
                             flex: 1 1 auto;
-                            max-width: 400px;
+                            min-width: 0;
+                            border: none;
+                            outline: none;
+                            background: transparent;
+                            font-family: var(--font-ui);
+                            font-size: 14px;
+                            color: var(--reader-ink);
+                        }
+
+                        .search__input::placeholder {
+                            color: var(--reader-muted);
+                        }
+
+                        .search__clear {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex: 0 0 auto;
+                            border: none;
+                            background: transparent;
+                            padding: 2px;
+                            cursor: pointer;
+                            color: var(--reader-muted);
+                        }
+
+                        .search__clear:hover {
+                            color: var(--reader-ink);
+                        }
+
+                        .search__clear svg {
+                            width: 16px;
+                            height: 16px;
+                        }
+
+                        :host ::ng-deep .mat-column-actions {
+                            width: 1%;
+                            white-space: nowrap;
+                            text-align: right;
                         }
 
                         .actions {
                             display: flex;
                             align-items: center;
-                            gap: 10px;
+                            justify-content: flex-end;
+                            gap: 8px;
                         }
                     `
                 ],
@@ -117,6 +186,11 @@ export class WriterTagListPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.dataService.init( this );
+    }
+
+    clearSearch(): void {
+        this.searchControl.setValue( '' );
+        this.dataService.search( '' );
     }
 
     onSearch(): void {
