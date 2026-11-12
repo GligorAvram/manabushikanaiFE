@@ -1,73 +1,64 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AppR } from '@shared/config/constants/routes';
 
-@Component({
-  standalone: true,
-  selector: 'app-top-bar',
-  template: `
-    <mat-toolbar class="app-navbar shadow-sm">
-      <div class="w-100 h-100">
-        <div class="d-flex align-items-center justify-content-between h-100">
-          <div class="d-flex align-items-center justify-content-start h-100">
-            <h1
-              class="m-0 p-0 text-center logo"
-              style="width: 250px"
-              [routerLink]="dashboardLink"
-            >
-              Manabi Reader
-            </h1>
-          </div>
-        </div>
-      </div>
-    </mat-toolbar>
-  `,
-  styles: [
-    `
-      .app-navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 50px;
-        background: #fff;
-        padding: 0;
-        z-index: 3;
-      }
+@Component( {
+                standalone     : true,
+                selector       : 'app-top-bar',
+                template       : `
+                    <header class="topbar">
+                        <a class="brand" [routerLink]="dashboardLink" aria-label="Manabi home">
+                            <span class="brand__jp">まなび</span>
+                            <span class="brand__en">Manabi</span>
+                        </a>
+                    </header>
+                `,
+                styles         : [
+                    `
+                        .topbar {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            height: 56px;
+                            display: flex;
+                            align-items: center;
+                            padding: 0 20px;
+                            background: var(--reader-panel, #fff);
+                            border-bottom: 1px solid var(--reader-line, #e7e3d8);
+                            z-index: 3;
+                        }
 
-      .logo {
-        width: 200px;
-        font-weight: bolder;
-        letter-spacing: 2px;
-        font-family: 'Ubuntu', sans-serif;
-        cursor: pointer;
-        background: #3f51b5;
-        background: linear-gradient(to right, #3f51b5 8%, #ff4081 73%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
+                        .brand {
+                            display: inline-flex;
+                            align-items: baseline;
+                            gap: 9px;
+                            text-decoration: none;
+                            cursor: pointer;
+                        }
 
-      .logo:hover {
-        background: #ff4081;
-        background: linear-gradient(to right, #ff4081 8%, #3f51b5 73%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-    `,
-  ],
-  imports: [
-    MatToolbarModule,
-    RouterModule
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
+                        .brand__jp {
+                            font-family: var(--font-reading, serif);
+                            font-weight: 700;
+                            font-size: 22px;
+                            color: var(--reader-accent, #38508c);
+                        }
+
+                        .brand__en {
+                            font-family: var(--font-ui, sans-serif);
+                            font-weight: 700;
+                            font-size: 16px;
+                            letter-spacing: .02em;
+                            color: var(--reader-ink, #1c1b18);
+                        }
+                    `
+                ],
+                imports        : [ RouterModule ],
+                changeDetection: ChangeDetectionStrategy.OnPush
+            } )
 export class TopBarComponent {
 
-  get dashboardLink(): string {
-    return AppR.dashboard.full;
-  }
+    get dashboardLink(): string {
+        return AppR.dashboard.full;
+    }
 }

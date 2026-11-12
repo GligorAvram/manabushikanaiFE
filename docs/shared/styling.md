@@ -19,7 +19,28 @@
   real `<button>`s (keyboard-focusable) rather than click-handlers on a div.
 - There is intentionally **no furigana** in the reader (product decision).
 
+## Navigation (chrome)
+
+- `top-bar` + `side-menu` (in the `secure` layout) are the app chrome, restyled to the
+  reader palette. The side menu is a full-height flex column: a **scrollable** top with the
+  **Reader** and **Writer** browse sections, and a **fixed, always-visible footer** with
+  account items (Dashboard / Profile / Settings) + **Log out**.
+- The Writer section is behind an `isEditor` flag in `side-menu.component.ts` — currently
+  hardcoded `true` (we assume the editor's view) with a TODO to gate on the signed-in
+  user's role in the accounts phase. `logout()` is a matching placeholder (no auth yet).
+- Active highlighting uses the **`routerLinkActive`** directive, not a hand-rolled
+  `router.url.includes(...)` check — see gotcha below.
+
 ## Gotchas
+
+### Active nav highlighting must use `routerLinkActive`, not a getter
+- **Symptom:** the old side menu's active item was stuck / didn't update on navigation.
+- **Cause:** it bound `[class.active]="isEntryActive(entry)"` which read `router.url` in a
+  getter, on an `OnPush` component. Navigation doesn't mark the menu dirty, so the binding
+  was never re-evaluated. (`url.includes()` is also prefix-fragile.)
+- **Rule:** use `routerLinkActive="..."` on the `<a [routerLink]>` — the directive tracks
+  the active route reactively and marks the view for check.
+- **Ref:** `src/app/shared/ui/side-menu.component.ts`
 
 ### Bootstrap utility classes are no-ops
 - **Symptom:** templates use `d-flex`, `w-100`, `rounded-3`, `p-3`, `shadow`, `mb-3`,
