@@ -38,6 +38,21 @@ Add a new topic doc here when a writer feature has conventions or gotchas worth 
 
 ## Gotchas
 
+### Both paragraph editors: escape highlight regex & resync selection on delete
+- **Applies to:** `sentence-editor` and `word-editor` (parallel code).
+- **Regex:** the "gray out what's already been added" highlighter builds a `RegExp` from the
+  sentence/word text. Raw text can contain regex metacharacters (`(`, `)`, `.`, `?`, …) which
+  throw `SyntaxError` (and the `removeX` splice has already run by then). Escape the input
+  (`escapeRegExp`) or avoid regex entirely — `word-editor.updateTextWithAllHighlights` uses a
+  `startsWith` scan instead.
+- **Delete must resync selection:** `removeWord`/`removeSentence` splice the array, so after a
+  delete they must: clear the edit box if the *selected* row was removed, or decrement
+  `selectedIndex` if an *earlier* row was removed — otherwise the edit box shows stale values or
+  edits the wrong row.
+- **New rows have undefined optional fields:** a row added by selecting text is
+  `{ originalWord/japaneseSentence } as …`, so other fields are `undefined`. Guard every
+  `setValue(row.field)` into a non-nullable control with `?? ''`.
+
 ### Template `!` (non-null assertion) does not guard at runtime
 - **Symptom:** opening a story with no translations yet throws
   `TypeError: can't access property "paragraphs", data.paragraphs is null` in the console.

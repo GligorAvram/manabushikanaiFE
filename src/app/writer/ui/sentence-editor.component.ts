@@ -394,7 +394,7 @@ export class SentenceEditorComponent implements OnInit {
         let lastIndex = 0; // Track the last matched index for sequential validation
 
         this.sentences.forEach( (text) => {
-            const regex = new RegExp( `(${text.japaneseSentence})`, 'g' );
+            const regex = new RegExp( `(${ this.escapeRegExp( text.japaneseSentence ) })`, 'g' );
             const match = updatedText.match( regex );
 
             if( match ) {
@@ -416,16 +416,23 @@ export class SentenceEditorComponent implements OnInit {
 
     removeSentence(index: number): void {
         this.sentences.splice( index, 1 );
+        // Reuse the shared highlighter (no ad-hoc regex, consistent with add/drop).
+        this.updateTextWithAllHighlights();
 
-        let updatedText = this.paragraph.originalParagraph;
-        this.sentences.forEach( (text) => {
-            const regex = new RegExp( `(${text.japaneseSentence})`, 'g' );
-            updatedText = updatedText.replace(
-                regex,
-                '<span class="grayed-out">$1</span>'
-            );
-        } );
-        this.displayText = this.sanitizeText( updatedText );
+        // Keep the edit box in sync with what was removed.
+        if( this.selectedIndex === index ) {
+            // The selected sentence itself was deleted — clear the edit box.
+            this.deselectSentence();
+        } else if( this.selectedIndex !== null && index < this.selectedIndex ) {
+            // A sentence before the selected one was removed — the selection shifted down by one.
+            this.selectedIndex--;
+            this.selectedSentence = this.sentences[this.selectedIndex] ?? null;
+        }
+    }
+
+    /** Escapes regex metacharacters so arbitrary sentence text is safe inside `new RegExp`. */
+    private escapeRegExp(value: string): string {
+        return value.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
     }
 
     sanitizeText(text: string): SafeHtml {
@@ -442,7 +449,15 @@ export class SentenceEditorComponent implements OnInit {
         this.selectedSentence = sentence;
         this.selectedIndex = index;
         this.form.controls.orig.setValue( sentence.japaneseSentence );
-        this.form.controls.translation.setValue( sentence.englishTranslation! );
+        this.form.controls.translation.setValue( sentence.englishTranslation ?? '' );
+    }
+
+    /** Clears the selection and resets the edit box. */
+    deselectSentence(): void {
+        this.selectedSentence = null;
+        this.selectedIndex = null;
+        this.form.controls.orig.setValue( '' );
+        this.form.controls.translation.setValue( '' );
     }
 
     editSentence() {
