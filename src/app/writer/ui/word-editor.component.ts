@@ -472,16 +472,9 @@ export class WordEditorComponent implements OnInit {
 
     removeWord(index: number): void {
         this.translatedParagraph.splice( index, 1 );
-
-        let updatedText = this.paragraph.originalParagraph;
-        this.translatedParagraph.forEach( (text) => {
-            const regex = new RegExp( `(${text.originalWord})`, 'g' );
-            updatedText = updatedText.replace(
-                regex,
-                '<span class="grayed-out">$1</span>'
-            );
-        } );
-        this.displayText = this.sanitizeText( updatedText );
+        // Reuse the shared highlighter (no regex, so it can't throw on words containing regex
+        // metacharacters, and it stays consistent with add/drop).
+        this.updateTextWithAllHighlights();
 
         // Keep the edit box in sync with what was removed.
         if( this.selectedIndex === index ) {
@@ -510,7 +503,7 @@ export class WordEditorComponent implements OnInit {
 
         this.form.controls.originalWord.setValue( word.originalWord );
         this.form.controls.dictionaryWordId.setValue( word.dictionaryWordId ?? '' );
-        this.form.controls.wordKana.setValue( word.wordKana );
+        this.form.controls.wordKana.setValue( word.wordKana ?? '' );
         this.form.controls.wordKanji.setValue( word.wordKanji ?? '' );
         this.form.controls.observation.setValue( word.observation ?? '' );
         // Drive the translation dropdown off this word's own chosen entry so it reflects the

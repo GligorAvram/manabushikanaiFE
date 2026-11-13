@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -49,13 +49,12 @@ import {valueIsNotEmpty} from "@shared/functions";
   ],
 })
 @UntilDestroy()
-export class SearchDropdownInputComponent<T extends { id: string }> implements OnChanges {
+export class SearchDropdownInputComponent<T extends { id: string }> {
   @Input() label = 'Search';
   @Input() placeholder = 'Type to search...';
   @Input() control!: FormControl<any>;
   @Input() searchResults: T[] = [];
   @Input() clearOptionsListAfterSearch: boolean = true;
-  @Input() initialValue?: T;
   /** Minimum characters that must be typed before `search` is emitted. 0 = search on any input. */
   @Input() minSearchLength = 0;
   /** Built-in hint shown while 0 < typed length < minSearchLength. `{min}` is substituted. */
@@ -149,18 +148,5 @@ export class SearchDropdownInputComponent<T extends { id: string }> implements O
 
   searchHint(): string {
     return this.searchHintTemplate.replace('{min}', String(this.minSearchLength));
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes["initialValue"]) {
-      if (this.initialValue !== undefined && this.initialValue !== null) {
-        this.onSelect(this.initialValue);
-      } else {
-        // No value for the current context: clear the visible text only, leaving
-        // the parent-managed `control` as it was set.
-        this.lastCommittedDisplay = '';
-        this.searchControl.setValue('', {emitEvent: false});
-      }
-    }
   }
 }
