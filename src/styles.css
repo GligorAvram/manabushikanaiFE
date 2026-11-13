@@ -17,3 +17,198 @@
     max-height: 0;
 }
 
+/* ===== Reader design tokens =====
+   Calm "washi paper" surface + one indigo accent. Pitch-accent word colours
+   stay owned by ACCENT_COLORS (accent-colors.ts) — the only other colour system. */
+:root {
+    --reader-bg: #f7f5ef;
+    --reader-panel: #ffffff;
+    --reader-ink: #1c1b18;
+    --reader-ink-soft: #55524a;
+    --reader-muted: #8c887c;
+    --reader-line: #e7e3d8;
+    --reader-line-soft: #efece2;
+    --reader-accent: #38508c;
+    --reader-accent-soft: #eef1f8;
+    --reader-radius: 14px;
+
+    --font-ui: 'Inter', 'Roboto', system-ui, sans-serif;
+    --font-jp: 'Noto Sans JP', 'Roboto', sans-serif;
+    --font-reading: 'Shippori Mincho', 'Noto Serif JP', Georgia, serif;
+}
+
+/* Compact page action (Add story / collection / tag), token-styled to the reader palette.
+   Global so it applies inside component templates (emulated encapsulation). */
+.add-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 38px;
+    padding: 0 15px;
+    border: none;
+    border-radius: 9px;
+    background: var(--reader-accent);
+    color: #fff;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .12s ease;
+}
+
+.add-action:hover {
+    background: #2f4679;
+}
+
+.add-action:focus-visible {
+    outline: 2px solid var(--reader-accent);
+    outline-offset: 2px;
+}
+
+.add-action svg {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* ===========================================================================
+   Material theme → reader ("washi paper" + indigo) overrides
+   ---------------------------------------------------------------------------
+   The app still loads the prebuilt deep-purple/amber Material theme. The writer
+   leans heavily on Material primitives (dialogs, outlined inputs, raised
+   buttons, tables, stepper, paginator) that the reader redesign never touched.
+   These global rules repaint those primitives to the reader palette/tokens so
+   the whole writer matches. They cascade app-wide, but the reader uses almost
+   none of them, so the only effect there is added consistency.
+
+   Specificity note: the prebuilt theme sets its MDC custom properties on the
+   component classes (e.g. `.mat-mdc-raised-button.mat-primary`). To win we
+   match that specificity and rely on later source order (this block is below
+   the `@import` at the top of the file). A few high-visibility rules use
+   `!important` as belt-and-braces where the exact token name is version-fragile.
+   =========================================================================== */
+
+/* --- Outlined form fields (text / select inputs) --------------------------- */
+.mat-mdc-form-field {
+    --mdc-outlined-text-field-container-shape: 10px;
+    --mdc-outlined-text-field-outline-color: var(--reader-line);
+    --mdc-outlined-text-field-hover-outline-color: #d8d2c4;
+    --mdc-outlined-text-field-focus-outline-color: var(--reader-accent);
+    --mdc-outlined-text-field-label-text-color: var(--reader-ink-soft);
+    --mdc-outlined-text-field-focus-label-text-color: var(--reader-accent);
+    --mdc-outlined-text-field-input-text-color: var(--reader-ink);
+    --mdc-outlined-text-field-caret-color: var(--reader-accent);
+    font-family: var(--font-ui);
+}
+
+/* Focused outline — force indigo over the deep-purple default. */
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: var(--reader-accent) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+    color: var(--reader-accent) !important;
+}
+
+/* --- Buttons --------------------------------------------------------------- */
+.mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: var(--reader-accent);
+    --mdc-protected-button-label-text-color: #ffffff;
+    border-radius: 9px;
+}
+
+.mat-mdc-raised-button.mat-primary:hover:not(:disabled) {
+    background-color: #2f4679 !important;
+}
+
+.mat-mdc-unelevated-button.mat-primary {
+    --mdc-filled-button-container-color: var(--reader-accent);
+    --mdc-filled-button-label-text-color: #ffffff;
+    border-radius: 9px;
+}
+
+.mat-mdc-outlined-button.mat-primary {
+    --mdc-outlined-button-label-text-color: var(--reader-accent);
+    --mdc-outlined-button-outline-color: var(--reader-line);
+    border-radius: 9px;
+}
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-button {
+    --mdc-text-button-label-text-color: var(--reader-ink-soft);
+}
+
+/* Delete mini-fab (color="warn") — token terracotta, not Material red. */
+.mat-mdc-mini-fab.mat-warn {
+    --mdc-fab-small-container-color: #c0562f;
+    box-shadow: none;
+}
+
+.mat-mdc-mini-fab.mat-warn:hover:not(:disabled) {
+    --mdc-fab-small-container-color: #a8491f;
+}
+
+/* --- Dialogs (all form modals) -------------------------------------------- */
+.mat-mdc-dialog-container {
+    --mdc-dialog-container-color: var(--reader-panel);
+    --mdc-dialog-container-shape: 16px;
+    --mdc-dialog-subhead-color: var(--reader-ink);
+    --mdc-dialog-supporting-text-color: var(--reader-ink-soft);
+    --mdc-dialog-subhead-font: var(--font-ui);
+    --mdc-dialog-supporting-text-font: var(--font-ui);
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+    border: 1px solid var(--reader-line);
+    box-shadow: 0 24px 60px -24px rgba(28, 27, 24, .45) !important;
+}
+
+/* --- Tables (story / collection / tag lists) ------------------------------ */
+.mat-mdc-table {
+    --mat-table-background-color: var(--reader-panel);
+    --mat-table-header-headline-color: var(--reader-ink-soft);
+    --mat-table-row-item-label-text-color: var(--reader-ink);
+    --mat-table-row-item-outline-color: var(--reader-line-soft);
+    --mat-table-header-headline-font: var(--font-ui);
+    --mat-table-row-item-label-text-font: var(--font-ui);
+    background: var(--reader-panel);
+    border: 1px solid var(--reader-line);
+    border-radius: var(--reader-radius);
+    overflow: hidden;
+}
+
+.mat-mdc-header-row {
+    --mat-table-header-container-height: 48px;
+}
+
+.mat-mdc-header-cell {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--reader-muted);
+}
+
+/* --- Paginator ------------------------------------------------------------- */
+.mat-mdc-paginator {
+    --mat-paginator-container-background-color: transparent;
+    --mat-paginator-container-text-color: var(--reader-ink-soft);
+    font-family: var(--font-ui);
+    background: transparent;
+}
+
+/* --- Stepper (story translation editor) ----------------------------------- */
+.mat-stepper-vertical,
+.mat-stepper-horizontal {
+    --mat-stepper-container-color: transparent;
+    --mat-stepper-line-color: var(--reader-line);
+    --mat-stepper-header-selected-state-icon-background-color: var(--reader-accent);
+    --mat-stepper-header-done-state-icon-background-color: #2f8f7e;
+    --mat-stepper-header-label-text-font: var(--font-ui);
+    background: transparent;
+    font-family: var(--font-ui);
+}
+

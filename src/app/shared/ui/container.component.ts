@@ -7,24 +7,22 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component';
                 selector       : 'app-container',
                 template       : `
                     <div
-                        class="rounded-3 w-100 d-flex flex-column align-items-start justify-content-center"
-                        [style]="'height: ' + (height ?? 'initial')"
+                        class="container"
+                        [style.height]="height ?? null"
                         [class.clickable]="clickable"
-                        [class.shadow]="!noBackground"
-                        [class.p-3]="!noBackground"
-                        [class.app-container]="!noBackground"
+                        [class.container--panel]="!noBackground"
                         (click)="cardClicked()"
                     >
-                        <div class="w-100">
+                        <div class="container__body">
                             <ng-container *ngIf="!loading; else loadingSpinner">
-                                <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="container__header">
                                     <ng-content select="[containerHeaderLeft]"></ng-content>
                                     <ng-content select="[containerHeaderRight]"></ng-content>
                                 </div>
                                 <ng-content></ng-content>
                             </ng-container>
                             <ng-template #loadingSpinner>
-                                <div class="d-flex justify-content-center w-100">
+                                <div class="container__spinner">
                                     <app-loading-spinner [visible]="loading"></app-loading-spinner>
                                 </div>
                             </ng-template>
@@ -33,17 +31,51 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner.component';
                 `,
                 styles         : [
                     `
-                        .app-container {
-                            background: #ffffff;
+                        /* Neutral full-width wrapper. Kept visually faithful to the
+                           original (white surface, no border/padding) so the shipped
+                           reader pages that wrap their whole view in it are unchanged;
+                           the dead Bootstrap utility classes it used before are dropped.
+                           Writer framing comes from the bordered tables / local sections. */
+                        .container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: stretch;
+                            width: 100%;
+                            box-sizing: border-box;
                         }
 
-                        .app-container.clickable {
+                        .container--panel {
+                            background: var(--reader-panel);
+                        }
+
+                        .container.clickable {
                             cursor: pointer;
-                            transition: transform 0.2s ease;
+                            transition: transform .2s ease;
                         }
 
-                        .app-container.clickable:hover {
+                        .container.clickable:hover {
                             transform: scale(1.05);
+                        }
+
+                        .container__body {
+                            width: 100%;
+                        }
+
+                        .container__header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            width: 100%;
+                        }
+
+                        .container__header:empty {
+                            display: none;
+                        }
+
+                        .container__spinner {
+                            display: flex;
+                            justify-content: center;
+                            width: 100%;
                         }
                     `
                 ],

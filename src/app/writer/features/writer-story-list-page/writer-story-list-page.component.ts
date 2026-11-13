@@ -20,13 +20,11 @@ import { WriterStoryListDataService } from './writer-story-list-data.service';
                             title="Story management page"
                             [icon]="icon.Stories"
                         ></app-title>
+                        <button headerRight type="button" class="add-action" (click)="openStoryCreateFormModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                            New story
+                        </button>
                     </app-header>
-                    <app-primary-button
-                        appButton
-                        label="Add new story"
-                        [icon]="icon.Add"
-                        (onClick)="openStoryCreateFormModal()"
-                    ></app-primary-button>
 
                     <app-container *ngIf="dataService.data$ | async as data">
                         <app-story-list-table
