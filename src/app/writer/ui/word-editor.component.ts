@@ -1,6 +1,6 @@
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { NgForOf, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IconEnum } from '@shared/config/enums/icon.enum';
@@ -11,6 +11,13 @@ import { SearchDropdownInputComponent } from '@shared/ui/input/search-dropdown-i
 import { TextInputComponent } from '@shared/ui/input/text-input.component';
 import { WriterPipesModule } from '@writer/pipes/writer-pipes.module';
 import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, DictionaryWordDto, ParagraphDto } from 'app/models/Api';
+
+/**
+ * In-editor word row. Besides the fields we submit, it keeps the full
+ * {@link DictionaryWordDto} that was chosen so the translation dropdown can
+ * re-display it when the user switches back to this word.
+ */
+type EditableWordTranslation = CreateWordTranslationDto & { dictionaryWord?: DictionaryWordDto };
 
 @Component( {
                 selector       : 'app-word-editor',
@@ -82,13 +89,15 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
                                                                appInput
                                                                formControlName="dictionaryWordId"
                                                                (search)="handleGetWordTranslation($event)"
+                                                               (optionSelected)="onTranslationSelected($event)"
+                                                               (textChange)="onTranslationTextChange($event)"
                                                                (clearOptionsList)="clearDictionaryWordList()"
                                                                [label]="'Search for translation'"
                                                                [placeholder]="'Search for a translation...'"
                                                                [control]="form.controls.dictionaryWordId"
                                                                [searchResults]="possibleTranslations"
                                                                [displayFn]="displayDictionaryWord"
-                                                               [initialValue]="initialValue"/>
+                                                               [revertOnBlur]="true"/>
                                     <app-text-input
                                         class="displayBlock"
                                         appInput
@@ -360,8 +369,8 @@ export class WordEditorComponent implements OnInit {
     onProcessWithAiClicked: EventEmitter<string> = new EventEmitter();
 
     displayText!: SafeHtml;
-    translatedParagraph: CreateWordTranslationDto[] = [];
-    selectedWord: CreateWordTranslationDto | null = null;
+    translatedParagraph: EditableWordTranslation[] = [];
+    selectedWord: EditableWordTranslation | null = null;
     selectedIndex: number | null = null;
 
     form!: FormGroup<{
@@ -372,7 +381,8 @@ export class WordEditorComponent implements OnInit {
         observation: FormControl<string>,
     }>;
 
-    initialValue: DictionaryWordDto | undefined;
+    @ViewChild( SearchDropdownInputComponent )
+    translationDropdown?: SearchDropdownInputComponent<DictionaryWordDto>;
 
     constructor(private sanitizer: DomSanitizer,
                 private _formBuilder: FormBuilder) {
@@ -416,16 +426,27 @@ export class WordEditorComponent implements OnInit {
             return;
         }
 
-        this.clearFormValues();
         const originalWord = selection.toString()
                                       .trim();
-        if( originalWord ) {
-            const word: CreateWordTranslationDto = { originalWord } as CreateWordTranslationDto;
-            this.translatedParagraph.push( word );
-            this.updateTextWithAllHighlights();
-            selection.removeAllRanges();
-            this.setAsSelectedWord( word, this.translatedParagraph.length - 1 );
+        if( !originalWord ) {
+            // A plain click in the paragraph (no text selected) deselects the current word.
+            this.deselectWord();
+            return;
         }
+
+        const word: EditableWordTranslation = { originalWord } as EditableWordTranslation;
+        this.translatedParagraph.push( word );
+        this.updateTextWithAllHighlights();
+        selection.removeAllRanges();
+        this.setAsSelectedWord( word, this.translatedParagraph.length - 1 );
+    }
+
+    /** Clears the selection and resets the edit box (fields + translation dropdown). */
+    deselectWord(): void {
+        this.selectedWord = null;
+        this.selectedIndex = null;
+        this.clearFormValues();
+        this.translationDropdown?.showSelection( null );
     }
 
     ngOnInit(): void {
@@ -436,7 +457,8 @@ export class WordEditorComponent implements OnInit {
                     originalWord    : word.originalWord,
                     wordKanji       : word.wordKanji,
                     wordKana        : word.wordKana,
-                    dictionaryWordId: word.translation ?? '',
+                    dictionaryWordId: word.translation?.id ?? '',
+                    dictionaryWord  : word.translation,
                     observation     : word.observation,
                     order           :
                     word.order
@@ -446,7 +468,6 @@ export class WordEditorComponent implements OnInit {
                                    [];
         this.updateTextWithAllHighlights();
         this.createFormBuilder();
-        this.dictionaryWordInitialValue();
     }
 
     removeWord(index: number): void {
@@ -461,32 +482,64 @@ export class WordEditorComponent implements OnInit {
             );
         } );
         this.displayText = this.sanitizeText( updatedText );
+
+        // Keep the edit box in sync with what was removed.
+        if( this.selectedIndex === index ) {
+            // The selected word itself was deleted — clear the edit box.
+            this.deselectWord();
+        } else if( this.selectedIndex !== null && index < this.selectedIndex ) {
+            // A word before the selected one was removed — the selection shifted down by one.
+            this.selectedIndex--;
+            this.selectedWord = this.translatedParagraph[this.selectedIndex] ?? null;
+        }
     }
 
     sanitizeText(text: string): SafeHtml {
         return this.sanitizer.bypassSecurityTrustHtml( text );
     }
 
-    drop(event: CdkDragDrop<CreateWordTranslationDto[]>): void {
+    drop(event: CdkDragDrop<EditableWordTranslation[]>): void {
         moveItemInArray( this.translatedParagraph, event.previousIndex, event.currentIndex );
         this.updateTextWithAllHighlights();
         this.setAsSelectedWord( this.translatedParagraph[event.currentIndex], event.currentIndex );
     }
 
-    setAsSelectedWord(word: CreateWordTranslationDto, index: number) {
+    setAsSelectedWord(word: EditableWordTranslation, index: number) {
         this.selectedWord = word;
         this.selectedIndex = index;
 
         this.form.controls.originalWord.setValue( word.originalWord );
-        this.form.controls.dictionaryWordId.setValue( word.dictionaryWordId! );
+        this.form.controls.dictionaryWordId.setValue( word.dictionaryWordId ?? '' );
         this.form.controls.wordKana.setValue( word.wordKana );
-        if( word.wordKanji != null ) {
-            this.form.controls.wordKanji.setValue( word.wordKanji );
+        this.form.controls.wordKanji.setValue( word.wordKanji ?? '' );
+        this.form.controls.observation.setValue( word.observation ?? '' );
+        // Drive the translation dropdown off this word's own chosen entry so it reflects the
+        // current selection (and clears for an unfilled word). Done imperatively because a
+        // bound [initialValue] does not re-run when switching between two empty selections.
+        this.translationDropdown?.showSelection( word.dictionaryWord );
+    }
+
+    onTranslationSelected(dictionaryWord: DictionaryWordDto) {
+        if( this.selectedWord ) {
+            this.selectedWord.dictionaryWord = dictionaryWord;
+            this.selectedWord.dictionaryWordId = dictionaryWord.id;
         }
-        if( word.observation != null ) {
-            this.form.controls.observation.setValue( word.observation );
+    }
+
+    /**
+     * Emptying the search box deselects the translation: drop it from the form and the
+     * selected row so it does not come back when switching away and back. Non-empty text
+     * is just an in-progress search and leaves the current selection untouched.
+     */
+    onTranslationTextChange(text: string) {
+        if( text?.trim() ) {
+            return;
         }
-        this.dictionaryWordInitialValue( word );
+        this.form.controls.dictionaryWordId.setValue( '' );
+        if( this.selectedWord ) {
+            this.selectedWord.dictionaryWord = undefined;
+            this.selectedWord.dictionaryWordId = '';
+        }
     }
 
     editWord() {
@@ -533,12 +586,6 @@ export class WordEditorComponent implements OnInit {
         this.displayText = this.sanitizeText(
             `<span style="color: gray; pointer-events: none;">${ updatedText }</span>${ restOfText }`
         );
-    }
-
-    dictionaryWordInitialValue(word?: CreateWordTranslationDto) {
-        if( word ) {
-            this.initialValue = this.paragraph.words?.find( m => m.originalWord === word?.originalWord )?.translation;
-        }
     }
 
     clearFormValues(): void {
