@@ -15,6 +15,8 @@ import {
 } from "@writer/features/writer-story-details-page/writer-story-details-page.component";
 import {AddWordToDictionaryFormModalComponent} from "@writer/ui/add-word-to-dictionary-form-modal.component";
 import {ContainerComponent} from "@shared/ui/container.component";
+import {HeaderComponent} from "@shared/ui/header.component";
+import {TitleComponent} from "@shared/ui/title.component";
 import {MatPaginator} from "@angular/material/paginator";
 
 @NgModule({
@@ -34,6 +36,8 @@ import {MatPaginator} from "@angular/material/paginator";
     WordEditorComponent,
     AddWordToDictionaryFormModalComponent,
     ContainerComponent,
+    HeaderComponent,
+    TitleComponent,
     MatPaginator
   ]
 })

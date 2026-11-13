@@ -21,19 +21,22 @@ import { WriterCollectionDetailsDataService } from './writer-collection-details-
                             <app-title
                                 headerLeft
                                 [title]="data.collection ? data.collection.name : 'Collection'"
+                                [subtitle]="data.collection?.japaneseName"
                                 [icon]="icon.Collections"
                             ></app-title>
+                            <button headerRight type="button" class="add-action" (click)="openAddStoryModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                Add a story
+                            </button>
                         </app-header>
-                        <p *ngIf="data.collection?.japaneseName" class="subtitle">
-                            {{ data.collection!.japaneseName }}
-                        </p>
-                        <p *ngIf="data.collection?.description" class="subtitle">
+
+                        <p *ngIf="data.collection?.description" class="lede">
                             {{ data.collection!.description }}
                         </p>
 
-                        <app-container>
-                            <h3>Stories in this collection</h3>
-                            <em *ngIf="stories.length === 0">No stories yet. Add one below.</em>
+                        <section class="panel">
+                            <h3 class="panel__heading">Stories in this collection</h3>
+                            <p *ngIf="stories.length === 0" class="empty">No stories yet. Add one above.</p>
                             <div
                                 cdkDropList
                                 (cdkDropListDropped)="drop($event)"
@@ -41,7 +44,7 @@ import { WriterCollectionDetailsDataService } from './writer-collection-details-
                             >
                                 <div class="story-row" *ngFor="let story of stories; let i = index" cdkDrag>
                                     <mat-icon cdkDragHandle class="drag-handle">{{ icon.DragHandle }}</mat-icon>
-                                    <span class="order">{{ i + 1 }}.</span>
+                                    <span class="order">{{ i + 1 }}</span>
                                     <span class="name">{{ story.name }}</span>
                                     <span class="spacer"></span>
                                     <app-delete-button
@@ -50,47 +53,84 @@ import { WriterCollectionDetailsDataService } from './writer-collection-details-
                                     ></app-delete-button>
                                 </div>
                             </div>
-                        </app-container>
-
-                        <app-primary-button
-                            appButton
-                            label="Add a story"
-                            [icon]="icon.Add"
-                            (onClick)="openAddStoryModal()"
-                        ></app-primary-button>
+                        </section>
                     </app-container>
                 `,
                 styles         : [
                     `
-                        .subtitle {
-                            margin: 0 0 0 10px;
-                            color: #5b5b5b;
+                        .lede {
+                            margin: 2px 0 18px 2px;
+                            max-width: 70ch;
+                            font-family: var(--font-ui);
+                            font-size: 14px;
+                            line-height: 1.5;
+                            color: var(--reader-ink-soft);
+                        }
+
+                        .panel {
+                            padding: 18px 20px;
+                            background: var(--reader-panel);
+                            border: 1px solid var(--reader-line);
+                            border-radius: var(--reader-radius);
+                        }
+
+                        .panel__heading {
+                            margin: 0 0 14px;
+                            font-family: var(--font-ui);
+                            font-size: 13px;
+                            font-weight: 600;
+                            letter-spacing: .03em;
+                            text-transform: uppercase;
+                            color: var(--reader-muted);
+                        }
+
+                        .empty {
+                            margin: 0;
+                            font-family: var(--font-ui);
+                            font-size: 14px;
+                            color: var(--reader-muted);
                         }
 
                         .story-list {
                             display: flex;
                             flex-direction: column;
+                            gap: 8px;
                         }
 
                         .story-row {
                             display: flex;
                             align-items: center;
-                            gap: 10px;
-                            padding: 8px 10px;
-                            border: 1px solid #e0e0e0;
-                            border-radius: 4px;
-                            margin-bottom: 6px;
-                            background: #fff;
+                            gap: 12px;
+                            padding: 10px 12px;
+                            border: 1px solid var(--reader-line);
+                            border-radius: 10px;
+                            background: var(--reader-bg);
+                            font-family: var(--font-ui);
                         }
 
                         .drag-handle {
                             cursor: move;
-                            color: #979797;
+                            color: var(--reader-muted);
                         }
 
                         .order {
-                            font-weight: bold;
-                            color: #5b5b5b;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex: 0 0 auto;
+                            width: 24px;
+                            height: 24px;
+                            border-radius: 50%;
+                            background: var(--reader-accent-soft);
+                            color: var(--reader-accent);
+                            font-size: 12px;
+                            font-weight: 600;
+                        }
+
+                        .name {
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: var(--reader-ink);
                         }
 
                         .spacer {
@@ -98,11 +138,16 @@ import { WriterCollectionDetailsDataService } from './writer-collection-details-
                         }
 
                         .cdk-drag-preview {
-                            box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2);
+                            border-radius: 10px;
+                            box-shadow: 0 14px 30px -16px rgba(28, 27, 24, .45);
                         }
 
                         .cdk-drag-placeholder {
                             opacity: 0.3;
+                        }
+
+                        .cdk-drag-animating {
+                            transition: transform .2s cubic-bezier(0, 0, 0.2, 1);
                         }
                     `
                 ],

@@ -31,6 +31,26 @@
 - Active highlighting uses the **`routerLinkActive`** directive, not a hand-rolled
   `router.url.includes(...)` check — see gotcha below.
 
+## Material theming (writer primitives)
+
+- The app still loads the **prebuilt `deeppurple-amber`** Material theme (`styles.css`
+  top `@import`). The writer leans on Material primitives the reader never used — outlined
+  form fields, raised/mini-fab buttons, dialogs, `mat-table`, `mat-stepper`,
+  `mat-paginator`. Rather than retheme each wrapper component, these are repainted to the
+  reader palette **globally** in the "Material theme → reader overrides" block at the
+  bottom of `src/styles.css` (mostly via the components' own MDC custom properties, e.g.
+  `--mdc-outlined-text-field-focus-outline-color`, `--mdc-protected-button-container-color`).
+  Put new Material-primitive theming there, not in component styles.
+- **Specificity:** the prebuilt theme sets its MDC tokens on the component classes
+  (e.g. `.mat-mdc-raised-button.mat-primary`), so overrides must match that specificity and
+  win on source order (the override block sits after the `@import`). A few high-visibility
+  rules use `!important` where the token name is version-fragile (focus outline, dialog
+  surface).
+- `app-container` is intentionally kept **visually neutral** (white surface, no
+  border/padding) — the shipped reader list pages wrap their *entire* view in it, so adding
+  framing there would regress the reader. Writer framing comes from the bordered tables and
+  local `.panel` sections instead.
+
 ## Gotchas
 
 ### Active nav highlighting must use `routerLinkActive`, not a getter

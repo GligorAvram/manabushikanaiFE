@@ -21,6 +21,19 @@ actions/api service.
   header and the table. On the tag page, the search box sits in a separate toolbar row
   below — create vs. filter are kept apart.
 
+## Visual redesign (reader palette)
+
+- The writer pages now follow the reader "washi paper + indigo" language via the design
+  tokens and the global Material overrides — see [styling.md](../shared/styling.md)
+  (Material theming section). Writer modals/tables/buttons inherit their look from the
+  shared primitives + those global overrides, so prefer fixing the shared piece over
+  per-page CSS.
+- The two translation editors (`sentence-editor`, `word-editor`) were reworked from the
+  old `mat-card` stacks into a **source-text card + two-column (list / edit) grid + footer
+  action** layout, built from native token-styled elements (the editing/selection/drag
+  logic is unchanged). The paragraph stepper lives in a bordered `.editor-panel` on the
+  story-details page, with the Word/Sentence `app-slider` moved into the page header.
+
 Add a new topic doc here when a writer feature has conventions or gotchas worth keeping.
 
 ## Gotchas

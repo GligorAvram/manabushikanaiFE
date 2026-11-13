@@ -1,14 +1,11 @@
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { NgClass, NgForOf, NgIf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCard, MatCardContent } from '@angular/material/card';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IconEnum } from '@shared/config/enums/icon.enum';
 import { ButtonModule } from '@shared/ui/buttons/button.module';
 import { DeleteButtonComponent } from '@shared/ui/buttons/delete-button.component';
-import { PrimaryButtonComponent } from '@shared/ui/buttons/primary-button.component';
-import { ContainerComponent } from '@shared/ui/container.component';
 import { InputModule } from '@shared/ui/input/input.module';
 import { SearchDropdownInputComponent } from '@shared/ui/input/search-dropdown-input.component';
 import { TextInputComponent } from '@shared/ui/input/text-input.component';
@@ -18,124 +15,327 @@ import { CreateWordTranslationDto, CreateWordTranslationForParagraphDto, Diction
 @Component( {
                 selector       : 'app-word-editor',
                 template       : `
-                    <app-container *ngIf="paragraph">
-                        <div>
-                            <app-primary-button
-                                label="Process with AI"
-                                [icon]="icon.Add"
-                                appButton
-                                (click)="processWithAi()"
-                            ></app-primary-button>
-                            <app-primary-button
-                                label="Add word to dictionary"
-                                [icon]="icon.Add"
-                                appButton
-                                (click)="openAddWordToDictionaryFormModal()"
-                            ></app-primary-button>
+                    <div class="weditor" *ngIf="paragraph">
+                        <div class="weditor__toolbar">
+                            <span class="weditor__step-label">Word translations</span>
+                            <div class="weditor__tools">
+                                <button type="button" class="ai-btn" (click)="processWithAi()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/></svg>
+                                    Process with AI
+                                </button>
+                                <button type="button" class="ai-btn" (click)="openAddWordToDictionaryFormModal()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                    Add word to dictionary
+                                </button>
+                            </div>
                         </div>
-                        <mat-card>
+
+                        <div class="source-card">
+                            <span class="source-card__hint">Select text in the paragraph to add it as a word.</span>
                             <div
                                 [innerHTML]="displayText"
                                 (mouseup)="addWord($event)"
                                 class="text-container"
-                                matTooltip="Select text to add it to the list."
                             ></div>
-                        </mat-card>
-                    </app-container>
-
-                    <app-container>
-                        <mat-card>
-                            <mat-card-content style="display: flex; flex-direction: row;">
-                                <div style="min-width: 5rem">
-                                    <div
-                                        cdkDropList
-                                        [cdkDropListData]="translatedParagraph"
-                                        cdkDropListOrientation="mixed"
-                                        (cdkDropListDropped)="drop($event)">
-                                        <span *ngFor="let item of translatedParagraph; let i = index">
-                                            <span [ngClass]="[!item.dictionaryWordId || !item.wordKana ? 'missing-data' : 'word-span']" class="example-box" cdkDrag (click)="setAsSelectedWord(item, i)">
-                                                {{ item.originalWord }}
-                                            </span>
-                                            <app-delete-button
-                                                appButton
-                                                class="no-touch-target"
-                                                (click)="removeWord(i)"
-                                            ></app-delete-button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </mat-card-content>
-                        </mat-card>
-                    </app-container>
-                    <app-container class="mx-3">
-                        <div>
-                            <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
-                                <app-text-input
-                                    class="displayBlock"
-                                    appInput
-                                    label="Original word"
-                                    [control]="form.controls.originalWord"
-                                    formControlName="originalWord"
-                                ></app-text-input>
-                                <app-search-dropdown-input class="displayBlock"
-                                                           appInput
-                                                           formControlName="dictionaryWordId"
-                                                           (search)="handleGetWordTranslation($event)"
-                                                           (clearOptionsList)="clearDictionaryWordList()"
-                                                           [label]="'Search for translation'"
-                                                           [placeholder]="'Search for a translation...'"
-                                                           [control]="form.controls.dictionaryWordId"
-                                                           [searchResults]="possibleTranslations"
-                                                           [displayFn]="displayDictionaryWord"
-                                                           [initialValue]="initialValue"/>
-                                <app-text-input
-                                    class="displayBlock"
-                                    appInput
-                                    label="Kanji"
-                                    [control]="form.controls.wordKanji"
-                                    formControlName="wordKanji"
-                                ></app-text-input>
-                                <app-text-input
-                                    class="displayBlock"
-                                    appInput
-                                    label="Kana"
-                                    [control]="form.controls.wordKana"
-                                    formControlName="wordKana"
-                                ></app-text-input>
-                                <app-text-input
-                                    class="displayBlock"
-                                    appInput
-                                    label="Observation"
-                                    [control]="form.controls.observation"
-                                    formControlName="observation"
-                                ></app-text-input>
-                                <button type="submit" [disabled]="!form.valid">Submit</button>
-                            </form>
-
-                            <app-primary-button
-                                label="Add paragraph translation"
-                                [icon]="icon.Add"
-                                appButton
-                                (click)="submitTranslation()"
-                            ></app-primary-button>
                         </div>
-                    </app-container>
+
+                        <div class="weditor__grid">
+                            <div class="words">
+                                <h4 class="words__heading">Words</h4>
+                                <p class="words__empty" *ngIf="!translatedParagraph.length">
+                                    No words yet — select text above to begin.
+                                </p>
+                                <div
+                                    cdkDropList
+                                    [cdkDropListData]="translatedParagraph"
+                                    cdkDropListOrientation="mixed"
+                                    class="words__list"
+                                    (cdkDropListDropped)="drop($event)">
+                                    <span class="word"
+                                          *ngFor="let item of translatedParagraph; let i = index"
+                                          [class.word--missing]="!item.dictionaryWordId || !item.wordKana"
+                                          [class.word--active]="selectedIndex === i"
+                                          cdkDrag>
+                                        <button type="button" class="word__text" (click)="setAsSelectedWord(item, i)">
+                                            {{ item.originalWord }}
+                                        </button>
+                                        <app-delete-button
+                                            appButton
+                                            class="no-touch-target"
+                                            (click)="removeWord(i)"
+                                        ></app-delete-button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="edit">
+                                <h4 class="edit__heading">Edit word</h4>
+                                <form *ngIf="form" [formGroup]="form" (ngSubmit)="editWord()">
+                                    <app-text-input
+                                        class="displayBlock"
+                                        appInput
+                                        label="Original word"
+                                        [control]="form.controls.originalWord"
+                                        formControlName="originalWord"
+                                    ></app-text-input>
+                                    <app-search-dropdown-input class="displayBlock"
+                                                               appInput
+                                                               formControlName="dictionaryWordId"
+                                                               (search)="handleGetWordTranslation($event)"
+                                                               (clearOptionsList)="clearDictionaryWordList()"
+                                                               [label]="'Search for translation'"
+                                                               [placeholder]="'Search for a translation...'"
+                                                               [control]="form.controls.dictionaryWordId"
+                                                               [searchResults]="possibleTranslations"
+                                                               [displayFn]="displayDictionaryWord"
+                                                               [initialValue]="initialValue"/>
+                                    <app-text-input
+                                        class="displayBlock"
+                                        appInput
+                                        label="Kanji"
+                                        [control]="form.controls.wordKanji"
+                                        formControlName="wordKanji"
+                                    ></app-text-input>
+                                    <app-text-input
+                                        class="displayBlock"
+                                        appInput
+                                        label="Kana"
+                                        [control]="form.controls.wordKana"
+                                        formControlName="wordKana"
+                                    ></app-text-input>
+                                    <app-text-input
+                                        class="displayBlock"
+                                        appInput
+                                        label="Observation"
+                                        [control]="form.controls.observation"
+                                        formControlName="observation"
+                                    ></app-text-input>
+                                    <button type="submit" class="btn btn--ghost" [disabled]="!form.valid">Save word</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="weditor__footer">
+                            <button type="button" class="btn btn--primary" (click)="submitTranslation()">
+                                Save paragraph translation
+                            </button>
+                        </div>
+                    </div>
                 `,
                 standalone     : true,
                 changeDetection: ChangeDetectionStrategy.OnPush,
                 styles         : [
-                    `.missing-data {
-                        color: #f44336;
-                    }
+                    `
+                        .weditor {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 18px;
+                            font-family: var(--font-ui);
+                            padding: 20px 0 4px;
+                        }
 
-                    .word-span {
-                        display: inline-block;
-                        min-width: 2rem;
-                    }
+                        .weditor__toolbar {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 12px;
+                            flex-wrap: wrap;
+                        }
+
+                        .weditor__tools {
+                            display: flex;
+                            gap: 8px;
+                            flex-wrap: wrap;
+                        }
+
+                        .weditor__step-label {
+                            font-size: 13px;
+                            font-weight: 600;
+                            letter-spacing: .03em;
+                            text-transform: uppercase;
+                            color: var(--reader-muted);
+                        }
+
+                        .source-card {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+                            padding: 16px 18px;
+                            background: var(--reader-bg);
+                            border: 1px solid var(--reader-line);
+                            border-radius: 12px;
+                        }
+
+                        .source-card__hint {
+                            font-size: 12px;
+                            color: var(--reader-muted);
+                        }
+
+                        .text-container {
+                            cursor: text;
+                            user-select: text;
+                            font-family: var(--font-jp);
+                            font-size: 18px;
+                            line-height: 1.9;
+                            color: var(--reader-ink);
+                        }
+
+                        .weditor__grid {
+                            display: grid;
+                            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                            gap: 18px;
+                            align-items: start;
+                        }
+
+                        @media (max-width: 860px) {
+                            .weditor__grid {
+                                grid-template-columns: minmax(0, 1fr);
+                            }
+                        }
+
+                        .words,
+                        .edit {
+                            padding: 16px;
+                            background: var(--reader-panel);
+                            border: 1px solid var(--reader-line);
+                            border-radius: 12px;
+                        }
+
+                        .words__heading,
+                        .edit__heading {
+                            margin: 0 0 12px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            letter-spacing: .03em;
+                            text-transform: uppercase;
+                            color: var(--reader-muted);
+                        }
+
+                        .words__empty {
+                            margin: 0;
+                            font-size: 13px;
+                            color: var(--reader-muted);
+                        }
+
+                        .words__list {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 8px;
+                        }
+
+                        .word {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 4px;
+                            padding: 4px 6px 4px 10px;
+                            border: 1px solid var(--reader-line);
+                            border-radius: 999px;
+                            background: var(--reader-bg);
+                        }
+
+                        .word--active {
+                            border-color: var(--reader-accent);
+                            box-shadow: 0 0 0 2px var(--reader-accent-soft);
+                        }
+
+                        .word--missing {
+                            border-color: #c0562f;
+                            background: #f7ece7;
+                        }
+
+                        .word__text {
+                            border: none;
+                            background: transparent;
+                            cursor: pointer;
+                            font-family: var(--font-jp);
+                            font-size: 15px;
+                            color: var(--reader-ink);
+                        }
+
+                        .word--missing .word__text {
+                            color: #a8491f;
+                        }
+
+                        .displayBlock {
+                            display: block;
+                            width: 100%;
+                        }
+
+                        .weditor__footer {
+                            display: flex;
+                            justify-content: flex-end;
+                        }
+
+                        .btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            height: 40px;
+                            padding: 0 18px;
+                            border-radius: 10px;
+                            font-family: var(--font-ui);
+                            font-size: 14px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: background .12s ease, border-color .12s ease;
+                        }
+
+                        .btn--primary {
+                            border: none;
+                            background: var(--reader-accent);
+                            color: #fff;
+                        }
+
+                        .btn--primary:hover {
+                            background: #2f4679;
+                        }
+
+                        .btn--ghost {
+                            border: 1px solid var(--reader-line);
+                            background: var(--reader-panel);
+                            color: var(--reader-ink);
+                        }
+
+                        .btn--ghost:hover:not(:disabled) {
+                            border-color: var(--reader-accent);
+                            color: var(--reader-accent);
+                        }
+
+                        .btn:disabled {
+                            opacity: .55;
+                            cursor: not-allowed;
+                        }
+
+                        .ai-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 7px;
+                            height: 36px;
+                            padding: 0 14px;
+                            border: 1px solid var(--reader-line);
+                            border-radius: 9px;
+                            background: var(--reader-panel);
+                            color: var(--reader-accent);
+                            font-family: var(--font-ui);
+                            font-size: 13px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: border-color .12s ease, background .12s ease;
+                        }
+
+                        .ai-btn:hover {
+                            border-color: var(--reader-accent);
+                            background: var(--reader-accent-soft);
+                        }
+
+                        .ai-btn svg {
+                            width: 16px;
+                            height: 16px;
+                        }
                     `
                 ],
                 imports        : [
-                    ButtonModule, CdkDropList, ContainerComponent, FormsModule, InputModule, MatCard, MatCardContent, NgForOf, NgIf, PrimaryButtonComponent, ReactiveFormsModule, TextInputComponent, WriterPipesModule, SearchDropdownInputComponent, DeleteButtonComponent, NgClass,
+                    ButtonModule, CdkDropList, FormsModule, InputModule, NgForOf, NgIf, ReactiveFormsModule, TextInputComponent, WriterPipesModule, SearchDropdownInputComponent, DeleteButtonComponent,
                     CdkDrag
                 ]
             } )

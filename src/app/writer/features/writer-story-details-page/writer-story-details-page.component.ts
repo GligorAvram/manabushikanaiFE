@@ -17,17 +17,28 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                 template       : `
                     <app-container *ngIf="dataService.data$ | async as data">
                         <app-loading-bar [visible]="data.loading"></app-loading-bar>
-                        <app-slider
-                            leftLabel="Word"
-                            rightLabel="Sentence"
-                            [leftOption]="wordView"
-                            [rightOption]="sentenceView"
-                            [checked]="selected === sentenceView"
-                            (onChange)="setSelected($event)"
-                        ></app-slider>
 
-                        <app-container *ngIf="data">
-                            <div>
+                        <app-header>
+                            <app-title
+                                headerLeft
+                                title="Translate story"
+                                subtitle="Add word- and sentence-level translations for each paragraph"
+                                [icon]="icon.Stories"
+                            ></app-title>
+                            <div headerRight class="view-toggle">
+                                <app-slider
+                                    leftLabel="Word"
+                                    rightLabel="Sentence"
+                                    [leftOption]="wordView"
+                                    [rightOption]="sentenceView"
+                                    [checked]="selected === sentenceView"
+                                    (onChange)="setSelected($event)"
+                                ></app-slider>
+                            </div>
+                        </app-header>
+
+                        <section class="editor-panel" *ngIf="data">
+                            <div class="pager">
                                 <mat-paginator [length]="data.paragraphs?.totalItems"
                                                [pageSize]="10"
                                                [pageSizeOptions]="[10]"
@@ -41,30 +52,105 @@ import { WriterStoryDetailsDataService } from './writer-story-details-data.servi
                                 <mat-step *ngFor="let paragraph of data.paragraphs?.paragraphs" [stepControl]="firstFormGroup"
                                           [completed]="checkIfCompleted(paragraph)">
 
-                                    <app-container *ngIf="selected===sentenceView">
-                                        <app-sentence-editor
-                                            [paragraph]="paragraph"
-                                            (onTranslationSubmitted)="submitTranslationForParagraph($event)"
-                                            (onProcessWithAiClicked)="generateSentenceTranslationWithAi($event)"
-                                        ></app-sentence-editor>
-                                    </app-container>
-                                    <app-container *ngIf="selected===wordView">
-                                        <app-word-editor
-                                            [paragraph]="paragraph"
-                                            (onOnWordFieldFilled)="getTranslationForWord($event)"
-                                            (onClearDictionaryWordsList)="clearWordTranslations()"
-                                            [possibleTranslations]="data.possibleWordTranslations"
-                                            (onWordTranslationSubmitted)="submitWordsTranslation($event)"
-                                            (onProcessWithAiClicked)="generateWordTranslationWithAi($event)"
-                                            (onOpenAddDictionaryModalClicked)="this.openAddWordToDictionaryFormModal()"
-                                        ></app-word-editor>
-                                    </app-container>
+                                    <app-sentence-editor
+                                        *ngIf="selected===sentenceView"
+                                        [paragraph]="paragraph"
+                                        (onTranslationSubmitted)="submitTranslationForParagraph($event)"
+                                        (onProcessWithAiClicked)="generateSentenceTranslationWithAi($event)"
+                                    ></app-sentence-editor>
+                                    <app-word-editor
+                                        *ngIf="selected===wordView"
+                                        [paragraph]="paragraph"
+                                        (onOnWordFieldFilled)="getTranslationForWord($event)"
+                                        (onClearDictionaryWordsList)="clearWordTranslations()"
+                                        [possibleTranslations]="data.possibleWordTranslations"
+                                        (onWordTranslationSubmitted)="submitWordsTranslation($event)"
+                                        (onProcessWithAiClicked)="generateWordTranslationWithAi($event)"
+                                        (onOpenAddDictionaryModalClicked)="this.openAddWordToDictionaryFormModal()"
+                                    ></app-word-editor>
                                 </mat-step>
                             </mat-stepper>
-                            <app-primary-button appButton (click)="publishStory()" label="Publish story"></app-primary-button>
-                        </app-container>
+                        </section>
+
+                        <div class="action-bar">
+                            <button type="button" class="publish-btn" (click)="publishStory()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                                Publish story
+                            </button>
+                        </div>
                     </app-container>
                 `,
+                styles         : [
+                    `
+                        /* Padding (not margin) so the action bar is included in the
+                           sidenav-content scroll height and the Publish button is always
+                           reachable at the bottom. */
+                        :host {
+                            display: block;
+                            padding-bottom: 40px;
+                        }
+
+                        .view-toggle {
+                            display: flex;
+                            align-items: center;
+                            padding: 4px 10px;
+                            border: 1px solid var(--reader-line);
+                            border-radius: 999px;
+                            background: var(--reader-panel);
+                        }
+
+                        .editor-panel {
+                            margin-top: 16px;
+                            padding: 8px 20px 20px;
+                            background: var(--reader-panel);
+                            border: 1px solid var(--reader-line);
+                            border-radius: var(--reader-radius);
+                        }
+
+                        .pager {
+                            display: flex;
+                            justify-content: flex-end;
+                            border-bottom: 1px solid var(--reader-line-soft);
+                        }
+
+                        .action-bar {
+                            display: flex;
+                            justify-content: flex-end;
+                            margin-top: 18px;
+                        }
+
+                        .publish-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            height: 42px;
+                            padding: 0 20px;
+                            border: none;
+                            border-radius: 10px;
+                            background: var(--reader-accent);
+                            color: #fff;
+                            font-family: var(--font-ui);
+                            font-size: 14px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: background .12s ease;
+                        }
+
+                        .publish-btn:hover {
+                            background: #2f4679;
+                        }
+
+                        .publish-btn:focus-visible {
+                            outline: 2px solid var(--reader-accent);
+                            outline-offset: 2px;
+                        }
+
+                        .publish-btn svg {
+                            width: 17px;
+                            height: 17px;
+                        }
+                    `
+                ],
                 providers      : [
                     WriterStoryDetailsDataService,
                     ModalService

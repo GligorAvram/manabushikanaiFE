@@ -80,7 +80,9 @@ import { combineLatest, map, Observable } from 'rxjs';
 
                         .hint {
                             display: block;
-                            color: #5b5b5b;
+                            font-family: var(--font-ui);
+                            font-size: 13px;
+                            color: var(--reader-muted);
                         }
 
                         .footer {
